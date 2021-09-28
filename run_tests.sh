@@ -63,7 +63,7 @@ append_row() {
 
 write_headers
 
-for TEST_TYPE in Reachability{Cardinality} ; do
+for TEST_TYPE in ReachabilityCardinality ; do
 	for MODEL in $(ls $TEST_FOLDER) ; do
 		
 		echo "Running $MODEL"
