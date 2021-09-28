@@ -76,31 +76,30 @@ for TEST_TYPE in Reachability{Cardinality} ; do
 			echo "	Q$Q"
 			CMD = "./binaries/$BIN $OPTIONS -x $Q $TEST_FOLDER/$MODEL/model.pnml $TEST_FOLDER/$MODEL/$TEST_TYPE.xml"
 			
-			# Execute test and store stdout in RES along with time and memory spent
+			# Execute test and store stdout in RES along with time and memory spent between @@@s
 			RES=$(eval "/usr/bin/time -f "@@@%e,%M@@@" timeout ${TIMING}m $CMD")
 
 			TIME=$(echo $RES | sed -E "s/.*@@@(.*),.*@@@.*/\1/")
 			MEM=$(echo $RES | sed -E "s/.*@@@.*,(.*)@@@.*/\1/")
 
-			# TODO Read statistics of 'RES'
+			ANSWER=$([[ ! -z "$(echo $RES | awk '/Query is satisfied/')" ]] && echo "TRUE" || echo "FALSE")
+			PREV_PLACE_COUNT=$(echo $RES | sed -E "s/.*Size of net before[^:]*: ([0-9]+).*/\1/")
+			PREV_TRANS_COUNT=$(echo $RES | sed -E "s/.*Size of net before[^:]*: [0-9]+.*([0-9]+).*/\1/")
+			POST_RED_PLACE_COUNT=$(echo $RES | sed -E "s/.*Size of net after[^:]*: ([0-9]+).*/\1/")
+			POST_RED_TRANS_COUNT=$(echo $RES | sed -E "s/.*Size of net after[^:]*: [0-9]+.*([0-9]+).*/\1/")
 
-			ANSWER="TRUE"
-			PREV_PLACE_COUNT=0
-			PREV_TRANS_COUNT=0
-			POST_RED_PLACE_COUNT=0
-			POST_RED_TRANS_COUNT=0
-			RULE_A=$(echo $RES | sed -E "s/.*Rule A: ([0-9]+).*/\1/")
-			RULE_B=$(echo $RES | sed -E "s/.*Rule B: ([0-9]+).*/\1/")
-			RULE_C=$(echo $RES | sed -E "s/.*Rule C: ([0-9]+).*/\1/")
-			RULE_D=$(echo $RES | sed -E "s/.*Rule D: ([0-9]+).*/\1/")
-			RULE_E=$(echo $RES | sed -E "s/.*Rule E: ([0-9]+).*/\1/")
-			RULE_F=$(echo $RES | sed -E "s/.*Rule F: ([0-9]+).*/\1/")
-			RULE_G=$(echo $RES | sed -E "s/.*Rule G: ([0-9]+).*/\1/")
-			RULE_H=$(echo $RES | sed -E "s/.*Rule H: ([0-9]+).*/\1/")
-			RULE_I=$(echo $RES | sed -E "s/.*Rule I: ([0-9]+).*/\1/")
-			RULE_J=$(echo $RES | sed -E "s/.*Rule J: ([0-9]+).*/\1/")
-			RULE_K=$(echo $RES | sed -E "s/.*Rule K: ([0-9]+).*/\1/")
-			RULE_L=$(echo $RES | sed -E "s/.*Rule L: ([0-9]+).*/\1/")
+			RULE_A=$(echo $RES | sed -E "s/.*Applications of rule A: ([0-9]+).*/\1/")
+			RULE_B=$(echo $RES | sed -E "s/.*Applications of rule B: ([0-9]+).*/\1/")
+			RULE_C=$(echo $RES | sed -E "s/.*Applications of rule C: ([0-9]+).*/\1/")
+			RULE_D=$(echo $RES | sed -E "s/.*Applications of rule D: ([0-9]+).*/\1/")
+			RULE_E=$(echo $RES | sed -E "s/.*Applications of rule E: ([0-9]+).*/\1/")
+			RULE_F=$(echo $RES | sed -E "s/.*Applications of rule F: ([0-9]+).*/\1/")
+			RULE_G=$(echo $RES | sed -E "s/.*Applications of rule G: ([0-9]+).*/\1/")
+			RULE_H=$(echo $RES | sed -E "s/.*Applications of rule H: ([0-9]+).*/\1/")
+			RULE_I=$(echo $RES | sed -E "s/.*Applications of rule I: ([0-9]+).*/\1/")
+			RULE_J=$(echo $RES | sed -E "s/.*Applications of rule J: ([0-9]+).*/\1/")
+			RULE_K=$(echo $RES | sed -E "s/.*Applications of rule K: ([0-9]+).*/\1/")
+			RULE_L=$(echo $RES | sed -E "s/.*Applications of rule L: ([0-9]+).*/\1/")
 
 			append_row $MODEL $Q $TIME $MEM $ANSWER $PREV_PLACE_COUNT $PREV_TRANS_COUNT $POST_RED_PLACE_COUNT $POST_RED_TRANS_COUNT $RULE_A $RULE_B $RULE_C $RULE_D $RULE_D $RULE_E $RULE_F $RULE_G $RULE_H $RULE_I $RULE_J $RULE_K $RULE_L
 		done
