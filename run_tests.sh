@@ -78,7 +78,7 @@ for TEST_TYPE in ReachabilityCardinality ; do
 			CMD="./binaries/$BIN $OPTIONS -x $Q $TEST_FOLDER/$MODEL/model.pnml $TEST_FOLDER/$MODEL/$TEST_TYPE.xml"
 			
 			# Execute test and store stdout in RES along with time and memory spent between @@@s
-			RES=$(eval "/usr/bin/time -f "@@@%e,%M@@@" timeout ${TIMING}m $CMD")
+			RES=$(/usr/bin/time -f "@@@%e,%M@@@" timeout ${TIMING}m $CMD)
 
 			TIME=$(echo $RES | sed -E "s/.*@@@(.*),.*@@@.*/\1/")
 			MEM=$(echo $RES | sed -E "s/.*@@@.*,(.*)@@@.*/\1/")
