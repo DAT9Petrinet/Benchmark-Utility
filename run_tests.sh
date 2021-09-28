@@ -23,7 +23,7 @@ fi
 
 if [ -z "$TIMING" ] ; then
 	echo "No timing given, using 1 minute per query"
-	T=1
+	TIMING=1
 fi
 
 OUT="output/$NAME.csv"
