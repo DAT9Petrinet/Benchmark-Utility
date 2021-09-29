@@ -89,9 +89,29 @@ for TEST_TYPE in ReachabilityCardinality ; do
 			if [[ ! -z "$(echo $RES | awk '/Query solved by Query Simplification/')" ]]; then
 
 				# Query was using using query reduction, so no structural reductions happened
-				append_row $MODEL $Q $TIME $MEM $ANSWER "TRUE" 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+				QUERY_SIMPLIFICATION="TRUE"
+
+				PREV_PLACE_COUNT=0
+				PREV_TRANS_COUNT=0
+				POST_RED_PLACE_COUNT=0
+				POST_RED_TRANS_COUNT=0
+
+				RULE_A=0
+				RULE_B=0
+				RULE_C=0
+				RULE_D=0
+				RULE_E=0
+				RULE_F=0
+				RULE_G=0
+				RULE_H=0
+				RULE_I=0
+				RULE_J=0
+				RULE_K=0
+				RULE_L=0
 			
 			else
+
+				QUERY_SIMPLIFICATION="FALSE"
 
 				PREV_PLACE_COUNT=$(echo $RES | sed -E "s/.*Size of net before[^:]*: ([0-9]+).*/\1/")
 				PREV_TRANS_COUNT=$(echo $RES | sed -E "s/.*Size of net before[^:]*: [0-9]+.*([0-9]+).*/\1/")
@@ -110,11 +130,10 @@ for TEST_TYPE in ReachabilityCardinality ; do
 				RULE_J=$(echo $RES | sed -E "s/.*Applications of rule J: ([0-9]+).*/\1/")
 				RULE_K=$(echo $RES | sed -E "s/.*Applications of rule K: ([0-9]+).*/\1/")
 				RULE_L=$(echo $RES | sed -E "s/.*Applications of rule L: ([0-9]+).*/\1/")
+
 			fi
 
-			append_row $MODEL $Q $TIME $MEM $ANSWER "FALSE" $PREV_PLACE_COUNT $PREV_TRANS_COUNT $POST_RED_PLACE_COUNT $POST_RED_TRANS_COUNT $RULE_A $RULE_B $RULE_C $RULE_D $RULE_D $RULE_E $RULE_F $RULE_G $RULE_H $RULE_I $RULE_J $RULE_K $RULE_L
-
-			exit 0
+			append_row $MODEL $Q $TIME $MEM $ANSWER $QUERY_SIMPLIFICATION $PREV_PLACE_COUNT $PREV_TRANS_COUNT $POST_RED_PLACE_COUNT $POST_RED_TRANS_COUNT $RULE_A $RULE_B $RULE_C $RULE_D $RULE_D $RULE_E $RULE_F $RULE_G $RULE_H $RULE_I $RULE_J $RULE_K $RULE_L
 		done
 	done
 done
