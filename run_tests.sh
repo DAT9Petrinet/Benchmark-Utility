@@ -78,8 +78,9 @@ for TEST_TYPE in ReachabilityCardinality ; do
 			CMD="./binaries/$BIN $OPTIONS -x $Q $TEST_FOLDER/$MODEL/model.pnml $TEST_FOLDER/$MODEL/$TEST_TYPE.xml"
 			
 			# Execute test and store stdout in RES along with time and memory spent between @@@s
+			# We also replace all newline characters \n with the character \r, since sed only works on one line at the time. https://unix.stackexchange.com/a/152389
 			eval "/usr/bin/time -f "@@@%e,%M@@@" timeout ${TIMING}m $CMD" &> temp
-			RES=$(cat temp)
+			RES=$(cat temp | tr '\n' '\r')
 
 			TIME=$(echo $RES | sed -E "s/.*@@@(.*),.*@@@.*/\1/")
 			MEM=$(echo $RES | sed -E "s/.*@@@.*,(.*)@@@.*/\1/")
