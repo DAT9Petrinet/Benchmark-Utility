@@ -78,7 +78,8 @@ for TEST_TYPE in ReachabilityCardinality ; do
 			CMD="./binaries/$BIN $OPTIONS -x $Q $TEST_FOLDER/$MODEL/model.pnml $TEST_FOLDER/$MODEL/$TEST_TYPE.xml"
 			
 			# Execute test and store stdout in RES along with time and memory spent between @@@s
-			RES=$(/usr/bin/time -f "@@@%e,%M@@@" timeout ${TIMING}m $CMD)
+			eval "/usr/bin/time -f "@@@%e,%M@@@" timeout ${TIMING}m $CMD" &> temp
+			RES=$(cat temp)
 
 			TIME=$(echo $RES | sed -E "s/.*@@@(.*),.*@@@.*/\1/")
 			MEM=$(echo $RES | sed -E "s/.*@@@.*,(.*)@@@.*/\1/")
@@ -112,6 +113,8 @@ for TEST_TYPE in ReachabilityCardinality ; do
 			fi
 
 			append_row $MODEL $Q $TIME $MEM $ANSWER "FALSE" $PREV_PLACE_COUNT $PREV_TRANS_COUNT $POST_RED_PLACE_COUNT $POST_RED_TRANS_COUNT $RULE_A $RULE_B $RULE_C $RULE_D $RULE_D $RULE_E $RULE_F $RULE_G $RULE_H $RULE_I $RULE_J $RULE_K $RULE_L
+
+			exit 0
 		done
 	done
 done
