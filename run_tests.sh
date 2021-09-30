@@ -85,12 +85,17 @@ for TEST_TYPE in ReachabilityCardinality ; do
 			TIME=$(echo $RES | sed -E "s/.*@@@(.*),.*@@@.*/\1/")
 			MEM=$(echo $RES | sed -E "s/.*@@@.*,(.*)@@@.*/\1/")
 
-			ANSWER=$([[ ! -z "$(echo $RES | awk '/Query is satisfied/')" ]] && echo "TRUE" || echo "FALSE")
+			# Did we get an answer or did the query time out?
+			# We can check this by checking if "satisfied" is a substring of the output.
+			# If "Query is satisfied" is also a substring, then the answer is TRUE.
+			ANSWER=$([[ -z "$(echo $RES | awk '/satisfied/')" ]] && ([[ -n "$(echo $RES | awk '/Query is satisfied/')" ]] && echo "TRUE" || echo "FALSE") || echo "NONE")
 
-			if [[ ! -z "$(echo $RES | awk '/Query solved by Query Simplification/')" ]]; then
+			# Was query solved using query reduction?
+			QUERY_SIMPLIFICATION=$([[ -n "$(echo $RES | awk '/Query solved by Query Simplification/')" ]] && echo "TRUE" || echo "FALSE")
 
-				# Query was using using query reduction, so no structural reductions happened
-				QUERY_SIMPLIFICATION="TRUE"
+			if [[ $ANSWER = "NONE" || $QUERY_SIMPLIFICATION = "TRUE" ]]; then
+
+				# In this case, no structural reduction was performed
 
 				PREV_PLACE_COUNT=0
 				PREV_TRANS_COUNT=0
@@ -111,8 +116,6 @@ for TEST_TYPE in ReachabilityCardinality ; do
 				RULE_L=0
 			
 			else
-
-				QUERY_SIMPLIFICATION="FALSE"
 
 				PREV_PLACE_COUNT=$(echo $RES | sed -E "s/.*Size of net before[^:]*: ([0-9]+).*/\1/")
 				PREV_TRANS_COUNT=$(echo $RES | sed -E "s/.*Size of net before[^:]*: [0-9]+.*([0-9]+).*/\1/")
