@@ -88,7 +88,7 @@ for TEST_TYPE in ReachabilityCardinality ; do
 			# Did we get an answer or did the query time out?
 			# We can check this by checking if "satisfied" is a substring of the output.
 			# If "Query is satisfied" is also a substring, then the answer is TRUE.
-			ANSWER=$([[ -z "$(echo $RES | awk '/satisfied/')" ]] && ([[ -n "$(echo $RES | awk '/Query is satisfied/')" ]] && echo "TRUE" || echo "FALSE") || echo "NONE")
+			ANSWER=$([[ -n "$(echo $RES | awk '/satisfied/')" ]] && ([[ -n "$(echo $RES | awk '/Query is satisfied/')" ]] && echo "TRUE" || echo "FALSE") || echo "NONE")
 
 			# Was query solved using query reduction?
 			QUERY_SIMPLIFICATION=$([[ -n "$(echo $RES | awk '/Query solved by Query Simplification/')" ]] && echo "TRUE" || echo "FALSE")
