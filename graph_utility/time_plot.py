@@ -14,8 +14,10 @@ column_names = ['model_name', 'query_index', 'time', 'memory', 'answer', 'prev p
                 'rule G', 'rule H', 'rule I', 'rule J', 'rule K', 'rule L']
 
 data_list = [pd.read_csv(path, names=column_names, skiprows=1) for path in paths]
+num_rows = len(data_list[0].index)
 
 for index, data in enumerate(data_list):
-    rules = [column for column in column_names if "rule" in column]
-    sns.violinplot(data=data[rules], bw=.1).set(title=f'{test_names[index]}', ylabel='uses')
+    sns.lineplot(data=data['time']).set(title=f'{test_names[index]}-time', ylabel='time taken',
+                                        xlabel='test instances', xticks=list(range(0, num_rows)), yscale="log")
     plt.savefig(f'graphs/time_{test_names[index]}.png')
+    plt.clf()

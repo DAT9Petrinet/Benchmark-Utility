@@ -19,3 +19,4 @@ for index, data in enumerate(data_list):
     rules = [column for column in column_names if "rule" in column]
     sns.violinplot(data=data[rules], bw=.1).set(title=f'{test_names[index]}', ylabel='uses')
     plt.savefig(f'graphs/violin_plot_{test_names[index]}.png')
+    plt.clf()
