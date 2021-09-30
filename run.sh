@@ -1,6 +1,8 @@
 #!/bin/bash
 
 # Args: <test-name> <bin-options> [time-out]
+# Starts a number of slurm tasks each solving the queries of one model in the test folder.
+# The results will be scattered in a number of csv files. Use collect_and_clean.sh afterwards.
 
 NAME=$1
 OPTIONS=$2
