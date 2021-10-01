@@ -52,8 +52,6 @@ for FILE in $(ls output) ; do
 		echo "Collecting from output/$FILE"
 
 		cat "output/$FILE" >> $OUT
-		# New line character
-		echo "" >> $OUT
 
 		# Remove the file
 		rm "output/$FILE"
