@@ -6,7 +6,7 @@
 
 NAME=$1
 OPTIONS=$2
-TIME_OUT="$3"
+TIME_OUT=$3
 BIN="binaries/verifypn-linux64"
 TEST_FOLDER="MCC2021"
 
@@ -28,5 +28,5 @@ fi
 
 for MODEL in $(ls $TEST_FOLDER) ; do
 
-	sbatch --mail-user=$(whoami) ./run_tests.sh $NAME $BIN $TEST_FOLDER $MODEL $TIME_OUT $OPTIONS
+	sbatch --mail-user=$(whoami) ./run_tests.sh $NAME $BIN $TEST_FOLDER $MODEL $TIME_OUT "$OPTIONS"
 done

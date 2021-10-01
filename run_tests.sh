@@ -4,6 +4,7 @@
 #SBATCH --mail-type=FAIL
 #SBATCH --partition=naples
 #SBATCH --mem=15G
+#SBATCH -c=4
 
 # Args: <test-name> <binary> <test-folder> <model> <time-out> <bin-options>
 # Do not run this. It is supposed to be run by `run.sh`. This script will run the binary on all the (ReachabilityCardinality) queries of a given model
@@ -31,6 +32,7 @@ for Q in $(seq 1 $NQ ) ; do
 	
 	echo "	Q$Q"
 	CMD="./$BIN $OPTIONS -x $Q $TEST_FOLDER/$MODEL/model.pnml $TEST_FOLDER/$MODEL/ReachabilityCardinality.xml"
+	echo $CMD
 	
 	# Execute test and store stdout in RES along with time and memory spent between @@@s
 	# We also replace all newline characters \n with the character \r, since sed only works on one line at the time. https://unix.stackexchange.com/a/152389
@@ -92,7 +94,7 @@ for Q in $(seq 1 $NQ ) ; do
 
 	fi
 
-	append_row $MODEL $Q $TIME $MEM $ANSWER $QUERY_SIMPLIFICATION $PREV_PLACE_COUNT $PREV_TRANS_COUNT $POST_RED_PLACE_COUNT $POST_RED_TRANS_COUNT $RULE_A $RULE_B $RULE_C $RULE_D $RULE_D $RULE_E $RULE_F $RULE_G $RULE_H $RULE_I $RULE_J $RULE_K $RULE_L
+	append_row $MODEL $Q $TIME $MEM $ANSWER $QUERY_SIMPLIFICATION $PREV_PLACE_COUNT $PREV_TRANS_COUNT $POST_RED_PLACE_COUNT $POST_RED_TRANS_COUNT $RULE_A $RULE_B $RULE_C $RULE_D $RULE_E $RULE_F $RULE_G $RULE_H $RULE_I $RULE_J $RULE_K $RULE_L
 done
 
 exit 0
