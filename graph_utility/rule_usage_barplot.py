@@ -1,6 +1,4 @@
 import matplotlib.pyplot as plt
-import numpy
-import numpy as np
 import pandas as pd
 import seaborn as sns
 import sys
@@ -19,13 +17,16 @@ for index, data in enumerate(data_list):
     grouped_data = data.groupby(['model name'])[rules].agg('sum')
     num_models = len(grouped_data)
 
-    #percentages = [(len(grouped_data[grouped_data[rule] > 0])) / num_models
-    #               for rule in rules]
+    percentages = (((((grouped_data > 0) * 1).mean()) * 100).to_frame()).transpose()
 
-    percentages = ((grouped_data > 0)*1).mean()
-    percentages = (percentages.to_frame()).transpose()
-    print(percentages)
-
-    sns.barplot(data=percentages).set(title=f'{test_names[index]}', ylabel='uses in \%')
-    plt.savefig(f'graphs/rule_usage_barplot_{test_names[index]}.png')
+    plot = sns.barplot(data=percentages)
+    plot.set(title=f'percentage of model using rule {test_names[index]}', ylabel='uses in \%')
+    for p in plot.patches:
+        plot.annotate(format(p.get_height(), '.1f'),
+                      (p.get_x() + p.get_width() / 2., p.get_height()),
+                      ha='center', va='center',
+                      size=10,
+                      xytext=(0, 8),
+                      textcoords='offset points')
+    plt.savefig(f'graphs/rule_usage_%_{test_names[index]}.png')
     plt.clf()
