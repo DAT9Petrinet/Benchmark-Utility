@@ -9,18 +9,12 @@ sns.set_style("whitegrid")
 paths = sys.argv[1:]
 test_names = [os.path.split(os.path.splitext(path)[0])[1] for path in paths]
 
-column_names = ['model_name', 'query_index', 'time', 'memory', 'answer', 'prev place count', 'prev transition count',
-                'post place count', 'post transition count', 'rule A', 'rule B', 'rule C', 'rule D', 'rule E', 'rule F',
-                'rule G', 'rule H', 'rule I', 'rule J', 'rule K', 'rule L']
-
-data_list = [pd.read_csv(path, names=column_names, skiprows=1) for path in paths]
+data_list = [pd.read_csv(path) for path in paths]
 num_rows = len(data_list[0].index)
 
 for index, data in enumerate(data_list):
     data.loc[data.answer != "None", "answer"] = "answered"
     data.loc[data.answer == "None", "answer"] = "not-answered"
-
-    print(data['answer'])
 
     num_answered = data['answer'].value_counts()['answered']
     try:
