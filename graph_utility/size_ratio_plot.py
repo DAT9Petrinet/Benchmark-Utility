@@ -36,6 +36,7 @@ for test_index, data in enumerate(data_list[1:]):
     for index, row in data.iterrows():
         if index in ignore_rows:
             continue
+
         size_pre_reductions = int(row['prev place count'] + row['prev transition count'])
 
         if size_pre_reductions != pre_sizes_numerator[index]:

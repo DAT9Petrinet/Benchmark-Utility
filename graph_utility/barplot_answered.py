@@ -13,15 +13,13 @@ data_list = [pd.read_csv(path) for path in paths]
 num_rows = len(data_list[0].index)
 
 for index, data in enumerate(data_list):
-    data.loc[data.answer != "None", "answer"] = "answered"
-    data.loc[data.answer == "None", "answer"] = "not-answered"
+    data.loc[data.answer != "NONE", "answer"] = "answered"
+    data.loc[data.answer == "NONE", "answer"] = "not-answered"
 
-    num_answered = data['answer'].value_counts()['answered']
-    try:
-        num_non_answered = data['answer'].value_counts()['not-answered']
-    except:
-        num_non_answered = 0
-    max_y_tick = max(num_answered, num_non_answered)
-    sns.countplot(data=data, x="answer").set(title=f'{test_names[index]}-answered-queries', xlabel='')
+    fig, ax = plt.subplots(1, 2)
+    plt.subplots_adjust(left=0.125, right=0.9, bottom=0.1, top=0.9, wspace=0.3, hspace=0.2)
+    sns.countplot(x=data['answer'], ax=ax[0])
+    data_with_answers = data.drop(data[(data.answer == 'not-answered')].index)
+    sns.countplot(x=data_with_answers['solved by query simplification'], ax=ax[1]).set(ylabel='')
     plt.savefig(f'graphs/answered_queries_{test_names[index]}.png')
     plt.clf()
