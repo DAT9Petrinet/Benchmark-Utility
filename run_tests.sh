@@ -6,7 +6,8 @@
 #SBATCH --mem=15G
 
 # Args: <test-name> <binary> <test-folder> <model> <time-out> <bin-options>
-# Out: output/<test-name>.<model>.csv
+# Do not run this. It is supposed to be run by `run.sh`. This script will run the binary on all the (ReachabilityCardinality) queries of a given model
+# and store the resulting stats in `output/<test-name>.<model>.csv`
 
 NAME=$1
 BIN=$2

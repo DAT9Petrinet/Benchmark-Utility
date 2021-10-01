@@ -22,7 +22,7 @@ fi
 
 if [ -z "$TIME_OUT" ] ; then
 	echo "No TIME_OUT given, using 10 minute per query"
-	TIME_OUT=10
+	TIME_OUT=15
 fi
 
 
