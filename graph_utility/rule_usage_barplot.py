@@ -20,7 +20,7 @@ for index, data in enumerate(data_list):
     percentages = (((((grouped_data > 0) * 1).mean()) * 100).to_frame()).transpose()
 
     plot = sns.barplot(data=percentages)
-    plot.set(title=f'percentage of model using rule {test_names[index]}', ylabel='uses in \%')
+    plot.set(title=f'({test_names[index]}) percentage of models using rules', ylabel='uses in \%')
     for p in plot.patches:
         plot.annotate(format(p.get_height(), '.1f'),
                       (p.get_x() + p.get_width() / 2., p.get_height()),
