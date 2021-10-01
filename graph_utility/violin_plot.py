@@ -13,6 +13,7 @@ data_list = [pd.read_csv(path) for path in paths]
 
 rules = [column for column in (pd.read_csv(paths[0], index_col=0, nrows=0).columns.tolist()) if "rule" in column]
 for index, data in enumerate(data_list):
+    data = data.drop(data[(data['solved by query simplification']) | (data.answer == 'NONE')].index)
     sns.violinplot(data=data[rules], bw=.1).set(title=f'{test_names[index]}', ylabel='uses')
     plt.savefig(f'graphs/violin_plot_{test_names[index]}.png')
     plt.clf()

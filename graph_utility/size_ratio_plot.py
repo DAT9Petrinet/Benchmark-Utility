@@ -20,33 +20,29 @@ for data in data_list:
     for index, row in data.iterrows():
         if index in ignore_rows:
             continue
-        elif row['answer'] == 'None' or row['solved by query simplification'] == 'True':
+        if row['answer'] == 'NONE' or row['solved by query simplification']:
             back_track = back_track + 1
             ignore_rows.add(index)
 
 pre_sizes_numerator = [] * num_rows
 post_sizes_numerator = [] * num_rows
 for index, row in data_list[0].iterrows():
-    if index in ignore_rows:
-        continue
-    else:
-        pre_sizes_numerator.append(int(row['prev place count'] + row['prev transition count']))
-        post_sizes_numerator.append(int(row['post place count'] + row['post transition count']))
+    pre_sizes_numerator.append(int(row['prev place count'] + row['prev transition count']))
+    post_sizes_numerator.append(int(row['post place count'] + row['post transition count']))
 
 df = pd.DataFrame()
 for test_index, data in enumerate(data_list[1:]):
-    back_track = 0
     ratios = [] * num_rows
     for index, row in data.iterrows():
         if index in ignore_rows:
             continue
         size_pre_reductions = int(row['prev place count'] + row['prev transition count'])
-        size_post_reductions = int(row['post place count'] + row['post transition count'])
 
-        if size_pre_reductions != pre_sizes_numerator[index - back_track]:
+        if size_pre_reductions != pre_sizes_numerator[index]:
             raise Exception("Not comparing same rows")
 
-        ratio = post_sizes_numerator[index - back_track] / size_post_reductions
+        size_post_reductions = int(row['post place count'] + row['post transition count'])
+        ratio = post_sizes_numerator[index] / size_post_reductions
         ratios.append(ratio)
 
     df[f"{test_names[0]}/{test_names[test_index + 1]}"] = ratios
