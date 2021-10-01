@@ -48,6 +48,6 @@ for test_index, data in enumerate(data_list[1:]):
     df[f"{test_names[0]}/{test_names[test_index + 1]}"] = ratios
 
 sns.lineplot(data=df).set(xlabel='test instances', ylabel='size ratios', yscale="log",
-                          xticks=list(range(0, num_rows - len(ignore_rows))), title='Reduced size of nets')
+                          title='Reduced size of nets')
 plt.savefig('graphs/size_ratios.png')
 plt.clf()

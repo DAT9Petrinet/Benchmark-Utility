@@ -13,7 +13,7 @@ data_list = [pd.read_csv(path) for path in paths]
 
 for index, data in enumerate(data_list):
     data = data.drop(data[(data['solved by query simplification']) | (data.answer == 'NONE')].index)
-    sns.lineplot(data=data['time']).set(title=f'{test_names[index]}-time', ylabel='time taken',
-                                        xlabel='test instances', xticks=list(range(0, len(data.index))), yscale="log")
+    sns.lineplot(data=data['time'], sort=True).set(title=f'{test_names[index]}-time', ylabel='time taken',
+                                                   xlabel='', yscale="log")
     plt.savefig(f'graphs/time_{test_names[index]}.png')
     plt.clf()

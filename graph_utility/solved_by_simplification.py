@@ -23,7 +23,6 @@ for index, data in enumerate(data_list):
         num_not_answered_by_simplification = 0
     max_y_tick = max(num_solved_by_simplification, num_not_answered_by_simplification)
     sns.countplot(data=data, x='solved by query simplification').set(
-        title=f'{test_names[index]}-Solved by simplification', xlabel='',
-        yticks=list(range(0, max_y_tick + 2)))
+        title=f'{test_names[index]}-solved by simplification', xlabel='')
     plt.savefig(f'graphs/solved_by_simplification_{test_names[index]}.png')
     plt.clf()

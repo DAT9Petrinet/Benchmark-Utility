@@ -22,7 +22,6 @@ for index, data in enumerate(data_list):
     except:
         num_non_answered = 0
     max_y_tick = max(num_answered, num_non_answered)
-    sns.countplot(data=data, x="answer").set(title=f'{test_names[index]}-answered-queries', xlabel='',
-                                             yticks=list(range(0, max_y_tick + 1)))
+    sns.countplot(data=data, x="answer").set(title=f'{test_names[index]}-answered-queries', xlabel='')
     plt.savefig(f'graphs/answered_queries_{test_names[index]}.png')
     plt.clf()
