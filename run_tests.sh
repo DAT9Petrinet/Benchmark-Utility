@@ -4,7 +4,7 @@
 #SBATCH --mail-type=FAIL
 #SBATCH --partition=naples
 #SBATCH --mem=15G
-#SBATCH -c=4
+#SBATCH -c 4
 
 # Args: <test-name> <binary> <test-folder> <model> <time-out> <bin-options>
 # Do not run this. It is supposed to be run by `run.sh`. This script will run the binary on all the (ReachabilityCardinality) queries of a given model

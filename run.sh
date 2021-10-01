@@ -21,8 +21,8 @@ if [ -z "$OPTIONS" ] ; then
 fi
 
 if [ -z "$TIME_OUT" ] ; then
-	echo "No TIME_OUT given, using 10 minute per query"
-	TIME_OUT=15
+	echo "No TIME_OUT given, using 5 minute per query"
+	TIME_OUT=5
 fi
 
 
