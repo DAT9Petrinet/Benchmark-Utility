@@ -28,5 +28,5 @@ for index, data in enumerate(data_list):
                       size=10,
                       xytext=(0, 8),
                       textcoords='offset points')
-    plt.savefig(f'graphs/rule_usage_%_{test_names[index]}.png')
+    plt.savefig(f'graphs/{test_names[index]}_rule_usage_%.png')
     plt.clf()
