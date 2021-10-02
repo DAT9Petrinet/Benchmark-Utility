@@ -22,11 +22,10 @@ for index, data in enumerate(data_list):
     simplifications.rename(columns={'solved by query simplification': "answer"}, inplace=True)
 
     temp = answers.append(simplifications)
-    temp = temp.divide(2, axis='columns')
     temp.rename(columns={'answer': test_names[index]}, inplace=True)
     combined = combined.append(temp.T)
 
-plot = combined.plot(kind='bar', stacked=True)
+plot = combined.plot(kind='bar', stacked=False)
 for item in plot.get_xticklabels():
     item.set_rotation(0)
 plt.legend(loc='upper right')
