@@ -31,5 +31,5 @@ for item in plot.get_xticklabels():
 plt.legend(loc='upper right')
 plt.ylabel("test instances")
 
-plt.savefig(f'graphs/answer_simplification_stacked_bars.png')
+plt.savefig(f'graphs/answer_simplification_bars.png')
 plt.clf()

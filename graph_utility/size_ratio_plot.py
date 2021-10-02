@@ -68,5 +68,5 @@ for test_index, data in enumerate(data_list[1:]):
 print(size_ratios)
 sns.lineplot(data=size_ratios).set(xlabel='test instances', ylabel='size ratios', yscale="linear",
                                    title='Reduced size of nets')
-plt.savefig('graphs/size_ratios.png')
+plt.savefig('graphs/reduced_size_compared.png')
 plt.clf()
