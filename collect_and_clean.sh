@@ -13,7 +13,7 @@ if [ -z "$NAME" ] ; then
 	exit
 fi
 
-if [ -z "$NAME" ] ; then
+if [ -z "$BIN" ] ; then
 	echo "Missing binary"
 	exit
 fi
