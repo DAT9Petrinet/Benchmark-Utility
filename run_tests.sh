@@ -77,7 +77,7 @@ for Q in $(seq 1 $NQ ) ; do
 		PREV_PLACE_COUNT=$(echo $RES | sed -E "s/.*Size of net before[^:]*: ([0-9]+).*/\1/")
 		PREV_TRANS_COUNT=$(echo $RES | sed -E "s/.*Size of net before[^:]*: [0-9]+ places, ([0-9]+).*/\1/")
 		POST_RED_PLACE_COUNT=$(echo $RES | sed -E "s/.*Size of net after[^:]*: ([0-9]+).*/\1/")
-		POST_RED_TRANS_COUNT=$(echo $RES | sed -E "s/.*Size of net after[^:]*: [0-9]+ place, ([0-9]+).*/\1/")
+		POST_RED_TRANS_COUNT=$(echo $RES | sed -E "s/.*Size of net after[^:]*: [0-9]+ places, ([0-9]+).*/\1/")
 
 		RULE_A=$(echo $RES | sed -E "s/.*Applications of rule A: ([0-9]+).*/\1/")
 		RULE_B=$(echo $RES | sed -E "s/.*Applications of rule B: ([0-9]+).*/\1/")
@@ -94,7 +94,7 @@ for Q in $(seq 1 $NQ ) ; do
 
 	fi
 
-	append_row $MODEL $Q $TIME $MEM $ANSWER $QUERY_SIMPLIFICATION $PREV_PLACE_COUNT $PREV_TRANS_COUNT $POST_RED_PLACE_COUNT $POST_RED_TRANS_COUNT $RULE_A $RULE_B $RULE_C $RULE_D $RULE_E $RULE_F $RULE_G $RULE_H $RULE_I $RULE_J $RULE_K $RULE_L
+	append_row "$MODEL" "$Q" "$TIME" "$MEM" "$ANSWER" "$QUERY_SIMPLIFICATION" "$PREV_PLACE_COUNT" "$PREV_TRANS_COUNT" "$POST_RED_PLACE_COUNT" "$POST_RED_TRANS_COUNT" "$RULE_A" "$RULE_B" "$RULE_C" "$RULE_D" "$RULE_E" "$RULE_F" "$RULE_G" "$RULE_H" "$RULE_I" "$RULE_J" "$RULE_K" "$RULE_L"
 done
 
 exit 0

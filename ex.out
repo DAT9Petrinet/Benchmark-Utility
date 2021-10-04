@@ -1,0 +1,45 @@
+Parameters: -x 2 MCC2021/ASLink-PT-01a/model.pnml MCC2021/ASLink-PT-01a/ReachabilityCardinality.xml
+
+Search=OverApprox,Trace=DISABLED,State_Space_Exploration=DISABLED,Structural_Reduction=AGGRESSIVE,Struct_Red_Timout=60,Stubborn_Reduction=ENABLED,Query_Simplication=ENABLED,QSTimeout=30,Siphon_Trap=DISABLED,LPSolve_Timeout=10
+Finished parsing model
+RWSTATS LEGEND:EG p-> !EF !p,AG p-> !AF !p,!EX p -> AX p,EX false -> false,EX true -> !deadlock,!AX p -> EX p,AX false -> deadlock,AX true -> true,EF !deadlock -> !deadlock,EF EF p -> EF p,EF AF p -> AF p,EF E p U q -> EF q,EF A p U q -> EF q,EF .. or .. -> EF .. or EF ..,AF !deadlock -> !deadlock,AF AF p -> AF p,AF EF p -> EF p,AF .. or EF p -> EF p or AF ..,AF A p U q -> AF q,A p U !deadlock -> !deadlock,A deadlock U q -> q,A !deadlock U q -> AF q,A p U AF q -> AF q,A p U EF q -> EF q,A p U .. or EF q -> EF q or A p U ..,E p U !deadlock -> !deadlock,E deadlock U q -> q,E !deadlock U q -> EF q,E p U EF q -> EF q,E p U .. or EF q -> EF q or E p U ..,!! p -> p,F F p -> F p,F p U q -> F q,F p or q -> F p or F q,p U F q -> F q,
+
+Query before reduction: AG (p244 <= p110)
+RWSTATS PRE:0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+RWSTATS POST:0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+
+Query after reduction: (not EF (p110 < p244))
+Query reduction finished after 3.42072 seconds.
+Query size reduced from 4 to 5 nodes ( -25 percent reduction).
+
+Size of net before structural reductions: 431 places, 735 transitions
+Size of net after structural reductions: 344 places, 659 transitions
+Structural reduction finished after 68.5942 seconds
+
+Net reduction is enabled.
+Removed transitions: 76
+Removed places: 87
+Applications of rule A: 1
+Applications of rule B: 71
+Applications of rule C: 18
+Applications of rule D: 0
+Applications of rule E: 0
+Applications of rule F: 1
+Applications of rule G: 0
+Applications of rule H: 0
+Applications of rule I: 0
+Applications of rule J: 0
+Applications of rule K: 0
+Applications of rule L: 8
+
+FORMULA ASLink-PT-01a-ReachabilityCardinality-01 FALSE TECHNIQUES COLLATERAL_PROCESSING STRUCTURAL_REDUCTION QUERY_REDUCTION SAT_SMT EXPLICIT STATE_COMPRESSION STUBBORN_SETS
+Query index 0 was solved
+
+Query is NOT satisfied.
+
+STATS:
+        discovered states: 53
+        explored states:   53
+        expanded states:   27
+        max tokens:        19
+@@@0.23,2312@@@
