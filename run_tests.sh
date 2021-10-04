@@ -31,7 +31,7 @@ echo "Running $MODEL ($NQ queries)"
 for Q in $(seq 1 $NQ ) ; do
 	
 	echo "	Q$Q"
-	CMD="./$BIN $OPTIONS -x $Q $TEST_FOLDER/$MODEL/model.pnml $TEST_FOLDER/$MODEL/ReachabilityCardinality.xml"
+	CMD="./$BIN $OPTIONS -q 0 -x $Q $TEST_FOLDER/$MODEL/model.pnml $TEST_FOLDER/$MODEL/ReachabilityCardinality.xml"
 	echo $CMD
 	
 	# Execute test and store stdout in RES along with time and memory spent between @@@s
