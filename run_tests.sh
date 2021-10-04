@@ -17,7 +17,8 @@ MODEL=$4
 TIME_OUT=$5
 OPTIONS="$6"
 
-OUT="output/$NAME.$MODEL.csv"
+OUT="output/$(basename $BIN)/$NAME/$MODEL.csv"
+TEMP="output/$(basename $BIN)/$NAME/$MODEL.temp"
 
 append_row() {
 	echo \"$1\",\"$2\",\"$3\",\"$4\",\"$5\",\"$6\",\"$7\",\"$8\",\"$9\",\"${10}\",\"${11}\",\"${12}\",\"${13}\",\"${14}\",\"${15}\",\"${16}\",\"${17}\",\"${18}\",\"${19}\",\"${20}\",\"${21}\",\"${22}\" >> $OUT
@@ -36,8 +37,8 @@ for Q in $(seq 1 $NQ ) ; do
 	
 	# Execute test and store stdout in RES along with time and memory spent between @@@s
 	# We also replace all newline characters \n with the character \r, since sed only works on one line at the time. https://unix.stackexchange.com/a/152389
-	eval "/usr/bin/time -f "@@@%e,%M@@@" timeout ${TIME_OUT}m $CMD" &> "output/temp-$NAME-$MODEL"
-	RES=$(cat "output/temp-$NAME-$MODEL" | tr '\n' '\r')
+	eval "/usr/bin/time -f "@@@%e,%M@@@" timeout ${TIME_OUT}m $CMD" &> "$TEMP"
+	RES=$(cat "$TEMP" | tr '\n' '\r')
 
 	TIME=$(echo $RES | sed -E "s/.*@@@(.*),.*@@@.*/\1/")
 	MEM=$(echo $RES | sed -E "s/.*@@@.*,(.*)@@@.*/\1/")
