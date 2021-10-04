@@ -33,8 +33,8 @@ for index, data in enumerate(data_list):
         continue
     combined_df = combined_df.join(memory_time_data)
 
-sns.lineplot(data=combined_df).set(title=f'Model checking time and memory per model, 16 queries each model',
-                                   ylabel='',
+sns.lineplot(data=combined_df).set(title=f'model checking time and memory per model',
+                                   ylabel='seconds or kB',
                                    xlabel='models', yscale="log")
-plt.savefig('graphs/time-memory_per_model.png')
+plt.savefig('../graphs/time-memory_per_model.png')
 plt.clf()

@@ -23,13 +23,22 @@ for index, data in enumerate(data_list):
 
     temp = answers.append(simplifications)
     temp.rename(columns={'answer': test_names[index]}, inplace=True)
-    combined = combined.append(temp.T)
+    temp.loc['reduced'] = temp.T['answered'] - temp.T['simplified']
+    temp = temp.T
+    # Remove the columns that Nicolaj doesnt like
+    temp.drop(['answered', 'not simplified'], 1, inplace=True)
 
-plot = combined.plot(kind='bar', stacked=False)
+    # Reorder the columns so that bars are stacked nicely
+    order = [2, 1, 0]  # setting column's order
+    temp = temp[[temp.columns[i] for i in order]]
+
+    combined = combined.append(temp)
+
+plot = combined.plot(kind='bar', stacked=True)
 for item in plot.get_xticklabels():
     item.set_rotation(0)
 plt.legend(loc='upper right')
 plt.ylabel("test instances")
 
-plt.savefig('graphs/answer_simplification_bars.png')
+plt.savefig('../graphs/answer_simplification_bars.png')
 plt.clf()
