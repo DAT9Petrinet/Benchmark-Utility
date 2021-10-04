@@ -18,8 +18,8 @@ if [ -z "$NAME" ] ; then
 	exit
 fi
 
+DIR="output/$BIN/$NAME"
 OUT="output/$BIN/$NAME.csv"
-OUT="output/$BIN/$NAME/$MODEL.csv"
 
 write_headers() {
 	# First check if the file exists, if not: insert row with headers
@@ -53,19 +53,15 @@ write_headers() {
 
 write_headers
 
-for FILE in $(ls output) ; do
+for FILE in $(ls "$DIR") ; do
 
-	# Check if file name matches regex
-	if [[ $FILE =~ $NAME\..*\.csv ]] ; then
+	echo "Collecting from $DIR/$FILE"
 
-		echo "Collecting from output/$FILE"
+	cat "$DIR/$FILE" >> $OUT
 
-		cat "output/$FILE" >> $OUT
+	# Remove the file
+	rm "$DIR/$FILE"
 
-		# Remove the file
-		rm "output/$FILE"
-
-	fi
 done
 
-rm output/temp-$NAME-*
+rm $DIR/*.temp
