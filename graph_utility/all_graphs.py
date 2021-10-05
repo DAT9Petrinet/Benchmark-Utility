@@ -32,8 +32,10 @@ def main():
     rule_usage_percentage.plot(copy.deepcopy(data_list), test_names, rules)
     size_ratio.plot(copy.deepcopy(data_list), copy.deepcopy(test_names), unneeded_columns_for_size_ratio)
     time_memory.plot(copy.deepcopy(data_list), test_names)
-    violin_absolute.plot(copy.deepcopy(data_list), test_names, rules)
-    violin_percentage.plot(copy.deepcopy(data_list), test_names, rules)
+    # Violin plots does not seem to make sense, might make sense on larger test-set, so I wont remove the files,
+    # but I comment them out
+    #violin_absolute.plot(copy.deepcopy(data_list), test_names, rules)
+    #violin_percentage.plot(copy.deepcopy(data_list), test_names, rules)
 
 
 if __name__ == "__main__":
