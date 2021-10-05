@@ -7,6 +7,9 @@ def plot(data_list, test_names, rules):
 
     # Make one plot (png) for each csv
     for index, data in enumerate(data_list):
+        if "no-red" in test_names[index]:
+            continue
+
         # Remove rows where query simplification has been used, or where there isn't an answer
         data = data.drop(data[(data['solved by query simplification']) | (data.answer == 'NONE')].index)
 

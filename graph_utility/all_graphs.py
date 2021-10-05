@@ -30,7 +30,7 @@ def main():
     answer_simplification_bars.plot(copy.deepcopy(data_list), test_names)
     rule_usage_absolute.plot(copy.deepcopy(data_list), test_names, rules)
     rule_usage_percentage.plot(copy.deepcopy(data_list), test_names, rules)
-    size_ratio.plot(copy.deepcopy(data_list), test_names, unneeded_columns_for_size_ratio)
+    size_ratio.plot(copy.deepcopy(data_list), copy.deepcopy(test_names), unneeded_columns_for_size_ratio)
     time_memory.plot(copy.deepcopy(data_list), test_names)
     violin_absolute.plot(copy.deepcopy(data_list), test_names, rules)
     violin_percentage.plot(copy.deepcopy(data_list), test_names, rules)

@@ -5,13 +5,18 @@ import seaborn as sns
 
 # The first csv will be used as numerator in the plots
 def plot(data_list, test_names, unneeded_columns):
+    for index, name in enumerate(test_names):
+        if 'no-red' in name:
+            data_list.pop(index)
+            test_names.pop(index)
+
     sns.set_theme(style="whitegrid", palette="pastel")
 
     # Find indices to remove
     # Cannot simply remove them per csv, we have to go through all csvs first, and
     # find any rows that has been solved by simplification, or has 'NONE' answers, as they should be removed from all csv
-    rows_to_delete = None
-    for df in data_list:
+    rows_to_delete = set
+    for indexx, df in enumerate(data_list):
         index = df.index
 
         # Find all indices where the query has been solved by simplification
@@ -25,8 +30,9 @@ def plot(data_list, test_names, unneeded_columns):
         answer_indices_set = set(answer_indices.tolist())
 
         # Take the union, (note sets, so we don't have duplicates)
-        combined_indices = list(answer_indices_set.union(simplification_indices_set))
-        rows_to_delete = df.index[combined_indices]
+        # combined_indices =
+        # rows_to_delete = df.index[combined_indices]
+        rows_to_delete = rows_to_delete.union((answer_indices_set.union(simplification_indices_set)))
 
     # Remove the rows, columns not needed, and group the data based on models
     for index, data in enumerate(data_list):
@@ -46,9 +52,12 @@ def plot(data_list, test_names, unneeded_columns):
     size_ratios = pd.DataFrame()
 
     # Go through all other csv and calculate the ratios
-    for test_index, data in enumerate(data_list[1:]):
+    for test_index, data in enumerate(data_list):
+        if test_index == 0:
+            continue
         df = pd.DataFrame()
         ratios = [] * num_rows
+
         # Iterate through all rows and compute ratio
         # All this with lists and stuff, and this iteration should probaly be handled better using pandas, but works :shrug
         for index, row in data.iterrows():
@@ -63,7 +72,7 @@ def plot(data_list, test_names, unneeded_columns):
             ratios.append(ratio)
 
         # Add ratios to the current dataframe, with the tests being compared as the column name
-        df[f"{test_names[0]}/{test_names[test_index + 1]}"] = ratios
+        df[f"{test_names[0]}/{test_names[test_index]}"] = ratios
 
         # Add ratios from this comparison to size_ratios
         if test_index == 0:
