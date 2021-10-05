@@ -21,7 +21,7 @@ def plot(data_list, test_names):
         temp.loc['reduced'] = temp.T['answered'] - temp.T['simplified']
         temp = temp.T
         # Remove the columns that Nicolaj doesnt like
-        temp.drop(['answered', 'not simplified'], 1, inplace=True)
+        temp.drop(columns=['answered', 'not simplified'], inplace=True)
 
         # Reorder the columns so that bars are stacked nicely
         order = [2, 1, 0]  # setting column's order
