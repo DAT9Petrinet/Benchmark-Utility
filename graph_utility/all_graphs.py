@@ -8,8 +8,8 @@ import rule_usage_absolute
 import rule_usage_percentage
 import size_ratio
 import time_memory
-import violin_plot_absolute
-import violin_plot_percentage
+import violin_absolute
+import violin_percentage
 
 
 def main():
@@ -32,8 +32,8 @@ def main():
     rule_usage_percentage.plot(copy.deepcopy(data_list), test_names, rules)
     size_ratio.plot(copy.deepcopy(data_list), test_names, unneeded_columns_for_size_ratio)
     time_memory.plot(copy.deepcopy(data_list), test_names)
-    violin_plot_absolute.plot(copy.deepcopy(data_list), test_names, rules)
-    violin_plot_percentage.plot(copy.deepcopy(data_list), test_names, rules)
+    violin_absolute.plot(copy.deepcopy(data_list), test_names, rules)
+    violin_percentage.plot(copy.deepcopy(data_list), test_names, rules)
 
 
 if __name__ == "__main__":
