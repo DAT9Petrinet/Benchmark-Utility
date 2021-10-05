@@ -23,7 +23,7 @@ NQ=$(grep "<property>" "$TEST_FOLDER/$MODEL/ReachabilityCardinality.xml" | wc -l
 
 echo "Running $MODEL ($NQ queries)"
 
-for Q in $(seq 1 $NQ ) ; do
+for Q in $(seq 1 1 ) ; do
 	
 	echo "	Q$Q"
 	CMD="./$BIN $OPTIONS -q 0 -x $Q $TEST_FOLDER/$MODEL/model.pnml $TEST_FOLDER/$MODEL/ReachabilityCardinality.xml"
