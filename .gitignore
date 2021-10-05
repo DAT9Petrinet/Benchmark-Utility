@@ -5,3 +5,4 @@ verifypn-linux64
 temp
 slurm-*
 .idea/
+__pycache__
