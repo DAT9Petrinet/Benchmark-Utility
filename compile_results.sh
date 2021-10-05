@@ -85,7 +85,9 @@ for FILE in $(ls "$DIR") ; do
 	# Was query solved using query reduction?
 	QUERY_SIMPLIFICATION=$([[ -n "$(echo $RES | awk '/Query solved by Query Simplification/')" ]] && echo "TRUE" || echo "FALSE")
 
-	if [[ $ANSWER = "NONE" || $QUERY_SIMPLIFICATION = "TRUE" ]]; then
+	ANY_RULE=$([[ -n "$(echo $RES | awk '/Applications of rule/')" ]] && echo "TRUE" || echo "FALSE")
+
+	if [[ $ANSWER = "NONE" || $QUERY_SIMPLIFICATION = "TRUE" || $ANY_RULE = "FALSE" ]]; then
 
 		# In this case, no structural reduction was performed
 
