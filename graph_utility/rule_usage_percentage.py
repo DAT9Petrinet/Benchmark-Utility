@@ -3,16 +3,22 @@ import seaborn as sns
 
 
 def plot(data_list, test_names, rules):
-    sns.set_style("whitegrid")
+    sns.set_theme(style="whitegrid", palette="pastel")
 
+    # Make one plot (png) for each csv
     for index, data in enumerate(data_list):
+        # Remove rows where query simplification has been used, or where there isn't an answer
         data = data.drop(data[(data['solved by query simplification']) | (data.answer == 'NONE')].index)
-        grouped_data = data.groupby(['model name'])[rules].agg('sum')
 
-        percentages = (((((grouped_data > 0) * 1).mean()) * 100).to_frame()).transpose()
+        # Group the data by each model, and sum the number of times each rule has been applied by each model
+        data_grouped_by_model = data.groupby(['model name'])[rules].agg('sum')
+
+        # Get the percentage of model that has applied a rule
+        percentages = (((((data_grouped_by_model > 0) * 1).mean()) * 100).to_frame()).T
 
         plot = sns.barplot(data=percentages)
         plot.set(title=f'({test_names[index]}) percentage of models using rules', ylabel='uses in \%')
+        # Plots numbers above bars
         for p in plot.patches:
             plot.annotate(format(p.get_height(), '.1f'),
                           (p.get_x() + p.get_width() / 2., p.get_height()),

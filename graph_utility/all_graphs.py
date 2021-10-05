@@ -1,8 +1,8 @@
 import os
 import sys
 import copy
-
 import pandas as pd
+
 import answer_simplification_bars
 import rule_usage_absolute
 import rule_usage_percentage
@@ -13,14 +13,20 @@ import violin_plot_percentage
 
 
 def main():
+    # Read csv data
     paths = sys.argv[1:]
-    test_names = [os.path.split(os.path.splitext(path)[0])[1] for path in paths]
     data_list = [pd.read_csv(path) for path in paths]
+
+    # Find names of the tests, to be used in graphs and file names
+    test_names = [os.path.split(os.path.splitext(path)[0])[1] for path in paths]
+
+    # Some common stuff that some graphs use
     rules = [column for column in (pd.read_csv(paths[0], index_col=0, nrows=0).columns.tolist()) if "rule" in column]
     unneeded_columns_for_size_ratio = [column for column in
                                        (pd.read_csv(paths[0], index_col=0, nrows=0).columns.tolist()) if
                                        not (("place" in column) or ("transition" in column))]
 
+    # Call each graph function with relevant data
     answer_simplification_bars.plot(copy.deepcopy(data_list), test_names)
     rule_usage_absolute.plot(copy.deepcopy(data_list), test_names, rules)
     rule_usage_percentage.plot(copy.deepcopy(data_list), test_names, rules)
