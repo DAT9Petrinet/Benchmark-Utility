@@ -42,7 +42,7 @@ def plot(data_list, test_names, unneeded_columns):
         pre_sizes_numerator.append(int(row['prev place count'] + row['prev transition count']))
         post_sizes_numerator.append(int(row['post place count'] + row['post transition count']))
 
-    # Dataframe to hold the size rato between reduced nets
+    # Dataframe to hold the size ratio between reduced nets
     size_ratios = pd.DataFrame()
 
     # Go through all other csv and calculate the ratios
