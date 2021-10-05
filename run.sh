@@ -33,7 +33,7 @@ fi
 
 mkdir -p "output/$(basename $BIN)/$NAME"
 
-for MODEL in $(ls -d $TEST_FOLDER/A*) ; do
+for MODEL in $(ls $TEST_FOLDER | grep "^A") ; do
 
 	sbatch --mail-user=$(whoami) ./run_tests.sh $NAME $BIN $TEST_FOLDER $MODEL $TIME_OUT "$OPTIONS"
 done
