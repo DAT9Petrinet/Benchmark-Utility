@@ -26,10 +26,15 @@ def main():
 
     # Call each graph function with relevant data
     answer_simplification_bars.plot(copy.deepcopy(data_list), test_names)
+    print("1/5 graphs done")
     rule_usage_absolute.plot(copy.deepcopy(data_list), test_names, rules)
+    print("2/5 graphs done")
     rule_usage_percentage.plot(copy.deepcopy(data_list), test_names, rules)
+    print("3/5 graphs done")
     size_ratio.plot(copy.deepcopy(data_list), copy.deepcopy(test_names), unneeded_columns_for_size_ratio)
+    print("4/5 graphs done")
     time_memory.plot(copy.deepcopy(data_list), test_names)
+    print("5/5 graphs done")
     # Violin plots does not seem to make sense, might make sense on larger test-set, so I wont remove the files,
     # but I comment them out
     # violin_absolute.plot(copy.deepcopy(data_list), test_names, rules)
