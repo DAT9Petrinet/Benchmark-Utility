@@ -29,7 +29,6 @@ def plot(data_list, test_names, unneeded_columns):
         data.drop(rows_to_delete, inplace=True)
         data.drop(columns=unneeded_columns, inplace=True)
 
-
     reduced_sizes = pd.DataFrame()
     for test_index, data in enumerate(data_list):
         reduced_sizes_list = []
@@ -47,6 +46,8 @@ def plot(data_list, test_names, unneeded_columns):
         post_filter_size = len(reduced_sizes_list)
         indices = indices[:-(pre_filter_size - post_filter_size)]
         reduced_sizes[f'{test_names[test_index]}'] = pd.Series(reduced_sizes_list, indices)
+        print(
+            f"(size-ratio) Test instances not completed by {test_names[test_index]} that were completed by another experiment: {(pre_filter_size - post_filter_size)}")
 
     # plot the plot
     sns.set_theme(style="darkgrid", palette="pastel")
