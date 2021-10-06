@@ -8,8 +8,6 @@ import rule_usage_absolute
 import rule_usage_percentage
 import size_ratio
 import time_memory
-import violin_absolute
-import violin_percentage
 
 
 def main():

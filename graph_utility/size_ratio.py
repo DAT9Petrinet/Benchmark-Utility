@@ -1,87 +1,102 @@
 import matplotlib.pyplot as plt
+import numpy as np
 import pandas as pd
 import seaborn as sns
 
 
 # The first csv will be used as numerator in the plots
 def plot(data_list, test_names, unneeded_columns):
+    pd.set_option('display.max_rows', None)
+
+    # Remove test with no reduction
     for index, name in enumerate(test_names):
         if 'no-red' in name:
             data_list.pop(index)
             test_names.pop(index)
 
-    sns.set_theme(style="whitegrid", palette="pastel")
-
     # Find indices to remove
     # Cannot simply remove them per csv, we have to go through all csvs first, and
     # find any rows that has been solved by simplification, or has 'NONE' answers, as they should be removed from all csv
+    # Also find all previous sizes
     rows_to_delete = set
-    for indexx, df in enumerate(data_list):
-        index = df.index
+    prev_sizes = pd.DataFrame()
+    for data in data_list:
+        for index, row in data.iterrows():
+            # If we dont know the size, or we already have the size, continue
+            if row['prev place count'] == 0 or index in prev_sizes.index:
+                continue
+            # Else add the previous size
+            else:
+                prev_size = row['prev place count'] + row['prev transition count']
+                new_row = pd.Series(data={'size': prev_size}, name=index)
+                prev_sizes = prev_sizes.append(new_row, ignore_index=False)
 
         # Find all indices where the query has been solved by simplification
-        condition_simplification = df['solved by query simplification']
-        simplification_indices = index[condition_simplification]
-        simplification_indices_set = set(simplification_indices.tolist())
+        simplification_indices = set((data.index[data['solved by query simplification']]).tolist())
 
         # Find all rows where we have 'NONE' answer
-        condition_answer = df['answer'] == 'NONE'
-        answer_indices = index[condition_answer]
-        answer_indices_set = set(answer_indices.tolist())
+        answer_indices = set((data.index[data['answer'] == 'NONE']).tolist())
 
-        # Take the union, (note sets, so we don't have duplicates)
-        # combined_indices =
-        # rows_to_delete = df.index[combined_indices]
-        rows_to_delete = rows_to_delete.union((answer_indices_set.union(simplification_indices_set)))
+        # Take the intersection
+        rows_to_delete = rows_to_delete.intersection((answer_indices.union(simplification_indices)))
 
     # Remove the rows, columns not needed, and group the data based on models
-    for index, data in enumerate(data_list):
+    for data in data_list:
         data.drop(rows_to_delete, inplace=True)
         data.drop(columns=unneeded_columns, inplace=True)
-        data_list[index] = (data.groupby(['model name']).agg('mean')).reset_index()
 
     # Get sizes from the data that will be used as numerator
-    num_rows = len(data_list[0])
-    pre_sizes_numerator = [] * num_rows
-    post_sizes_numerator = [] * num_rows
+    numerator_sizes = pd.DataFrame()
     for index, row in data_list[0].iterrows():
-        pre_sizes_numerator.append(int(row['prev place count'] + row['prev transition count']))
-        post_sizes_numerator.append(int(row['post place count'] + row['post transition count']))
+        post_size = row['post place count'] + row['post transition count']
+        pre_size = row['prev place count'] + row['prev transition count']
+        reduced_size = ((post_size / pre_size) * 100) if post_size > 0 else 0
+        new_row = pd.Series(data={'prev size': pre_size, 'post size': post_size, 'reduced size': reduced_size},
+                            name=index)
+        numerator_sizes = numerator_sizes.append(new_row, ignore_index=False)
 
     # Dataframe to hold the size ratio between reduced nets
     size_ratios = pd.DataFrame()
 
     # Go through all other csv and calculate the ratios
     for test_index, data in enumerate(data_list):
+        # Dont compare size against the numerator, would just be 1 and a quite boring line
         if test_index == 0:
             continue
-        df = pd.DataFrame()
-        ratios = [] * num_rows
+
+        ratios = pd.DataFrame()
 
         # Iterate through all rows and compute ratio
         # All this with lists and stuff, and this iteration should probaly be handled better using pandas, but works :shrug
         for index, row in data.iterrows():
             size_pre_reductions = int(row['prev place count'] + row['prev transition count'])
 
-            # Sanity check
-            if pre_sizes_numerator[index] != size_pre_reductions:
-                raise Exception("Not comparing same rows")
+            # Check if this csv has managed to complete the query
+            if size_pre_reductions == 0:
+                ratios = ratios.append(pd.Series(data={'size': np.infty}, name=index), ignore_index=False)
+            elif numerator_sizes.loc[index]['post size'] == 0:
+                ratios = ratios.append(pd.Series(data={'size': np.nan}, name=index), ignore_index=False)
+            elif size_pre_reductions != 0:
+                # Sanity check
+                if prev_sizes.loc[index]['size'] != size_pre_reductions:
+                    raise Exception("Not comparing same rows")
 
-            size_post_reduction = int(row['post place count'] + row['post transition count'])
-            ratio = post_sizes_numerator[index] / size_post_reduction
-            ratios.append(ratio)
+                post_size = row['post place count'] + row['post transition count']
+                ratio = numerator_sizes.loc[index]['post size'] / post_size
+                new_row = pd.Series(data={'size': ratio}, name=index)
+                ratios = ratios.append(new_row, ignore_index=False)
+            else:
+                raise Exception("Should not be able to reach this")
 
         # Add ratios to the current dataframe, with the tests being compared as the column name
-        df[f"{test_names[0]}/{test_names[test_index]}"] = ratios
+        size_ratios[f"{test_names[0]}/{test_names[test_index]}"] = ratios
 
-        # Add ratios from this comparison to size_ratios
-        if test_index == 0:
-            size_ratios = df
-        else:
-            size_ratios.append(df)
-
+    size_ratios = (size_ratios.join(numerator_sizes['reduced size'])).sort_values('reduced size')
+    size_ratios.reset_index(inplace=True, drop=True)
+    size_ratios.drop(columns='reduced size', inplace=True)
     # plot the plot
-    sns.lineplot(data=size_ratios).set(xlabel='models', ylabel='size ratio', yscale="linear",
+    sns.set_theme(style="whitegrid", palette="pastel")
+    sns.lineplot(data=size_ratios).set(xlabel='test instance', ylabel='size ratio', yscale="log",
                                        title='Reduced size of nets')
     plt.savefig('../graphs/reduced_size_compared.png')
     plt.clf()
