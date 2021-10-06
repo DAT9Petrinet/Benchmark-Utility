@@ -17,7 +17,6 @@ MODEL=$4
 TIME_OUT=$5
 OPTIONS="$6"
 
-
 # Find the number of queries for this model by counting how many times "<property>" appears
 NQ=$(grep "<property>" "$TEST_FOLDER/$MODEL/ReachabilityCardinality.xml" | wc -l)
 
@@ -27,7 +26,6 @@ for Q in $(seq 1 $NQ) ; do
 	
 	echo "	Q$Q"
 	CMD="./$BIN $OPTIONS -q 0 -x $Q $TEST_FOLDER/$MODEL/model.pnml $TEST_FOLDER/$MODEL/ReachabilityCardinality.xml"
-	
 	OUT="output/$(basename $BIN)/$NAME/$MODEL.$Q.out"
 	
 	# Execute test and store stdout along with time and memory spent between @@@s
