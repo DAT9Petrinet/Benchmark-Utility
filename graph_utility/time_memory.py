@@ -37,8 +37,8 @@ def plot(data_list, test_names):
         combined_df = combined_df.join(memory_time_data)
 
     # Plot the plot
-    sns.lineplot(data=combined_df).set(title=f'model checking time and memory per model',
-                                       ylabel='seconds or kB',
-                                       xlabel='models', yscale="log")
+    sns.lineplot(data=combined_df, linewidth=2.5).set(title=f'model checking time and memory per model',
+                                                      ylabel='seconds or kB',
+                                                      xlabel='models', yscale="log")
     plt.savefig('../graphs/time-memory_per_model.png')
     plt.clf()

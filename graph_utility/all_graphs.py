@@ -34,8 +34,8 @@ def main():
     time_memory.plot(copy.deepcopy(data_list), test_names)
     # Violin plots does not seem to make sense, might make sense on larger test-set, so I wont remove the files,
     # but I comment them out
-    #violin_absolute.plot(copy.deepcopy(data_list), test_names, rules)
-    #violin_percentage.plot(copy.deepcopy(data_list), test_names, rules)
+    # violin_absolute.plot(copy.deepcopy(data_list), test_names, rules)
+    # violin_percentage.plot(copy.deepcopy(data_list), test_names, rules)
 
 
 if __name__ == "__main__":
