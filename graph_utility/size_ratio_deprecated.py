@@ -6,6 +6,8 @@ import seaborn as sns
 
 # The first csv will be used as numerator in the plots
 def plot(data_list, test_names, unneeded_columns):
+    pd.set_option('display.max_rows', None)
+
     # Remove test with no reduction
     for index, name in enumerate(test_names):
         if 'no-red' in name:
