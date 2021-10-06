@@ -53,6 +53,6 @@ def plot(data_list, test_names, unneeded_columns):
     sns.set_theme(style="darkgrid", palette="pastel")
     sns.lineplot(data=reduced_sizes, linewidth=2.5).set(xlabel='test instances', ylabel='size in percent',
                                                         yscale="linear",
-                                                        title=f'Reduced size in comparison to pre size, sorted by ({test_names[0]}) results')
+                                                        title=f'Reduced size in comparison to pre size, sorted non-decreasingly')
     plt.savefig('../graphs/reduced_size_compared.png')
     plt.clf()
