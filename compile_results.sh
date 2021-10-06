@@ -1,5 +1,11 @@
 #!/bin/bash
 
+#SBATCH --time=22:00:00
+#SBATCH --mail-type=FAIL
+#SBATCH --partition=naples
+#SBATCH --mem=15G
+#SBATCH -c 4
+
 # Args: <test-name> <binary>
 # After running `run.sh` the results will be scattered in a number of csv files.
 # This script will collect the data from all the csv files belong to the given test into a single `<test-name>.csv`.
