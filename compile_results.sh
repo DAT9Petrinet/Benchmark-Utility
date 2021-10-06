@@ -77,8 +77,8 @@ for FILE in $(ls "$DIR") ; do
 	MODEL=$(echo $FILE | sed -E "s/([^\.]*).*/\1/")
 	Q=$(echo $FILE | sed -E "s/[^\.]*\.([0-9]*).*/\1/")
 
-	# Get stdout of model and replace new lines such that regex will work
-	RES=$(cat "$DIR/$FILE" | tr '\n' '\r')
+	# Get stdout of model, filter out transition and place-bound statistics, and replace new lines such that regex will work
+	RES=$(cat "$DIR/$FILE" | grep -v "^<" | tr '\n' '\r')
 
 	# Time and memory is appended to the file
 	TIME=$(echo $RES | sed -E "s/.*@@@(.*),.*@@@.*/\1/")
