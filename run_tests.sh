@@ -20,7 +20,7 @@ OPTIONS="$6"
 OUT="output/$NAME.$MODEL.csv"
 
 append_row() {
-	echo \"$1\",\"$2\",\"$3\",\"$4\",\"$5\",\"$6\",\"$7\",\"$8\",\"$9\",\"${10}\",\"${11}\",\"${12}\",\"${13}\",\"${14}\",\"${15}\",\"${16}\",\"${17}\",\"${18}\",\"${19}\",\"${20}\",\"${21}\",\"${22}\" >> $OUT
+	echo \"$1\",\"$2\",\"$3\",\"$4\",\"$5\",\"$6\",\"$7\",\"$8\",\"$9\",\"${10}\",\"${11}\",\"${12}\",\"${13}\",\"${14}\",\"${15}\",\"${16}\",\"${17}\",\"${18}\",\"${19}\",\"${20}\",\"${21}\",\"${22}\",\"${23}\" >> $OUT
 }
 
 # Find the number of queries for this model by counting how many times "<property>" appears
@@ -71,6 +71,7 @@ for Q in $(seq 1 $NQ ) ; do
 		RULE_J=0
 		RULE_K=0
 		RULE_L=0
+		RULE_M=0
 	
 	else
 
@@ -91,10 +92,11 @@ for Q in $(seq 1 $NQ ) ; do
 		RULE_J=$(echo $RES | sed -E "s/.*Applications of rule J: ([0-9]+).*/\1/")
 		RULE_K=$(echo $RES | sed -E "s/.*Applications of rule K: ([0-9]+).*/\1/")
 		RULE_L=$(echo $RES | sed -E "s/.*Applications of rule L: ([0-9]+).*/\1/")
+		RULE_M=$(echo $RES | sed -E "s/.*Applications of rule M: ([0-9]+).*/\1/")
 
 	fi
 
-	append_row "$MODEL" "$Q" "$TIME" "$MEM" "$ANSWER" "$QUERY_SIMPLIFICATION" "$PREV_PLACE_COUNT" "$PREV_TRANS_COUNT" "$POST_RED_PLACE_COUNT" "$POST_RED_TRANS_COUNT" "$RULE_A" "$RULE_B" "$RULE_C" "$RULE_D" "$RULE_E" "$RULE_F" "$RULE_G" "$RULE_H" "$RULE_I" "$RULE_J" "$RULE_K" "$RULE_L"
+	append_row "$MODEL" "$Q" "$TIME" "$MEM" "$ANSWER" "$QUERY_SIMPLIFICATION" "$PREV_PLACE_COUNT" "$PREV_TRANS_COUNT" "$POST_RED_PLACE_COUNT" "$POST_RED_TRANS_COUNT" "$RULE_A" "$RULE_B" "$RULE_C" "$RULE_D" "$RULE_E" "$RULE_F" "$RULE_G" "$RULE_H" "$RULE_I" "$RULE_J" "$RULE_K" "$RULE_L" "$RULE_M"
 done
 
 exit 0
