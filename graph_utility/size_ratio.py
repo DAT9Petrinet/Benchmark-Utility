@@ -95,7 +95,7 @@ def plot(data_list, test_names, unneeded_columns):
     size_ratios.reset_index(inplace=True, drop=True)
     size_ratios.drop(columns='reduced size', inplace=True)
     # plot the plot
-    sns.set_theme(style="whitegrid", palette="pastel")
+    sns.set_theme(style="darkgrid", palette="pastel")
     sns.lineplot(data=size_ratios).set(xlabel='test instance', ylabel='size ratio', yscale="log",
                                        title='Reduced size of nets')
     plt.savefig('../graphs/reduced_size_compared.png')

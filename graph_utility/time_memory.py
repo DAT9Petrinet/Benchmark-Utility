@@ -4,8 +4,6 @@ import seaborn as sns
 
 
 def plot(data_list, test_names):
-    sns.set_theme(style="whitegrid", palette="pastel")
-
     # Dataframe to hold data from all csv's
     # Rows will be models
     # Columns are (test_name)-time and (test_name)-memory
@@ -37,6 +35,7 @@ def plot(data_list, test_names):
         combined_df = combined_df.join(memory_time_data)
 
     # Plot the plot
+    sns.set_theme(style="darkgrid", palette="pastel")
     sns.lineplot(data=combined_df, linewidth=2.5).set(title=f'model checking time and memory per model',
                                                       ylabel='seconds or kB',
                                                       xlabel='models', yscale="log")

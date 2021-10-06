@@ -3,8 +3,6 @@ import seaborn as sns
 
 
 def plot(data_list, test_names, rules):
-    sns.set_theme(style="whitegrid", palette="pastel")
-
     # Produce one plot (png) for each csv
     for index, data in enumerate(data_list):
         if "no-red" in test_names[index]:
@@ -20,6 +18,7 @@ def plot(data_list, test_names, rules):
         percentages = ((data_grouped_by_model > 0) * 1) * 100
 
         # Plot the plot
+        sns.set_theme(style="darkgrid", palette="pastel")
         plot = sns.violinplot(data=percentages, bw=0.1)
         plot.set(title=f'({test_names[index]}) chance for a rule to be used in a model', ylabel='Chance to be used')
         plt.savefig(f'../graphs/{test_names[index]}_rule_violin_percentage.png')

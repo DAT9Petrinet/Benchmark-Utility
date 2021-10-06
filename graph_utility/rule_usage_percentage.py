@@ -3,8 +3,6 @@ import seaborn as sns
 
 
 def plot(data_list, test_names, rules):
-    sns.set_theme(style="whitegrid", palette="pastel")
-
     # Make one plot (png) for each csv
     for index, data in enumerate(data_list):
         if "no-red" in test_names[index]:
@@ -18,6 +16,7 @@ def plot(data_list, test_names, rules):
         # Get the percentage of model that has applied a rule
         percentages = (((((data_grouped_by_model > 0) * 1).mean()) * 100).to_frame()).T
 
+        sns.set_theme(style="darkgrid", palette="pastel")
         plot = sns.barplot(data=percentages)
         plot.set(title=f'({test_names[index]}) percentage of models using rules', ylabel='uses in \%')
         # Plots numbers above bars

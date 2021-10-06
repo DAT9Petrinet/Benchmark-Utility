@@ -3,8 +3,6 @@ import seaborn as sns
 
 
 def plot(data_list, test_names, rules):
-    sns.set_theme(style="whitegrid", palette="pastel")
-
     # Make one plot (png) for each csv
     for index, data in enumerate(data_list):
         if "no-red" in test_names[index]:
@@ -16,6 +14,7 @@ def plot(data_list, test_names, rules):
         # Sum over all rows the number of times each rule has been used
         rules_summed = data[rules].agg('sum').to_frame().T
 
+        sns.set_theme(style="darkgrid", palette="pastel")
         plot = sns.barplot(data=rules_summed)
         plot.set_yscale("log")
         plot.set(title=f'({test_names[index]}) number of times rules are used', ylabel='uses')
