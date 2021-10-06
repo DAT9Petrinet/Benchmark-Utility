@@ -1,3 +1,5 @@
+import re
+
 import matplotlib.pyplot as plt
 import seaborn as sns
 
@@ -13,6 +15,8 @@ def plot(data_list, test_names, rules):
 
         # Sum over all rows the number of times each rule has been used
         rules_summed = data[rules].agg('sum').to_frame().T
+
+        rules_summed.rename(columns=lambda x: re.sub('rule', '', x), inplace=True)
 
         sns.set_theme(style="darkgrid", palette="pastel")
         plot = sns.barplot(data=rules_summed)
