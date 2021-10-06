@@ -20,7 +20,7 @@ run.sh
 1) You may want to remove all the `slurm-*.out`
 
 ## run.sh
-Arguments: `<test-name> <binary-options> [test-time-out]`
+Arguments: `<test-name> <binary> <binary-options> [test-time-out]`
 
 Starts a number of slurm tasks each solving the queries of one model in the test folder.
 The results will be scattered in a number of csv files. Use `collect_and_clean.sh` afterwards.
@@ -33,7 +33,7 @@ This script will run the binary on all the (ReachabilityCardinality) queries of 
 store the resulting stats in `output/<test-name>.<model>.csv`
 
 ## collect_and_clean.sh
-Arguments: `<test-name>`
+Arguments: `<test-name> <binary>`
 
 After running `run.sh` the results will be scattered in a number of csv files.
 This script will collect the data from all the csv files belong to the given test into a single `<test-name>.csv`.
@@ -51,7 +51,7 @@ Columns:
 - prev transition prev
 - post reduced place count
 - post reduced transition count
-- ruleX (for each application of rule X)
+- rule X (number of applications of rule X)
 
 If the query did not finish within the time limit, answer will be NONE. Some queries can be solved using only
 query simplification which means prev/post transition/place count and rule applications will be 0.
