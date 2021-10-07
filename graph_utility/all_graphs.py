@@ -6,7 +6,7 @@ import pandas as pd
 import answer_simplification_bars
 import rule_usage_absolute
 import rule_usage_percentage
-import size_ratio
+import reduced_size
 import time_memory
 
 
@@ -31,7 +31,7 @@ def main():
     print("2/5 graphs done")
     rule_usage_percentage.plot(copy.deepcopy(data_list), test_names, rules)
     print("3/5 graphs done")
-    size_ratio.plot(copy.deepcopy(data_list), copy.deepcopy(test_names), unneeded_columns_for_size_ratio)
+    reduced_size.plot(copy.deepcopy(data_list), copy.deepcopy(test_names), unneeded_columns_for_size_ratio)
     print("4/5 graphs done")
     time_memory.plot(copy.deepcopy(data_list), test_names)
     print("5/5 graphs done")
