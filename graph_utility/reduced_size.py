@@ -47,7 +47,7 @@ def plot(data_list, test_names, unneeded_columns):
         indices = indices[:-(pre_filter_size - post_filter_size)]
         reduced_sizes[f'{test_names[test_index]}'] = pd.Series(reduced_sizes_list, indices)
         print(
-            f"(size-ratio) Test instances not completed by {test_names[test_index]} that were completed by another experiment: {(pre_filter_size - post_filter_size)}")
+            f"(reduced_size) Test instances not completed by {test_names[test_index]} that were completed by another experiment: {(pre_filter_size - post_filter_size)}")
 
     # plot the plot
     sns.set_theme(style="darkgrid", palette="pastel")
