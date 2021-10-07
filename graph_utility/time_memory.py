@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
+import re
 
 
 def plot(data_list, test_names):
@@ -34,10 +35,32 @@ def plot(data_list, test_names):
             continue
         combined_df = combined_df.join(memory_time_data)
 
-    # Plot the plot
+    # Recolor lines and choose dashes
+    regex = r"(.*)-(time|memory)$"
     sns.set_theme(style="darkgrid", palette="pastel")
-    sns.lineplot(data=combined_df, linewidth=2.5).set(title=f'model checking time and memory per model',
-                                                      ylabel='seconds or kB',
-                                                      xlabel='models', yscale="log")
+    pal = sns.color_palette()
+    custom_palette = {}
+    dashes = []
+    for column_index, column in enumerate(combined_df.columns):
+        matches = re.finditer(regex, column, re.MULTILINE)
+        for match in matches:
+            data_type = match.groups()[1]
+            if data_type == "time":
+                dashes.append((1, 0))
+            elif data_type == "memory":
+                dashes.append((2, 2))
+            else:
+                raise Exception("(time_memory) Should not be able to reach this")
+            test_name = match.groups()[0]
+            custom_palette[column] = pal[test_names.index(test_name)]
+
+    # Plot the plot
+    plot = sns.lineplot(data=combined_df, linewidth=2.5, palette=custom_palette,
+                        dashes=dashes)
+    plot.set(
+        title=f'model checking time and memory per model',
+        ylabel='seconds or kB',
+        xlabel='models', yscale="log")
+
     plt.savefig('../graphs/time-memory_per_model.png')
     plt.clf()
