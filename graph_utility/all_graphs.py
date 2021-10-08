@@ -15,6 +15,9 @@ def main():
     script_dir = os.path.dirname(__file__)
     graph_dir = os.path.join(script_dir, '..\graphs\\')
 
+    if not os.path.isdir(graph_dir):
+        os.makedirs(graph_dir)
+
     # Read csv data
     paths = sys.argv[1:]
     data_list = [pd.read_csv(path) for path in paths]
