@@ -3,10 +3,11 @@ import seaborn as sns
 
 
 def plot(data_list, test_names, rules):
-    sns.set_theme(style="whitegrid", palette="pastel")
-
     # Produce one plot (png) for each csv
     for index, data in enumerate(data_list):
+        if "no-red" in test_names[index]:
+            continue
+            
         # Remove rows where query simplification has been used, or where there isn't an answer
         data = data.drop(data[(data['solved by query simplification']) | (data.answer == 'NONE')].index)
 
@@ -14,6 +15,7 @@ def plot(data_list, test_names, rules):
         data_grouped_by_model = data.groupby(['model name'])[rules].agg('sum')
 
         # Plot the plot
+        sns.set_theme(style="darkgrid", palette="pastel")
         plot = sns.violinplot(data=data_grouped_by_model, bw=0.1)
         plot.set_yscale("log")
         plot.set(title=f'({test_names[index]}) rule usage per model', ylabel='uses')

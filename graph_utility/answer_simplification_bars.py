@@ -4,8 +4,6 @@ import seaborn as sns
 
 
 def plot(data_list, test_names):
-    sns.set_theme(style="whitegrid", palette="pastel")
-
     # data from each csv will become a row in the combined dataframe, such that row index is the test name,
     # and columns are answered, not answered, not simplified, simplified and reduced.
     # Some columns are then removed for plotting
@@ -43,6 +41,7 @@ def plot(data_list, test_names):
         combined = combined.append(temp)
 
     # Make stacked bar plot
+    sns.set_theme(style="darkgrid", palette="pastel")
     plot = combined.plot(kind='bar', stacked=True)
     # For some reason seaborn really wants to rotate the labels, so i un-rotate them
     for item in plot.get_xticklabels():
