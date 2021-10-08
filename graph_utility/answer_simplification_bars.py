@@ -46,7 +46,7 @@ def plot(data_list, test_names):
     # For some reason seaborn really wants to rotate the labels, so i un-rotate them
     for item in plot.get_xticklabels():
         item.set_rotation(0)
-    plt.legend(loc='upper right')
+    plt.legend(bbox_to_anchor=(0.35, 1.12), loc='upper left', borderaxespad=0)
     plt.ylabel("test instances")
     # For each patch (basically each rectangle within the bar), add a label.
     for index, bar in enumerate(plot.patches):
@@ -56,7 +56,7 @@ def plot(data_list, test_names):
             bar.get_x() + bar.get_width() / 2,
             # Vertically, add the height of the bar to the start of the bar,
             # along with the offset.
-            bar.get_y() if bar.get_height() < 2500 else (bar.get_height() / 2) + bar.get_y() ,
+            bar.get_y() if bar.get_height() < 2500 else (bar.get_height() / 2) + bar.get_y(),
             # This is actual value we'll show.
             round(bar.get_height()),
             # Center the labels and style them a bit.
