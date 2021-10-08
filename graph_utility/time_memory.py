@@ -15,14 +15,14 @@ def plot(data_list, test_names):
             data[(data['solved by query simplification']) | (data.answer == 'NONE')].index)
 
         # Group by model name, and sum over time, sort so lowest time first
-        time_data = (((data.groupby(['model name'])['time'].agg('sum')).sort_values()).reset_index()).drop(columns=
-                                                                                                           'model name')
+        time_data = ((data['time'].sort_values()).reset_index()).drop(columns=
+                                                                      'index')
         # Rename the column to include the name of the test
         time_data.rename(columns={'time': f"{test_names[index]}-time"}, inplace=True)
 
         # Group by model name, and sum over memory, sort so lowest memory first
-        memory_data = (((data.groupby(['model name'])['memory'].agg('sum')).sort_values()).reset_index()).drop(
-            columns='model name')
+        memory_data = ((data['memory'].sort_values()).reset_index()).drop(columns=
+                                                                          'index')
         # Rename the column to include the name of the test
         memory_data.rename(columns={'memory': f"{test_names[index]}-memory"}, inplace=True)
 
