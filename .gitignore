@@ -1,8 +1,8 @@
+.idea/
+binaries/
 output/
 snippets/results.csv
 MCC2021
-verifypn-linux64
 temp
 slurm-*
-.idea/
 __pycache__
