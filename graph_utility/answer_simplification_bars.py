@@ -48,5 +48,21 @@ def plot(data_list, test_names):
         item.set_rotation(0)
     plt.legend(loc='upper right')
     plt.ylabel("test instances")
+    # For each patch (basically each rectangle within the bar), add a label.
+    for index, bar in enumerate(plot.patches):
+        plot.text(
+            # Put the text in the middle of each bar. get_x returns the start
+            # so we add half the width to get to the middle.
+            bar.get_x() + bar.get_width() / 2,
+            # Vertically, add the height of the bar to the start of the bar,
+            # along with the offset.
+            bar.get_y() if bar.get_height() < 2500 else (bar.get_height() / 2) + bar.get_y() ,
+            # This is actual value we'll show.
+            round(bar.get_height()),
+            # Center the labels and style them a bit.
+            ha='center',
+            color='black',
+            size=10
+        )
     plt.savefig('../graphs/answer_simplification_bars.png')
     plt.clf()
