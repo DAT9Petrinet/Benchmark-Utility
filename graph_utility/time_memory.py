@@ -4,7 +4,7 @@ import seaborn as sns
 import re
 
 
-def plot(data_list, test_names):
+def plot(data_list, test_names, graph_dir):
     # Dataframe to hold data from all csv's
     # Rows will be models
     # Columns are (test_name)-time and (test_name)-memory
@@ -63,5 +63,5 @@ def plot(data_list, test_names):
         xlabel='models', yscale="log")
     plt.legend(bbox_to_anchor=(1.02, 0.55), loc='best', borderaxespad=0)
 
-    plt.savefig('../graphs/time-memory_per_model.png', bbox_inches='tight')
+    plt.savefig(graph_dir + 'time-memory_per_model.png', bbox_inches='tight')
     plt.clf()
