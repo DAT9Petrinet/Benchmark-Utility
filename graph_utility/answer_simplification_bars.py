@@ -62,7 +62,6 @@ def plot(data_list, test_names):
             # Center the labels and style them a bit.
             ha='center',
             color='black',
-            weight='bold',
             size=10
         )
     plt.savefig('../graphs/answer_simplification_bars.png')
