@@ -21,7 +21,7 @@ def plot(data_list, test_names, rules, graph_dir):
         sns.set_theme(style="darkgrid", palette="pastel")
         plot = sns.barplot(data=rules_summed)
         plot.set_yscale("log")
-        plot.set(title=f'({test_names[index]}) number of times rules are used', ylabel='uses')
+        plot.set(title=f'({test_names[index]}) number of times rules are used', ylabel='uses', xlabel='rules')
         # This for loop puts the number of times each rule has been used, on top of the bar
         for p in plot.patches:
             plot.annotate(format(p.get_height().astype(int), 'd'),

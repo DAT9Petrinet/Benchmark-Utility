@@ -21,7 +21,7 @@ def plot(data_list, test_names, rules, graph_dir):
         percentages.rename(columns=lambda x: re.sub('rule', '', x), inplace=True)
         sns.set_theme(style="darkgrid", palette="pastel")
         plot = sns.barplot(data=percentages)
-        plot.set(title=f'({test_names[index]}) percentage of models using rules', ylabel='uses in \%')
+        plot.set(title=f'({test_names[index]}) percentage of models using rules', ylabel='uses in \%', xlabel='rules')
         # Plots numbers above bars
         for p in plot.patches:
             plot.annotate(format(p.get_height(), '.1f'),

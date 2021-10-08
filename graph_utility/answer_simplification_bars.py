@@ -48,6 +48,7 @@ def plot(data_list, test_names, graph_dir):
         item.set_rotation(0)
     plt.legend(bbox_to_anchor=(0.35, 1.12), loc='upper left', borderaxespad=0)
     plt.ylabel("test instances")
+    plt.xlabel('experiments')
     # For each patch (basically each rectangle within the bar), add a label.
     for index, bar in enumerate(plot.patches):
         plot.text(
