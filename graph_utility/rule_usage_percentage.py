@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 
-def plot(data_list, test_names, rules):
+def plot(data_list, test_names, rules, graph_dir):
     # Make one plot (png) for each csv
     for index, data in enumerate(data_list):
         if "no-red" in test_names[index]:
@@ -30,5 +30,5 @@ def plot(data_list, test_names, rules):
                           size=10,
                           xytext=(0, 8),
                           textcoords='offset points')
-        plt.savefig(f'../graphs/{test_names[index]}_rule_usage_percentage.png')
+        plt.savefig(graph_dir + f'{test_names[index]}_rule_usage_percentage.png')
         plt.clf()

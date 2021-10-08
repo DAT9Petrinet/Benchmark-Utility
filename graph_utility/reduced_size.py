@@ -3,7 +3,7 @@ import pandas as pd
 import seaborn as sns
 
 
-def plot(data_list, test_names, unneeded_columns):
+def plot(data_list, test_names, unneeded_columns, graph_dir):
     # Remove test with no reduction
     for index, name in enumerate(test_names):
         if 'no-red' in name:
@@ -53,5 +53,5 @@ def plot(data_list, test_names, unneeded_columns):
                                                       yscale="linear",
                                                       title=f'Reduced size in comparison to pre size, sorted non-decreasingly')
 
-    plt.savefig('../graphs/reduced_size_compared.png')
+    plt.savefig(graph_dir + '/reduced_size_compared.png')
     plt.clf()

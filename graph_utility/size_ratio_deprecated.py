@@ -5,7 +5,7 @@ import seaborn as sns
 
 
 # The first csv will be used as numerator in the plots
-def plot(data_list, test_names, unneeded_columns):
+def plot(data_list, test_names, unneeded_columns, graph_dir):
     pd.set_option('display.max_rows', None)
 
     # Remove test with no reduction
@@ -98,5 +98,5 @@ def plot(data_list, test_names, unneeded_columns):
     sns.set_theme(style="darkgrid", palette="pastel")
     sns.lineplot(data=size_ratios).set(xlabel='test instance', ylabel='size ratio', yscale="log",
                                        title='Reduced size of nets')
-    plt.savefig('../graphs/reduced_size_compared.png')
+    plt.savefig(graph_dir + 'reduced_size_compared.png')
     plt.clf()

@@ -11,6 +11,10 @@ import time_memory
 
 
 def main():
+    # Find the directory to save figures
+    script_dir = os.path.dirname(__file__)
+    graph_dir = os.path.join(script_dir, '..\graphs\\')
+
     # Read csv data
     paths = sys.argv[1:]
     data_list = [pd.read_csv(path) for path in paths]
@@ -25,15 +29,15 @@ def main():
                                        not (("place" in column) or ("transition" in column))]
 
     # Call each graph function with relevant data
-    answer_simplification_bars.plot(copy.deepcopy(data_list), test_names)
+    answer_simplification_bars.plot(copy.deepcopy(data_list), test_names, graph_dir)
     print("1/5 graphs done")
-    rule_usage_absolute.plot(copy.deepcopy(data_list), test_names, rules)
+    rule_usage_absolute.plot(copy.deepcopy(data_list), test_names, rules, graph_dir)
     print("2/5 graphs done")
-    rule_usage_percentage.plot(copy.deepcopy(data_list), test_names, rules)
+    rule_usage_percentage.plot(copy.deepcopy(data_list), test_names, rules, graph_dir)
     print("3/5 graphs done")
-    reduced_size.plot(copy.deepcopy(data_list), copy.deepcopy(test_names), unneeded_columns_for_size_ratio)
+    reduced_size.plot(copy.deepcopy(data_list), copy.deepcopy(test_names), unneeded_columns_for_size_ratio, graph_dir)
     print("4/5 graphs done")
-    time_memory.plot(copy.deepcopy(data_list), test_names)
+    time_memory.plot(copy.deepcopy(data_list), test_names, graph_dir)
     print("5/5 graphs done")
     # Violin plots does not seem to make sense, might make sense on larger test-set, so I wont remove the files,
     # but I comment them out

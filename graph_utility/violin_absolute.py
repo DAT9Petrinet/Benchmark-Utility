@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 
-def plot(data_list, test_names, rules):
+def plot(data_list, test_names, rules, graph_dir):
     # Produce one plot (png) for each csv
     for index, data in enumerate(data_list):
         if "no-red" in test_names[index]:
@@ -19,5 +19,5 @@ def plot(data_list, test_names, rules):
         plot = sns.violinplot(data=data_grouped_by_model, bw=0.1)
         plot.set_yscale("log")
         plot.set(title=f'({test_names[index]}) rule usage per model', ylabel='uses')
-        plt.savefig(f'../graphs/{test_names[index]}_rule_violin_absolute.png')
+        plt.savefig(graph_dir + f'{test_names[index]}_rule_violin_absolute.png')
         plt.clf()
