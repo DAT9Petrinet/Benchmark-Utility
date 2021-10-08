@@ -15,14 +15,14 @@ def plot(data_list, test_names, graph_dir):
             data[(data['solved by query simplification']) | (data.answer == 'NONE')].index)
 
         # Group by model name, and sum over time, sort so lowest time first
-        time_data = (((data.groupby(['model name'])['time'].agg('sum')).sort_values()).reset_index()).drop(columns=
-                                                                                                           'model name')
+        time_data = ((data['time'].sort_values()).reset_index()).drop(columns=
+                                                                      'index')
         # Rename the column to include the name of the test
         time_data.rename(columns={'time': f"{test_names[index]}-time"}, inplace=True)
 
         # Group by model name, and sum over memory, sort so lowest memory first
-        memory_data = (((data.groupby(['model name'])['memory'].agg('sum')).sort_values()).reset_index()).drop(
-            columns='model name')
+        memory_data = ((data['memory'].sort_values()).reset_index()).drop(columns=
+                                                                          'index')
         # Rename the column to include the name of the test
         memory_data.rename(columns={'memory': f"{test_names[index]}-memory"}, inplace=True)
 
@@ -61,6 +61,7 @@ def plot(data_list, test_names, graph_dir):
         title=f'model checking time and memory per model',
         ylabel='seconds or kB',
         xlabel='models', yscale="log")
+    plt.legend(bbox_to_anchor=(1.02, 0.55), loc='best', borderaxespad=0)
 
-    plt.savefig(graph_dir + 'time-memory_per_model.png')
+    plt.savefig(graph_dir + 'time-memory_per_model.png', bbox_inches='tight')
     plt.clf()

@@ -53,5 +53,6 @@ def plot(data_list, test_names, unneeded_columns, graph_dir):
                                                       yscale="linear",
                                                       title=f'Reduced size in comparison to pre size, sorted non-decreasingly')
 
+    plt.legend(loc='best')
     plt.savefig(graph_dir + 'reduced_size_compared.png')
     plt.clf()
