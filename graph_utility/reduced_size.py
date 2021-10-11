@@ -42,7 +42,8 @@ def plot(data_list, test_names, unneeded_columns, graph_dir):
         pre_filter_size = len(reduced_sizes_list)
         reduced_sizes_list = [size for size in reduced_sizes_list if size != -1]
         post_filter_size = len(reduced_sizes_list)
-        indices = indices[:-(pre_filter_size - post_filter_size)]
+        if (pre_filter_size - post_filter_size) != 0:
+            indices = indices[:-(pre_filter_size - post_filter_size)]
         reduced_sizes[f'{test_names[test_index]}'] = pd.Series(reduced_sizes_list, indices)
         print(
             f"(reduced_size) Test instances not completed by {test_names[test_index]} that were completed by another experiment: {(pre_filter_size - post_filter_size)}")
