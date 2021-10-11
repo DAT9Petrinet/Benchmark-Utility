@@ -26,7 +26,14 @@ def main():
     test_names = [os.path.split(os.path.splitext(path)[0])[1] for path in paths]
 
     # Some common stuff that some graphs use
-    rules = [column for column in (pd.read_csv(paths[0], index_col=0, nrows=0).columns.tolist()) if "rule" in column]
+    rules = []
+    most_rules_seen = 0
+    for n in range(len(data_list)):
+        rules_in_data = [column for column in (pd.read_csv(paths[n], index_col=0, nrows=0).columns.tolist()) if
+                         "rule" in column]
+        if len(rules_in_data) >= most_rules_seen:
+            rules = rules_in_data
+
     unneeded_columns_for_size_ratio = [column for column in
                                        (pd.read_csv(paths[0], index_col=0, nrows=0).columns.tolist()) if
                                        not (("place" in column) or ("transition" in column))]
