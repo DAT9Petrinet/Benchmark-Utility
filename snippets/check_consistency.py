@@ -6,17 +6,17 @@ import pandas as pd
 def check_consistency():
     script_dir = os.path.dirname(__file__)
     result_dir = os.path.join(script_dir, '..\saved\\')
-    correct_results_csv_name = 'base-rules.csv'
-    correct_results_name = os.path.splitext(correct_results_csv_name)[0]
 
     # What we assume to be correct results
+    correct_results_csv_name = 'base-rules.csv'
+    correct_results_name = os.path.splitext(correct_results_csv_name)[0]
     correct_results = pd.read_csv(result_dir + correct_results_csv_name)
 
     # Read csv data
     paths = sys.argv[1:]
     data_list = [pd.read_csv(path) for path in paths]
 
-    # Find names of the tests, to be used in graphs and file names
+    # Find names of the tests
     test_names = [os.path.split(os.path.splitext(path)[0])[1] for path in paths]
 
     print(f"Using {correct_results_name} as the basis for checking consitencies in our data\n")
@@ -42,12 +42,13 @@ def check_consistency():
         else:
             print(f"{test_names[test_index]} is not consistent with {correct_results_name}\n"
                   f"found inconsistencies in answers in: {len(inconsistent_rows)} rows\n")
-            print(f"an example of this are the model/query combination:")
+            print(f"an example of this is the model/query combination:")
             print(f"{correct_results_name} output:")
             print(inconsistent_rows[0][0])
+            print("")
             print(f"{test_names[test_index]} output:")
             print(inconsistent_rows[0][1])
-            print("")
+            print("--------------------------------------------------------------------")
 
 
 if __name__ == '__main__':
