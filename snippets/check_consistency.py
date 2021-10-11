@@ -19,7 +19,9 @@ def check_consistency():
     # Find names of the tests, to be used in graphs and file names
     test_names = [os.path.split(os.path.splitext(path)[0])[1] for path in paths]
 
-    # Remove "base-rules" if present in argument list, as we assume this is correct anyways
+    print(f"Using {correct_results_name} as the basis for checking consitencies in our data\n")
+
+    # Remove "correct_results_name" if present in argument list, as we assume this is correct anyways
     for index, test_name in enumerate(test_names):
         if correct_results_name == test_name:
             print(f"{correct_results_name}: trivially consistent \n")
@@ -27,27 +29,25 @@ def check_consistency():
             test_names.pop(index)
 
     for test_index, data in enumerate(data_list):
-        found_inconsistency = False
+        inconsistent_rows = []
         for index, row in data.iterrows():
             same_result = correct_results.iloc[index].answer == row.answer
             either_row_is_none = (correct_results.iloc[index].answer == 'NONE') or (row.answer == 'NONE')
 
             if (not same_result) and (not either_row_is_none):
-                found_inconsistency = True
-                print(f"{test_names[test_index]} is not consistent with {correct_results_name}")
-                print(
-                    f"The rows from ({correct_results_name}) and ({test_names[test_index]}) where the answer diverged:")
-                print(f"The row from ({correct_results_name})")
-                print(correct_results.iloc[index])
-                print("")
-                print(f"The row from ({test_names[test_index]})")
-                print(row)
-                print("")
-                break
+                inconsistent_rows.append((correct_results.iloc[index], row))
 
-        if found_inconsistency:
-            continue
-        print(f"{test_names[test_index]} is consistent with {correct_results_name}\n")
+        if len(inconsistent_rows) == 0:
+            print(f"{test_names[test_index]} is consistent with {correct_results_name}\n")
+        else:
+            print(f"{test_names[test_index]} is not consistent with {correct_results_name}\n"
+                  f"found inconsistencies in answers in: {len(inconsistent_rows)} rows\n")
+            print(f"an example of this are the model/query combination:")
+            print(f"{correct_results_name} output:")
+            print(inconsistent_rows[0][0])
+            print(f"{test_names[test_index]} output:")
+            print(inconsistent_rows[0][1])
+            print("")
 
 
 if __name__ == '__main__':
