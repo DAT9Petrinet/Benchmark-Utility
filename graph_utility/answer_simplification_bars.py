@@ -26,12 +26,25 @@ def plot(data_list, test_names, graph_dir):
         simplifications.rename(columns={'solved by query simplification': test_names[index]}, inplace=True)
         temp = answers.append(simplifications)
 
+        columns_to_remove = ['answered', 'not simplified']
+        try:
+            num_answered = temp.T['answered']
+        except:
+            columns_to_remove.remove('answered')
+            num_answered = 0
+
+        try:
+            num_simplified = temp.T['simplified']
+        except:
+            columns_to_remove.remove('not simplified')
+            num_simplified = 0
+
         # Create new column 'reduced'
-        temp.loc['reduced'] = temp.T['answered'] - temp.T['simplified']
+        temp.loc['reduced'] = num_answered - num_simplified
         temp = temp.T
 
         # Remove the columns that Nicolaj doesn't like
-        temp.drop(columns=['answered', 'not simplified'], inplace=True)
+        temp.drop(columns=columns_to_remove, inplace=True)
 
         # Reorder the columns so that bars are stacked nicely
         order = [2, 1, 0]
