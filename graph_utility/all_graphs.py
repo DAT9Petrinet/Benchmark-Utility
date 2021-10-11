@@ -2,6 +2,7 @@ import os
 import sys
 import copy
 import pandas as pd
+from os import walk
 
 import answer_simplification_bars
 import rule_usage_absolute
@@ -10,7 +11,7 @@ import reduced_size
 import time_memory
 
 
-def main():
+def main(paths):
     # Find the directory to save figures
     script_dir = os.path.dirname(__file__)
     graph_dir = os.path.join(script_dir, '..\graphs\\')
@@ -19,7 +20,6 @@ def main():
         os.makedirs(graph_dir)
 
     # Read csv data
-    paths = sys.argv[1:]
     data_list = [pd.read_csv(path) for path in paths]
 
     # Find names of the tests, to be used in graphs and file names
@@ -56,4 +56,13 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    script_dir = os.path.dirname(__file__)
+    graph_dir = os.path.join(script_dir, '..\saved\\')
+
+    f = []
+    for (dirpath, dirnames, filenames) in walk(graph_dir):
+        f.extend(filenames)
+        break
+
+    for path in f:
+        main(["saved/" + path])
