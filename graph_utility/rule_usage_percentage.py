@@ -4,11 +4,14 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 
-def plot(data_list, test_names, rules, graph_dir):
+def plot(data_list, test_names, graph_dir):
     # Make one plot (png) for each csv
     for index, data in enumerate(data_list):
         if "no-red" in test_names[index]:
             continue
+
+        rules = [column for column in data.columns.tolist() if
+             "rule" in column]
         # Remove rows where query simplification has been used, or where there isn't an answer
         data = data.drop(data[(data['solved by query simplification']) | (data.answer == 'NONE')].index)
 

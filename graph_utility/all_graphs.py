@@ -11,7 +11,7 @@ import reduced_size
 import time_memory
 
 
-def main(paths):
+def main():
     # Find the directory to save figures
     script_dir = os.path.dirname(__file__)
     graph_dir = os.path.join(script_dir, '..\graphs\\')
@@ -20,32 +20,20 @@ def main(paths):
         os.makedirs(graph_dir)
 
     # Read csv data
+    paths = sys.argv[1:]
     data_list = [pd.read_csv(path) for path in paths]
 
     # Find names of the tests, to be used in graphs and file names
     test_names = [os.path.split(os.path.splitext(path)[0])[1] for path in paths]
 
-    # Some common stuff that some graphs use
-    rules = []
-    most_rules_seen = 0
-    for n in range(len(data_list)):
-        rules_in_data = [column for column in (pd.read_csv(paths[n], index_col=0, nrows=0).columns.tolist()) if
-                         "rule" in column]
-        if len(rules_in_data) >= most_rules_seen:
-            rules = rules_in_data
-
-    unneeded_columns_for_size_ratio = [column for column in
-                                       (pd.read_csv(paths[0], index_col=0, nrows=0).columns.tolist()) if
-                                       not (("place" in column) or ("transition" in column))]
-
     # Call each graph function with relevant data
     answer_simplification_bars.plot(copy.deepcopy(data_list), test_names, graph_dir)
     print("1/5 graphs done")
-    rule_usage_absolute.plot(copy.deepcopy(data_list), test_names, rules, graph_dir)
+    rule_usage_absolute.plot(copy.deepcopy(data_list), test_names, graph_dir)
     print("2/5 graphs done")
-    rule_usage_percentage.plot(copy.deepcopy(data_list), test_names, rules, graph_dir)
+    rule_usage_percentage.plot(copy.deepcopy(data_list), test_names, graph_dir)
     print("3/5 graphs done")
-    reduced_size.plot(copy.deepcopy(data_list), copy.deepcopy(test_names), unneeded_columns_for_size_ratio, graph_dir)
+    reduced_size.plot(copy.deepcopy(data_list), copy.deepcopy(test_names), graph_dir)
     print("4/5 graphs done")
     time_memory.plot(copy.deepcopy(data_list), test_names, graph_dir)
     print("5/5 graphs done")
@@ -56,13 +44,4 @@ def main(paths):
 
 
 if __name__ == "__main__":
-    script_dir = os.path.dirname(__file__)
-    graph_dir = os.path.join(script_dir, '..\saved\\')
-
-    f = []
-    for (dirpath, dirnames, filenames) in walk(graph_dir):
-        f.extend(filenames)
-        break
-
-    for path in f:
-        main(["saved/" + path])
+    main()
