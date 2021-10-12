@@ -2,7 +2,6 @@ import os
 import sys
 import copy
 import pandas as pd
-from os import walk
 
 import answer_simplification_bars
 import rule_usage_absolute

@@ -55,10 +55,10 @@ def plot(data_list, test_names, graph_dir):
             custom_palette[column] = pal[test_names.index(test_name)]
 
     # Plot the plot
-    plot = sns.lineplot(data=combined_df, linewidth=2.5, palette=custom_palette,
+    plot = sns.lineplot(data=combined_df, palette=custom_palette,
                         dashes=dashes)
     plot.set(
-        title=f'model checking time and memory per model',
+        title=f'model checking time and memory per test instance',
         ylabel='seconds or kB',
         xlabel='test instances', yscale="log")
     plt.legend(bbox_to_anchor=(1.02, 0.55), loc='best', borderaxespad=0)

@@ -38,22 +38,20 @@ def plot(data_list, test_names, graph_dir):
             reduced_size = ((post_size / pre_size) * 100) if post_size > 0 else np.nan
             reduced_sizes_list.append(reduced_size)
 
-        # This block should remove all -1 in the reduced_sizes_list
-        pre_filter_size = len(reduced_sizes_list)
-        reduced_sizes_list = [size for size in reduced_sizes_list if not np.isnan(size)]
-        post_filter_size = len(reduced_sizes_list)
+        # This block should remove all np.nan in the reduced_sizes_list
+        reduced_sizes_list = [size for size in reduced_sizes_list if (np.isfinite(size) and size < 100)]
+        reduced_sizes_list.sort()
+        reduced_frame = pd.DataFrame(reduced_sizes_list, columns=[f'{test_names[test_index]}'])
+        reduced_sizes = pd.concat([reduced_sizes, reduced_frame], axis=1)
 
-        reduced_sizes[f'{test_names[test_index]}'] = pd.Series(reduced_sizes_list, dtype='float64')
-        print(
-            f"(reduced_size) Test instances not completed by {test_names[test_index]} that were completed by another experiment: {(pre_filter_size - post_filter_size)}")
-
-    for col in reduced_sizes:
-        reduced_sizes[col] = reduced_sizes[col].sort_values(ignore_index=True)
-    # plot the plot
+    marker_interval = int(len(reduced_sizes.index) / 20)
     sns.set_theme(style="darkgrid", palette="pastel")
-    sns.lineplot(data=reduced_sizes, linewidth=2).set(xlabel='test instances', ylabel='size in percent',
-                                                      yscale="linear",
-                                                      title=f'Reduced size in comparison to pre size, sorted non-decreasingly')
+    plot = sns.lineplot(data=reduced_sizes, markers=True, dashes=False, markevery=marker_interval)
+    plot.set(
+        xlabel='test instances',
+        ylabel='size in percent',
+        yscale="linear",
+        title=f'Reduced size in comparison to pre size, sorted non-decreasingly')
 
     plt.legend(loc='best')
     plt.savefig(graph_dir + 'reduced_size_compared.png')
