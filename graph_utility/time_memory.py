@@ -61,7 +61,7 @@ def plot(data_list, test_names, graph_dir):
         title=f'model checking time and memory per test instance',
         ylabel='seconds or kB',
         xlabel='test instances', yscale="log")
-    plt.legend(bbox_to_anchor=(1.02, 0.55), loc='best', borderaxespad=0)
+    plt.legend(bbox_to_anchor=(1.02, 1), loc='best', borderaxespad=0)
 
     plt.savefig(graph_dir + 'time-memory_per_model.png', bbox_inches='tight')
     plt.clf()

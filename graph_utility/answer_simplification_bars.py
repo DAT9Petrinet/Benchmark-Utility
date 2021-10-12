@@ -8,6 +8,10 @@ def plot(data_list, test_names, graph_dir):
     # and columns are answered, not answered, not simplified, simplified and reduced.
     # Some columns are then removed for plotting
     combined = pd.DataFrame()
+
+    print(f"(answer_simplification_bars) map for x-axis:")
+    for index, test_name in enumerate(test_names):
+        print(f"{index} = {test_name}")
     for index, data in enumerate(data_list):
         # Change 'NONE' value to 'not answered', and 'TRUE' and 'FALSE' to 'answered'
         data.loc[data.answer != "NONE", "answer"] = "answered"
@@ -22,8 +26,8 @@ def plot(data_list, test_names, graph_dir):
         # Get counts of 'simplified' and 'not simplified'
         simplifications = (data['solved by query simplification'].value_counts()).to_frame()
         # Combine into same dataframe, with column being the test name, and row indices being above metrics
-        answers.rename(columns={'answer': test_names[index]}, inplace=True)
-        simplifications.rename(columns={'solved by query simplification': test_names[index]}, inplace=True)
+        answers.rename(columns={'answer': index}, inplace=True)
+        simplifications.rename(columns={'solved by query simplification': index}, inplace=True)
         temp = answers.append(simplifications)
 
         columns_to_remove = ['answered', 'not simplified']
