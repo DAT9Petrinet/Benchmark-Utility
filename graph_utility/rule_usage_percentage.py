@@ -11,7 +11,7 @@ def plot(data_list, test_names, graph_dir):
             continue
 
         rules = [column for column in data.columns.tolist() if
-             "rule" in column]
+                 "rule" in column]
         # Remove rows where query simplification has been used, or where there isn't an answer
         data = data.drop(data[(data['solved by query simplification']) | (data.answer == 'NONE')].index)
 
@@ -24,11 +24,12 @@ def plot(data_list, test_names, graph_dir):
         percentages.rename(columns=lambda x: re.sub('rule', '', x), inplace=True)
         sns.set_theme(style="darkgrid", palette="pastel")
         plot = sns.barplot(data=percentages)
-        plot.set(title=f'({test_names[index]}) percentage of models using rules', ylabel='uses in \%', xlabel='rules')
+        plot.set(title=f'({test_names[index]}) percentage of models using rules', ylabel='uses in \\%', xlabel='rules')
         # Plots numbers above bars
         for p in plot.patches:
             plot.annotate(format(p.get_height(), '.1f'),
-                          (p.get_x() + p.get_width() / 2., p.get_height()),
+                          (p.get_x() + p.get_width() / 2.,
+                           p.get_height()),
                           ha='center', va='center',
                           size=10,
                           xytext=(0, 8),

@@ -30,25 +30,28 @@ def plot(data_list, test_names, graph_dir):
         try:
             num_answered = temp.T['answered']
         except:
-            columns_to_remove.remove('answered')
             num_answered = 0
 
         try:
             num_simplified = temp.T['simplified']
         except:
-            columns_to_remove.remove('not simplified')
             num_simplified = 0
 
         # Create new column 'reduced'
-        temp.loc['reduced'] = num_answered - num_simplified
+        reduced = int(num_answered - num_simplified)
+        if reduced > 0:
+            temp.loc['reduced'] = reduced
         temp = temp.T
 
         # Remove the columns that Nicolaj doesn't like
-        temp.drop(columns=columns_to_remove, inplace=True)
+        for col in columns_to_remove:
+            try:
+                temp.drop(columns=col, inplace=True)
+            except:
+                continue
 
         # Reorder the columns so that bars are stacked nicely
-        order = [2, 1, 0]
-        temp = temp[[temp.columns[i] for i in order]]
+        temp = temp[temp.columns[::-1]]
 
         # Add these result, to results from other csv's
         combined = combined.append(temp)
@@ -63,7 +66,7 @@ def plot(data_list, test_names, graph_dir):
     plt.ylabel("test instances")
     plt.xlabel('experiments')
     # For each patch (basically each rectangle within the bar), add a label.
-    for index, bar in enumerate(plot.patches):
+    for bar in plot.patches:
         plot.text(
             # Put the text in the middle of each bar. get_x returns the start
             # so we add half the width to get to the middle.
@@ -72,7 +75,7 @@ def plot(data_list, test_names, graph_dir):
             # along with the offset.
             bar.get_y() if bar.get_height() < 2500 else (bar.get_height() / 2) + bar.get_y(),
             # This is actual value we'll show.
-            round(bar.get_height()),
+            round(bar.get_height()) if round(bar.get_height()) > 0 else "",
             # Center the labels and style them a bit.
             ha='center',
             color='black',
