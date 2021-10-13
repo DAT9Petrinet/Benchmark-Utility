@@ -9,8 +9,14 @@ import copy
 
 # The first csv will be used as numerator in the plots
 def plot(data_list, test_names, graph_dir):
+    '''
+        DEPRECATED DO NOT USE
+    '''
+    # The deepcopies are because in the 'all_graphs' the data_list are used for all plots,
+    # so each function will make their own copy
     data_list = copy.deepcopy(data_list)
     test_names = copy.deepcopy(test_names)
+
     pd.set_option('display.max_rows', None)
 
     # Remove test with no reduction
@@ -114,8 +120,11 @@ if __name__ == "__main__":
     if not os.path.isdir(graph_dir):
         os.makedirs(graph_dir)
 
+    # Read data given as arguments
     paths = sys.argv[1:]
+    data_list = [pd.read_csv(path) for path in paths]
+
+    # Find name of the tests
     test_names = [os.path.split(os.path.splitext(path)[0])[1] for path in paths]
 
-    data_list = [pd.read_csv(path) for path in paths]
     plot(data_list, test_names, graph_dir)

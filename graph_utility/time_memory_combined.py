@@ -8,10 +8,17 @@ import copy
 
 
 def plot(data_list, test_names, graph_dir):
+    """
+    Plots both memory and time for each experiment on same graph
+    """
+
+    # The deepcopies are because in the 'all_graphs' the data_list are used for all plots,
+    # so each function will make their own copy
     data_list = copy.deepcopy(data_list)
     test_names = copy.deepcopy(test_names)
+
     # Dataframe to hold data from all csv's
-    # Rows will be models
+    # Rows will be test-instances
     # Columns are (test_name)-time and (test_name)-memory
     combined_df = pd.DataFrame()
     for index, data in enumerate(data_list):
@@ -19,13 +26,13 @@ def plot(data_list, test_names, graph_dir):
         data = data.drop(
             data[(data['solved by query simplification']) | (data.answer == 'NONE')].index)
 
-        # Group by model name, and sum over time, sort so lowest time first
+        # Get data from time column sorted
         time_data = ((data['time'].sort_values()).reset_index()).drop(columns=
                                                                       'index')
         # Rename the column to include the name of the test
         time_data.rename(columns={'time': f"{test_names[index]}-time"}, inplace=True)
 
-        # Group by model name, and sum over memory, sort so lowest memory first
+        # Get data from memory column sorted
         memory_data = ((data['memory'].sort_values()).reset_index()).drop(columns=
                                                                           'index')
         # Rename the column to include the name of the test
@@ -40,7 +47,8 @@ def plot(data_list, test_names, graph_dir):
             continue
         combined_df = combined_df.join(memory_time_data)
 
-    # Recolor lines and choose dashes
+    # Recolor lines and choose dashes such that all memory-lines gets dashes, and time-lines are not dashes
+    # Also make sure the color matches between the two lines for each experiment
     regex = r"(.*)-(time|memory)$"
     sns.set_theme(style="darkgrid", palette="pastel")
     pal = sns.color_palette('pastel', 16)
@@ -55,7 +63,7 @@ def plot(data_list, test_names, graph_dir):
             elif data_type == "memory":
                 dashes.append((2, 2))
             else:
-                raise Exception("(time_memory) Should not be able to reach this")
+                raise Exception("(time_memory_combined) Should not be able to reach this")
             test_name = match.groups()[0]
             custom_palette[column] = pal[test_names.index(test_name)]
 
@@ -71,6 +79,7 @@ def plot(data_list, test_names, graph_dir):
     plt.savefig(graph_dir + 'time-memory_per_model.png', bbox_inches='tight')
     plt.clf()
 
+
 if __name__ == "__main__":
     # Find the directory to save figures
     script_dir = os.path.dirname(__file__)
@@ -79,8 +88,11 @@ if __name__ == "__main__":
     if not os.path.isdir(graph_dir):
         os.makedirs(graph_dir)
 
+    # Read data given as arguments
     paths = sys.argv[1:]
+    data_list = [pd.read_csv(path) for path in paths]
+
+    # Find name of the tests
     test_names = [os.path.split(os.path.splitext(path)[0])[1] for path in paths]
 
-    data_list = [pd.read_csv(path) for path in paths]
     plot(data_list, test_names, graph_dir)

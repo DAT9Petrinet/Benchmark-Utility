@@ -7,20 +7,26 @@ import copy
 
 
 def plot(data_list, test_names, graph_dir, metric):
+    """
+    Can be called with a column name, and will plot all values from this column sorted as a line.
+    Can be called with multiple csvs, and will plot all lines on same graph
+    """
+
+    # The deepcopies are because in the 'all_graphs' the data_list are used for all plots,
+    # so each function will make their own copy
     data_list = copy.deepcopy(data_list)
     test_names = copy.deepcopy(test_names)
-    # Dataframe to hold data from all csv's
-    # Rows will be models
-    # Columns are (test_name)-time and (test_name)-memory
+
+    # Dataframe to hold data from all csvs
     combined_df = pd.DataFrame()
     for index, data in enumerate(data_list):
         # Remove rows where query simplification has been used, or where there isn't an answer
         data = data.drop(
             data[(data['solved by query simplification']) | (data.answer == 'NONE')].index)
 
-        # Group by model name, and sum over metric, sort so lowest metric first
+        # Get data from relevant column sorted
         metric_data = ((data[f'{metric}'].sort_values()).reset_index()).drop(columns=
-                                                                          'index')
+                                                                             'index')
         # Rename the column to include the name of the test
         metric_data.rename(columns={f'{metric}': f"{test_names[index]}-{metric}"}, inplace=True)
 
@@ -30,9 +36,23 @@ def plot(data_list, test_names, graph_dir, metric):
             continue
         combined_df = combined_df.join(metric_data)
 
+    # Make sure colors and dashes matches the ones from 'time_memory_combined'
+    sns.set_theme(style="darkgrid", palette="pastel")
+    pal = sns.color_palette('pastel', 16)
+    custom_palette = {}
+    dashes = []
+    for column_index, column in enumerate(combined_df.columns):
+        if metric == "time":
+            dashes.append((1, 0))
+        elif metric == "memory":
+            dashes.append((2, 2))
+        else:
+            raise Exception("(time_memory) Should not be able to reach this")
+        custom_palette[column] = pal[column_index]
 
     # Plot the plot
-    plot = sns.lineplot(data=combined_df)
+    plot = sns.lineplot(data=combined_df, palette=custom_palette,
+                        dashes=dashes)
     plot.set(
         title=f'model checking {metric} per test instance',
         ylabel='kB',
@@ -51,10 +71,14 @@ if __name__ == "__main__":
     if not os.path.isdir(graph_dir):
         os.makedirs(graph_dir)
 
+    # Read data given as arguments
     paths = sys.argv[1:]
+    data_list = [pd.read_csv(path) for path in paths]
+
+    # Find name of the tests
     test_names = [os.path.split(os.path.splitext(path)[0])[1] for path in paths]
 
-    data_list = [pd.read_csv(path) for path in paths]
+    # This plot also takes as argument which column to be used, so here we call with both 'time' and 'memory'
     metrics = ['time', 'memory']
     for metric in metrics:
         plot(data_list, test_names, graph_dir, metric)
