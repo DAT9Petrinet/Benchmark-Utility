@@ -4,9 +4,8 @@ import answer_simplification_bars
 import rule_usage_absolute
 import rule_usage_percentage
 import reduced_size
+import time_memory_combined
 import time_memory
-import time_lines
-import memory
 
 
 def plot_all(data_list, test_names, graph_dir):
@@ -25,12 +24,12 @@ def plot_all(data_list, test_names, graph_dir):
     print(f"3/{num_graphs} graphs done")
     reduced_size.plot(data_list, test_names, graph_dir)
     print(f"4/{num_graphs} graphs done")
-    time_memory.plot(data_list, test_names, graph_dir)
+    time_memory_combined.plot(data_list, test_names, graph_dir)
     print(f"5/{num_graphs} graphs done")
-    time_lines.plot(data_list, test_names, graph_dir)
+    metrics = ['time', 'memory']
+    for metric in metrics:
+        time_memory.plot(data_list, test_names, graph_dir, metric)
     print(f"6/{num_graphs} graphs done")
-    memory.plot(data_list, test_names, graph_dir)
-    print(f"7/{num_graphs} graphs done")
 
 
 if __name__ == "__main__":
