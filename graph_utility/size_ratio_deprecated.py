@@ -1,3 +1,5 @@
+import os
+import sys
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -6,7 +8,7 @@ import copy
 
 
 # The first csv will be used as numerator in the plots
-def plot(data_list, test_names, unneeded_columns, graph_dir):
+def plot(data_list, test_names, graph_dir):
     data_list = copy.deepcopy(data_list)
     test_names = copy.deepcopy(test_names)
     pd.set_option('display.max_rows', None)
@@ -103,3 +105,18 @@ def plot(data_list, test_names, unneeded_columns, graph_dir):
                                        title='Reduced size of nets')
     plt.savefig(graph_dir + 'reduced_size_compared.png')
     plt.clf()
+
+
+if __name__ == "__main__":
+    # Find the directory to save figures
+    script_dir = os.path.dirname(__file__)
+    graph_dir = os.path.join(script_dir, '..\graphs\\')
+
+    if not os.path.isdir(graph_dir):
+        os.makedirs(graph_dir)
+
+    paths = sys.argv[1:]
+    test_names = [os.path.split(os.path.splitext(path)[0])[1] for path in paths]
+
+    data_list = [pd.read_csv(path) for path in paths]
+    plot(data_list, test_names, graph_dir)

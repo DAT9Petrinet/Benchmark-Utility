@@ -7,22 +7,7 @@ import reduced_size
 import time_memory
 
 
-def main():
-    # Find the directory to save figures
-    script_dir = os.path.dirname(__file__)
-    csv_dir = os.path.join(script_dir, '..\saved\\')
-    graph_dir = os.path.join(script_dir, '..\graphs\\')
-
-    if not os.path.isdir(graph_dir):
-        os.makedirs(graph_dir)
-
-    # Read csv data
-    csvs = [file for file in os.listdir(csv_dir) if '.csv' in file]
-    data_list = [pd.read_csv(csv_dir + csv) for csv in csvs]
-
-    # Find names of the tests, to be used in graphs and file names
-    test_names = [os.path.split(os.path.splitext(path)[0])[1] for path in csvs]
-
+def plot_all(data_list, test_names, graph_dir):
     # Call each graph function with relevant data
     answer_simplification_bars.plot(data_list, test_names, graph_dir)
     print("1/5 graphs done")
@@ -41,4 +26,18 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    # Find the directory to save figures
+    script_dir = os.path.dirname(__file__)
+    csv_dir = os.path.join(script_dir, '..\saved\\')
+    graph_dir = os.path.join(script_dir, '..\graphs\\')
+
+    if not os.path.isdir(graph_dir):
+        os.makedirs(graph_dir)
+
+    # Read csv data
+    csvs = [file for file in os.listdir(csv_dir) if '.csv' in file]
+    data_list = [pd.read_csv(csv_dir + csv) for csv in csvs]
+
+    # Find names of the tests, to be used in graphs and file names
+    test_names = [os.path.split(os.path.splitext(path)[0])[1] for path in csvs]
+    plot_all(data_list, test_names, graph_dir)
