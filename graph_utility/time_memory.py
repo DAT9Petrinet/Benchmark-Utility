@@ -41,7 +41,7 @@ def plot(data_list, test_names, graph_dir):
     # Recolor lines and choose dashes
     regex = r"(.*)-(time|memory)$"
     sns.set_theme(style="darkgrid", palette="pastel")
-    pal = sns.color_palette()
+    pal = sns.color_palette('pastel', 16)
     custom_palette = {}
     dashes = []
     for column_index, column in enumerate(combined_df.columns):
@@ -55,7 +55,6 @@ def plot(data_list, test_names, graph_dir):
             else:
                 raise Exception("(time_memory) Should not be able to reach this")
             test_name = match.groups()[0]
-            print(test_name)
             custom_palette[column] = pal[test_names.index(test_name)]
 
     # Plot the plot
