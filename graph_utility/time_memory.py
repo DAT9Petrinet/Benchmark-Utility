@@ -1,9 +1,11 @@
+import math
 import os
 import sys
 import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
 import copy
+import numpy as np
 
 
 def plot(data_list, test_names, graph_dir, metric):
@@ -37,8 +39,14 @@ def plot(data_list, test_names, graph_dir, metric):
         combined_df = combined_df.join(metric_data)
 
     # Make sure colors and dashes matches the ones from 'time_memory_combined'
-    sns.set_theme(style="darkgrid", palette="pastel")
-    pal = sns.color_palette('pastel', 16)
+    def color(t):
+        a = np.array([0.5, 0.5, 0.5])
+        b = np.array([0.5, 0.5, 0.5])
+        c = np.array([1.0, 1.0, 1.0])
+        d = np.array([0.0, 0.33, 0.67])
+
+        return a + (b * np.cos(2 * np.pi * (c * t + d)))
+    sns.set_theme(style="darkgrid")
     custom_palette = {}
     dashes = []
     for column_index, column in enumerate(combined_df.columns):
@@ -48,7 +56,7 @@ def plot(data_list, test_names, graph_dir, metric):
             dashes.append((2, 2))
         else:
             raise Exception("(time_memory) Should not be able to reach this")
-        custom_palette[column] = pal[column_index]
+        custom_palette[column] = color((column_index + 1) / len(combined_df.columns))
 
     # Plot the plot
     plot = sns.lineplot(data=combined_df, palette=custom_palette,

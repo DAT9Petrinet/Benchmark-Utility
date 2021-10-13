@@ -1,6 +1,7 @@
 import os
 import sys
 import matplotlib.pyplot as plt
+import numpy as np
 import pandas as pd
 import seaborn as sns
 import re
@@ -50,8 +51,16 @@ def plot(data_list, test_names, graph_dir):
     # Recolor lines and choose dashes such that all memory-lines gets dashes, and time-lines are not dashes
     # Also make sure the color matches between the two lines for each experiment
     regex = r"(.*)-(time|memory)$"
-    sns.set_theme(style="darkgrid", palette="pastel")
-    pal = sns.color_palette('pastel', 16)
+    sns.set_theme(style="darkgrid")
+
+    def color(t):
+        a = np.array([0.5, 0.5, 0.5])
+        b = np.array([0.5, 0.5, 0.5])
+        c = np.array([1.0, 1.0, 1.0])
+        d = np.array([0.0, 0.33, 0.67])
+
+        return a + (b * np.cos(2 * np.pi * (c * t + d)))
+
     custom_palette = {}
     dashes = []
     for column_index, column in enumerate(combined_df.columns):
@@ -65,7 +74,7 @@ def plot(data_list, test_names, graph_dir):
             else:
                 raise Exception("(time_memory_combined) Should not be able to reach this")
             test_name = match.groups()[0]
-            custom_palette[column] = pal[test_names.index(test_name)]
+            custom_palette[column] = color((column_index + 1) / len(combined_df.columns))
 
     # Plot the plot
     plot = sns.lineplot(data=combined_df, palette=custom_palette,
