@@ -2,9 +2,12 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sns
+import copy
 
 
 def plot(data_list, test_names, graph_dir):
+    data_list = copy.deepcopy(data_list)
+    test_names = copy.deepcopy(test_names)
     # Remove test with no reduction
     for test_index, name in enumerate(test_names):
         if 'no-red' in name:

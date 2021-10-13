@@ -1,8 +1,11 @@
 import matplotlib.pyplot as plt
 import seaborn as sns
+import copy
 
 
 def plot(data_list, test_names, rules, graph_dir):
+    data_list = copy.deepcopy(data_list)
+    test_names = copy.deepcopy(test_names)
     # Produce one plot (png) for each csv
     for index, data in enumerate(data_list):
         if "no-red" in test_names[index]:

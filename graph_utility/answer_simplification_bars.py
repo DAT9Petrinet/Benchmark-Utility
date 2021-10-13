@@ -1,9 +1,12 @@
 import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
+import copy
 
 
 def plot(data_list, test_names, graph_dir):
+    data_list = copy.deepcopy(data_list)
+    test_names = copy.deepcopy(test_names)
     # data from each csv will become a row in the combined dataframe, such that row index is the test name,
     # and columns are answered, not answered, not simplified, simplified and reduced.
     # Some columns are then removed for plotting

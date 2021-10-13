@@ -2,9 +2,12 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
 import re
+import copy
 
 
 def plot(data_list, test_names, graph_dir):
+    data_list = copy.deepcopy(data_list)
+    test_names = copy.deepcopy(test_names)
     # Dataframe to hold data from all csv's
     # Rows will be models
     # Columns are (test_name)-time and (test_name)-memory
@@ -52,6 +55,7 @@ def plot(data_list, test_names, graph_dir):
             else:
                 raise Exception("(time_memory) Should not be able to reach this")
             test_name = match.groups()[0]
+            print(test_name)
             custom_palette[column] = pal[test_names.index(test_name)]
 
     # Plot the plot

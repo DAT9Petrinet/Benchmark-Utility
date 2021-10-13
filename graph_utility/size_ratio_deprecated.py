@@ -2,10 +2,13 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sns
+import copy
 
 
 # The first csv will be used as numerator in the plots
 def plot(data_list, test_names, unneeded_columns, graph_dir):
+    data_list = copy.deepcopy(data_list)
+    test_names = copy.deepcopy(test_names)
     pd.set_option('display.max_rows', None)
 
     # Remove test with no reduction

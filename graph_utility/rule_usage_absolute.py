@@ -1,5 +1,6 @@
 import re
 import warnings
+import copy
 
 warnings.filterwarnings("error")
 
@@ -8,6 +9,8 @@ import seaborn as sns
 
 
 def plot(data_list, test_names, graph_dir):
+    data_list = copy.deepcopy(data_list)
+    test_names = copy.deepcopy(test_names)
     # Make one plot (png) for each csv
     for test_index, data in enumerate(data_list):
         if "no-red" in test_names[test_index]:
