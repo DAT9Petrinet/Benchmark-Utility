@@ -29,12 +29,12 @@ def plot(data_list, test_names, graph_dir):
 
     for index, data in enumerate(data_list):
         # Change 'NONE' value to 'not answered', and 'TRUE' and 'FALSE' to 'answered'
-        data.loc[data.answer != "NONE", "answer"] = "answered"
-        data.loc[data.answer == "NONE", "answer"] = "not answered"
+        data['answer'] = data['answer'].replace(['TRUE', 'FALSE'], 'answered')
+        data['answer'] = data['answer'].replace(['NONE'], 'not answered')
 
         # Same thing for simplification, renames to simplified and not simplified, based on bool value
-        data.loc[data['solved by query simplification'], 'solved by query simplification'] = "simplified"
-        data.loc[data['solved by query simplification'] == False, 'solved by query simplification'] = "not simplified"
+        data['solved by query simplification'] = data['solved by query simplification'].replace(True, 'simplified')
+        data['solved by query simplification'] = data['solved by query simplification'].replace(False, 'not simplified')
 
         # Get counts of 'answered' and 'not answered'
         answers = (data['answer'].value_counts()).to_frame()
