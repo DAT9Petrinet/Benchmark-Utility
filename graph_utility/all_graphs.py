@@ -13,17 +13,18 @@ import time_memory
 def main():
     # Find the directory to save figures
     script_dir = os.path.dirname(__file__)
+    csv_dir = os.path.join(script_dir, '..\saved\\')
     graph_dir = os.path.join(script_dir, '..\graphs\\')
 
     if not os.path.isdir(graph_dir):
         os.makedirs(graph_dir)
 
     # Read csv data
-    paths = sys.argv[1:]
-    data_list = [pd.read_csv(path) for path in paths]
+    csvs = [file for file in os.listdir(csv_dir) if '.csv' in file]
+    data_list = [pd.read_csv(csv_dir+csv) for csv in csvs]
 
     # Find names of the tests, to be used in graphs and file names
-    test_names = [os.path.split(os.path.splitext(path)[0])[1] for path in paths]
+    test_names = [os.path.split(os.path.splitext(path)[0])[1] for path in csvs]
 
     # Call each graph function with relevant data
     answer_simplification_bars.plot(copy.deepcopy(data_list), test_names, graph_dir)
@@ -32,7 +33,7 @@ def main():
     print("2/5 graphs done")
     rule_usage_percentage.plot(copy.deepcopy(data_list), test_names, graph_dir)
     print("3/5 graphs done")
-    reduced_size.plot(copy.deepcopy(data_list), copy.deepcopy(test_names), graph_dir)
+    reduced_size.plot(copy.deepcopy(data_list), test_names, graph_dir)
     print("4/5 graphs done")
     time_memory.plot(copy.deepcopy(data_list), test_names, graph_dir)
     print("5/5 graphs done")
