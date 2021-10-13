@@ -48,7 +48,6 @@ def plot(data_list, test_names, graph_dir):
     # Remove the rows, columns not needed, and group the data based on models
     for data in data_list:
         data.drop(rows_to_delete, inplace=True)
-        data.drop(columns=unneeded_columns, inplace=True)
 
     # Get sizes from the data that will be used as numerator
     numerator_sizes = pd.DataFrame()
@@ -110,7 +109,7 @@ def plot(data_list, test_names, graph_dir):
 if __name__ == "__main__":
     # Find the directory to save figures
     script_dir = os.path.dirname(__file__)
-    graph_dir = os.path.join(script_dir, '..\graphs\\')
+    graph_dir = os.path.join(script_dir, '..\\graphs\\')
 
     if not os.path.isdir(graph_dir):
         os.makedirs(graph_dir)
