@@ -40,7 +40,7 @@ def check_consistency(correct_results, correct_results_name, data_list, test_nam
 if __name__ == "__main__":
     # What we assume to be correct results
     if len(sys.argv) == 1:
-        correct_results_name = 'no-red'
+        correct_results_name = 'base-rules'
     else:
         correct_results_name = sys.argv[1]
 
