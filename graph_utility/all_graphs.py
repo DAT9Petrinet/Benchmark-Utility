@@ -25,32 +25,32 @@ def plot_all(data_list, test_names, graph_dir, correct_results_name):
     graphs_made = 0
 
     # Call each graph function with relevant data
-    # answer_simplification_bars.plot(data_list, test_names, graph_dir)
+    answer_simplification_bars.plot(data_list, test_names, graph_dir)
     graphs_made = graphs_made + 1
     print(f"{graphs_made}/{num_graphs} graphs done")
 
-    # rule_usage_absolute.plot(data_list, test_names, graph_dir)
+    rule_usage_absolute.plot(data_list, test_names, graph_dir)
     graphs_made = graphs_made + 1
     print(f"{graphs_made}/{num_graphs} graphs done")
 
-    # rule_usage_percentage.plot(data_list, test_names, graph_dir)
+    rule_usage_percentage.plot(data_list, test_names, graph_dir)
     graphs_made = graphs_made + 1
     print(f"{graphs_made}/{num_graphs} graphs done")
 
-    # reduced_size.plot(data_list, test_names, graph_dir)
+    reduced_size.plot(data_list, test_names, graph_dir)
     graphs_made = graphs_made + 1
     print(f"{graphs_made}/{num_graphs} graphs done")
 
-    # time_memory_combined.plot(data_list, test_names, graph_dir)
+    time_memory_combined.plot(data_list, test_names, graph_dir)
     graphs_made = graphs_made + 1
     print(f"{graphs_made}/{num_graphs} graphs done")
 
     metrics = ['time', 'memory']
     for metric in metrics:
-        # time_memory.plot(data_list, test_names, graph_dir, metric)
+        time_memory.plot(data_list, test_names, graph_dir, metric)
         pass
-    graphs_made = graphs_made + 1
-    print(f"{graphs_made}/{num_graphs} graphs done")
+        graphs_made = graphs_made + 1
+        print(f"{graphs_made}/{num_graphs} graphs done")
 
     reduction_points.plot(data_list, test_names, graph_dir, correct_results_name)
     graphs_made = graphs_made + 1
