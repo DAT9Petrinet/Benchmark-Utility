@@ -1,11 +1,22 @@
+import os
+import sys
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sns
+import copy
 
 
 # The first csv will be used as numerator in the plots
-def plot(data_list, test_names, unneeded_columns, graph_dir):
+def plot(data_list, test_names, graph_dir):
+    '''
+        DEPRECATED DO NOT USE
+    '''
+    # The deepcopies are because in the 'all_graphs' the data_list are used for all plots,
+    # so each function will make their own copy
+    data_list = copy.deepcopy(data_list)
+    test_names = copy.deepcopy(test_names)
+
     pd.set_option('display.max_rows', None)
 
     # Remove test with no reduction
@@ -43,7 +54,6 @@ def plot(data_list, test_names, unneeded_columns, graph_dir):
     # Remove the rows, columns not needed, and group the data based on models
     for data in data_list:
         data.drop(rows_to_delete, inplace=True)
-        data.drop(columns=unneeded_columns, inplace=True)
 
     # Get sizes from the data that will be used as numerator
     numerator_sizes = pd.DataFrame()
@@ -100,3 +110,21 @@ def plot(data_list, test_names, unneeded_columns, graph_dir):
                                        title='Reduced size of nets')
     plt.savefig(graph_dir + 'reduced_size_compared.png')
     plt.clf()
+
+
+if __name__ == "__main__":
+    # Find the directory to save figures
+    script_dir = os.path.dirname(__file__)
+    graph_dir = os.path.join(script_dir, '..\\graphs\\')
+
+    if not os.path.isdir(graph_dir):
+        os.makedirs(graph_dir)
+
+    # Read data given as arguments
+    paths = sys.argv[1:]
+    data_list = [pd.read_csv(path) for path in paths]
+
+    # Find name of the tests
+    test_names = [os.path.split(os.path.splitext(path)[0])[1] for path in paths]
+
+    plot(data_list, test_names, graph_dir)

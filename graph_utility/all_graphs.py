@@ -1,52 +1,59 @@
 import os
-import sys
-import copy
 import pandas as pd
-
 import answer_simplification_bars
 import rule_usage_absolute
 import rule_usage_percentage
 import reduced_size
+import time_memory_combined
 import time_memory
 
 
-def main():
+def plot_all(data_list, test_names, graph_dir):
+    """
+    Will create all plots from all graph functions in this directory, except the deprecated ones
+    """
+    # Get number of files in this directory, remove the ones we do not use
+    # Can use this for the prints
+    graphs = os.listdir(os.path.dirname(__file__))
+    graphs.remove('size_ratio_deprecated.py')
+    graphs.remove('__pycache__')
+    graphs.remove('all_graphs.py')
+    num_graphs = len(graphs)
+
+    # Call each graph function with relevant data
+    answer_simplification_bars.plot(data_list, test_names, graph_dir)
+    print(f"1/{num_graphs} graphs done")
+    rule_usage_absolute.plot(data_list, test_names, graph_dir)
+    print(f"2/{num_graphs} graphs done")
+    rule_usage_percentage.plot(data_list, test_names, graph_dir)
+    print(f"3/{num_graphs} graphs done")
+    reduced_size.plot(data_list, test_names, graph_dir)
+    print(f"4/{num_graphs} graphs done")
+    time_memory_combined.plot(data_list, test_names, graph_dir)
+    print(f"5/{num_graphs} graphs done")
+    metrics = ['time', 'memory']
+    for metric in metrics:
+        time_memory.plot(data_list, test_names, graph_dir, metric)
+        print(f"{6+metrics.index(metric)}/{num_graphs} graphs done")
+
+
+
+if __name__ == "__main__":
     # Find the directory to save figures
     script_dir = os.path.dirname(__file__)
-    graph_dir = os.path.join(script_dir, '..\graphs\\')
+    graph_dir = os.path.join(script_dir, '..\\graphs\\')
 
     if not os.path.isdir(graph_dir):
         os.makedirs(graph_dir)
 
+    # Directory for all our csv
+    csv_dir = os.path.join(script_dir, '..\\saved\\')
+
     # Read csv data
-    paths = sys.argv[1:]
-    data_list = [pd.read_csv(path) for path in paths]
+    csvs = [file for file in os.listdir(csv_dir) if '.csv' in file]
+    data_list = [pd.read_csv(csv_dir + csv) for csv in csvs]
 
     # Find names of the tests, to be used in graphs and file names
-    test_names = [os.path.split(os.path.splitext(path)[0])[1] for path in paths]
+    test_names = [os.path.split(os.path.splitext(csv)[0])[1] for csv in csvs]
 
-    # Some common stuff that some graphs use
-    rules = [column for column in (pd.read_csv(paths[0], index_col=0, nrows=0).columns.tolist()) if "rule" in column]
-    unneeded_columns_for_size_ratio = [column for column in
-                                       (pd.read_csv(paths[0], index_col=0, nrows=0).columns.tolist()) if
-                                       not (("place" in column) or ("transition" in column))]
-
-    # Call each graph function with relevant data
-    answer_simplification_bars.plot(copy.deepcopy(data_list), test_names, graph_dir)
-    print("1/5 graphs done")
-    rule_usage_absolute.plot(copy.deepcopy(data_list), test_names, rules, graph_dir)
-    print("2/5 graphs done")
-    rule_usage_percentage.plot(copy.deepcopy(data_list), test_names, rules, graph_dir)
-    print("3/5 graphs done")
-    reduced_size.plot(copy.deepcopy(data_list), copy.deepcopy(test_names), unneeded_columns_for_size_ratio, graph_dir)
-    print("4/5 graphs done")
-    time_memory.plot(copy.deepcopy(data_list), test_names, graph_dir)
-    print("5/5 graphs done")
-    # Violin plots does not seem to make sense, might make sense on larger test-set, so I wont remove the files,
-    # but I comment them out
-    # violin_absolute.plot(copy.deepcopy(data_list), test_names, rules)
-    # violin_percentage.plot(copy.deepcopy(data_list), test_names, rules)
-
-
-if __name__ == "__main__":
-    main()
+    plot_all(data_list, test_names, graph_dir)
