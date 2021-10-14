@@ -6,6 +6,7 @@ import rule_usage_percentage
 import reduced_size
 import time_memory_combined
 import time_memory
+import total_reductions
 
 
 def plot_all(data_list, test_names, graph_dir):
@@ -34,8 +35,8 @@ def plot_all(data_list, test_names, graph_dir):
     metrics = ['time', 'memory']
     for metric in metrics:
         time_memory.plot(data_list, test_names, graph_dir, metric)
-        print(f"{6+metrics.index(metric)}/{num_graphs} graphs done")
-
+        print(f"{6 + metrics.index(metric)}/{num_graphs} graphs done")
+    total_reductions.plot(data_list, test_names, graph_dir)
 
 
 if __name__ == "__main__":
