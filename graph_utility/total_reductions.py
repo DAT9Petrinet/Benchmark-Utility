@@ -45,35 +45,45 @@ def plot(data_list, test_names, graph_dir):
     for data in data_list:
         data.drop(rows_to_delete, inplace=True)
 
-    sums = []
+    total = []
+    transitions = []
+    places = []
     for test_index, data in enumerate(data_list):
-        sum = 0
+        total_reduction_row = 0
+        transition_reduction_row = 0
+        place_reduction_row = 0
         for index, row in data.iterrows():
             pre_size = row['prev place count'] + row['prev transition count']
             reduced_size = row['post place count'] + row['post transition count']
-            sum += (pre_size - reduced_size)
-        sums.append(sum)
+            total_reduction_row += (pre_size - reduced_size)
+            transition_reduction_row += row['prev transition count'] - row['post transition count']
+            place_reduction_row += row['prev place count'] - row['post place count']
+        total.append(total_reduction_row)
+        transitions.append(transition_reduction_row)
+        places.append(place_reduction_row)
 
-    points_df = pd.DataFrame({'names': test_names, 'sums': sums})
+    new_indices = dict()
+    for index, name in enumerate(test_names):
+        new_indices[index] = name
+
+    points_df = pd.DataFrame({'total': total, 'places': places, 'transitions': transitions})
+    points_df.rename(index=new_indices, inplace=True)
+    print(points_df)
 
     sns.set_theme(style="darkgrid", palette="pastel")
-    plot = sns.barplot(x='sums', y='names', data=points_df)
-    plt.xlabel("Total reductions")
-    plt.ylabel('Experiments')
-    plt.title(f'How much the experiment reduced sizes in total')
-    plt.xscale('linear')
-    plt.tight_layout()
+    plot = points_df.plot(kind='barh', stacked=True)
 
-    # This for-loop puts the number of times each rule has been used, on top of the bar
+    plt.legend(bbox_to_anchor=(1.02, 1), loc='best', borderaxespad=0)
+
+    plt.xlabel("reductions")
+    plt.ylabel('experiments')
+    # For each patch (basically each rectangle within the bar), add a label.
     for p in plot.patches:
-        width = p.get_width()  # get bar length
-        plot.text(width/2,  # set the text at 1 unit right of the bar
-                  p.get_y() + p.get_height() / 2,  # get Y coordinate + X coordinate / 2
-                  int(width),  # set variable to display, 2 decimals
-                  ha='left',  # horizontal alignment
-                  va='center')  # vertical alignment
+        left, bottom, width, height = p.get_bbox().bounds
+        plot.annotate(int(width), xy=(left + width / 2, bottom + height / 2),
+                      ha='center', va='center')
 
-    plt.savefig(graph_dir + 'total_reductions.png')
+    plt.savefig(graph_dir + 'total_reductions.png', bbox_inches='tight')
     plt.clf()
 
 

@@ -24,18 +24,18 @@ def plot_all(data_list, test_names, graph_dir):
     # Call each graph function with relevant data
     answer_simplification_bars.plot(data_list, test_names, graph_dir)
     print(f"1/{num_graphs} graphs done")
-    rule_usage_absolute.plot(data_list, test_names, graph_dir)
+    #rule_usage_absolute.plot(data_list, test_names, graph_dir)
     print(f"2/{num_graphs} graphs done")
-    rule_usage_percentage.plot(data_list, test_names, graph_dir)
+    #rule_usage_percentage.plot(data_list, test_names, graph_dir)
     print(f"3/{num_graphs} graphs done")
-    reduced_size.plot(data_list, test_names, graph_dir)
+    #reduced_size.plot(data_list, test_names, graph_dir)
     print(f"4/{num_graphs} graphs done")
-    time_memory_combined.plot(data_list, test_names, graph_dir)
+    #time_memory_combined.plot(data_list, test_names, graph_dir)
     print(f"5/{num_graphs} graphs done")
-    metrics = ['time', 'memory']
-    for metric in metrics:
-        time_memory.plot(data_list, test_names, graph_dir, metric)
-        print(f"{6 + metrics.index(metric)}/{num_graphs} graphs done")
+    #metrics = ['time', 'memory']
+    #for metric in metrics:
+        #time_memory.plot(data_list, test_names, graph_dir, metric)
+        #print(f"{6 + metrics.index(metric)}/{num_graphs} graphs done")
     total_reductions.plot(data_list, test_names, graph_dir)
 
 
