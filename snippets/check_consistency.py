@@ -3,23 +3,9 @@ import os
 import pandas as pd
 
 
-def check_consistency():
-    script_dir = os.path.dirname(__file__)
-    result_dir = os.path.join(script_dir, '..\saved\\')
-
-    # What we assume to be correct results
-    correct_results_csv_name = 'base-rules.csv'
-    correct_results_name = os.path.splitext(correct_results_csv_name)[0]
-    correct_results = pd.read_csv(result_dir + correct_results_csv_name)
-
-    # Read csv data
-    paths = sys.argv[1:]
-    data_list = [pd.read_csv(path) for path in paths]
-
-    # Find names of the tests
-    test_names = [os.path.split(os.path.splitext(path)[0])[1] for path in paths]
-
-    print(f"Using {correct_results_name} as the basis for checking consitencies in our data\n")
+def check_consistency(correct_results, correct_results_name, data_list, test_names):
+    print(f"Using {correct_results_name} as the basis for checking consistencies in our data")
+    print("--------------------------------------------------------------------")
 
     # Remove "correct_results_name" if present in argument list, as we assume this is correct anyways
     for index, test_name in enumerate(test_names):
@@ -40,16 +26,33 @@ def check_consistency():
         if len(inconsistent_rows) == 0:
             print(f"{test_names[test_index]} is consistent with {correct_results_name}\n")
         else:
-            print(f"{test_names[test_index]} is not consistent with {correct_results_name}\n"
-                  f"found inconsistencies in answers in: {len(inconsistent_rows)} rows\n")
-            print(f"an example of this is the model/query combination:")
-            print(f"{correct_results_name} output:")
+            print(f"({test_names[test_index]}) is not consistent with ({correct_results_name})\n"
+                  f"Found inconsistencies in answers in: {len(inconsistent_rows)} rows\n")
+            print(f"First instance found of an inconsistency is the model/query combination:")
+            print(f"({correct_results_name}) output:")
             print(inconsistent_rows[0][0])
             print("")
-            print(f"{test_names[test_index]} output:")
+            print(f"({test_names[test_index]}) output:")
             print(inconsistent_rows[0][1])
             print("--------------------------------------------------------------------")
 
 
-if __name__ == '__main__':
-    check_consistency()
+if __name__ == "__main__":
+    # What we assume to be correct results
+    correct_results_name = sys.argv[1]
+
+    # Find the directory to save figures
+    script_dir = os.path.dirname(__file__)
+
+    # Directory for all our csv
+    csv_dir = os.path.join(script_dir, '..\\saved\\')
+
+    # Read csv data
+    csvs = [file for file in os.listdir(csv_dir) if ('.csv' in file) and (correct_results_name not in file)]
+    data_list = [pd.read_csv(csv_dir + csv) for csv in csvs]
+    correct_results = pd.read_csv(csv_dir + correct_results_name + '.csv')
+
+    # Find names of the tests, to be used in graphs and file names
+    test_names = [os.path.split(os.path.splitext(csv)[0])[1] for csv in csvs]
+
+    check_consistency(correct_results, correct_results_name, data_list, test_names)
