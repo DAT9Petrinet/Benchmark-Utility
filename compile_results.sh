@@ -56,12 +56,13 @@ write_headers() {
 		col21="rule K"
 		col22="rule L"
 		col23="rule M"
-		echo \"$col1\",\"$col2\",\"$col3\",\"$col4\",\"$col5\",\"$col6\",\"$col7\",\"$col8\",\"$col9\",\"${col10}\",\"${col11}\",\"${col12}\",\"${col13}\",\"${col14}\",\"${col15}\",\"${col16}\",\"${col17}\",\"${col18}\",\"${col19}\",\"${col20}\",\"${col21}\",\"${col22}\",\"${col23}\" >> $OUT
+		col24="rule N"
+		echo \"$col1\",\"$col2\",\"$col3\",\"$col4\",\"$col5\",\"$col6\",\"$col7\",\"$col8\",\"$col9\",\"${col10}\",\"${col11}\",\"${col12}\",\"${col13}\",\"${col14}\",\"${col15}\",\"${col16}\",\"${col17}\",\"${col18}\",\"${col19}\",\"${col20}\",\"${col21}\",\"${col22}\",\"${col23}\",\"${col24}\" >> $OUT
 	fi
 }
 
 append_row() {
-	echo \"$1\",\"$2\",\"$3\",\"$4\",\"$5\",\"$6\",\"$7\",\"$8\",\"$9\",\"${10}\",\"${11}\",\"${12}\",\"${13}\",\"${14}\",\"${15}\",\"${16}\",\"${17}\",\"${18}\",\"${19}\",\"${20}\",\"${21}\",\"${22}\",\"${23}\" >> $OUT
+	echo \"$1\",\"$2\",\"$3\",\"$4\",\"$5\",\"$6\",\"$7\",\"$8\",\"$9\",\"${10}\",\"${11}\",\"${12}\",\"${13}\",\"${14}\",\"${15}\",\"${16}\",\"${17}\",\"${18}\",\"${19}\",\"${20}\",\"${21}\",\"${22}\",\"${23}\",\"${24}\" >> $OUT
 }
 
 
@@ -116,6 +117,7 @@ for FILE in $(ls "$DIR") ; do
 		RULE_K=0
 		RULE_L=0
 		RULE_M=0
+		RULE_N=0
 	
 	else
 
@@ -136,9 +138,10 @@ for FILE in $(ls "$DIR") ; do
 		RULE_J=$(echo $RES | sed -E "s/.*Applications of rule J: ([0-9]+).*/\1/")
 		RULE_K=$(echo $RES | sed -E "s/.*Applications of rule K: ([0-9]+).*/\1/")
 		RULE_L=$(echo $RES | sed -E "s/.*Applications of rule L: ([0-9]+).*/\1/")
-		RULE_M=$(echo $RES | sed -E "s/.*Applications of rule L: ([0-9]+).*/\1/")
+		RULE_M=$(echo $RES | sed -E "s/.*Applications of rule M: ([0-9]+).*/\1/")
+		RULE_N=$(echo $RES | sed -E "s/.*Applications of rule N: ([0-9]+).*/\1/")
 
 	fi
 
-	append_row "$MODEL" "$Q" "$TIME" "$MEM" "$ANSWER" "$QUERY_SIMPLIFICATION" "$PREV_PLACE_COUNT" "$PREV_TRANS_COUNT" "$POST_RED_PLACE_COUNT" "$POST_RED_TRANS_COUNT" "$RULE_A" "$RULE_B" "$RULE_C" "$RULE_D" "$RULE_E" "$RULE_F" "$RULE_G" "$RULE_H" "$RULE_I" "$RULE_J" "$RULE_K" "$RULE_L" "$RULE_M"
+	append_row "$MODEL" "$Q" "$TIME" "$MEM" "$ANSWER" "$QUERY_SIMPLIFICATION" "$PREV_PLACE_COUNT" "$PREV_TRANS_COUNT" "$POST_RED_PLACE_COUNT" "$POST_RED_TRANS_COUNT" "$RULE_A" "$RULE_B" "$RULE_C" "$RULE_D" "$RULE_E" "$RULE_F" "$RULE_G" "$RULE_H" "$RULE_I" "$RULE_J" "$RULE_K" "$RULE_L" "$RULE_M" "$RULE_N"
 done
