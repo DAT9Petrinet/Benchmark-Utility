@@ -39,7 +39,10 @@ def check_consistency(correct_results, correct_results_name, data_list, test_nam
 
 if __name__ == "__main__":
     # What we assume to be correct results
-    correct_results_name = sys.argv[1]
+    if len(sys.argv) == 1:
+        correct_results_name = 'no-red'
+    else:
+        correct_results_name = sys.argv[1]
 
     # Find the directory to save figures
     script_dir = os.path.dirname(__file__)
@@ -49,10 +52,17 @@ if __name__ == "__main__":
 
     # Read csv data
     csvs = [file for file in os.listdir(csv_dir) if ('.csv' in file) and (correct_results_name not in file)]
-    data_list = [pd.read_csv(csv_dir + csv) for csv in csvs]
-    correct_results = pd.read_csv(csv_dir + correct_results_name + '.csv')
 
     # Find names of the tests, to be used in graphs and file names
     test_names = [os.path.split(os.path.splitext(csv)[0])[1] for csv in csvs]
+
+    try:
+        correct_results = pd.read_csv(csv_dir + correct_results_name + '.csv')
+    except:
+        raise Exception(
+            f'({correct_results_name}) is not present in saved/ and cannot be used as basis for comparison. '
+            f'Check if you made a typo in the parameter to the program')
+
+    data_list = [pd.read_csv(csv_dir + csv) for csv in csvs]
 
     check_consistency(correct_results, correct_results_name, data_list, test_names)
