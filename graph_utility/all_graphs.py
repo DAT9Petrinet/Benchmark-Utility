@@ -48,9 +48,8 @@ def plot_all(data_list, test_names, graph_dir, correct_results_name):
     metrics = ['time', 'memory']
     for metric in metrics:
         time_memory.plot(data_list, test_names, graph_dir, metric)
-        pass
-        graphs_made = graphs_made + 1
-        print(f"{graphs_made}/{num_graphs} graphs done")
+    graphs_made = graphs_made + 1
+    print(f"{graphs_made}/{num_graphs} graphs done")
 
     reduction_points.plot(data_list, test_names, graph_dir, correct_results_name)
     graphs_made = graphs_made + 1

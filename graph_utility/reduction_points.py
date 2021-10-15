@@ -88,7 +88,7 @@ def plot(data_list, test_names, graph_dir, experiment_to_compare_against_name):
     plot = sns.barplot(x='sums', y='names', data=points_df)
     plt.xlabel("Points")
     plt.ylabel('Experiments')
-    plt.title(f'Points given for being better to reduce than ({experiment_to_compare_against_name})')
+    plt.title(f'Points for reduced size=|P|+|T| compared to ({experiment_to_compare_against_name})')
     plt.tight_layout()
     # This for-loop puts the number of times each rule has been used, on top of the bar
     for p in plot.patches:
