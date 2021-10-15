@@ -36,7 +36,7 @@ def plot(data_list, test_names, graph_dir, metric):
         if index == 0:
             combined_df = metric_data
             continue
-        combined_df = combined_df.join(metric_data)
+        combined_df = pd.concat([combined_df, metric_data], axis=1)
 
     # Make sure colors and dashes matches the ones from 'time_memory_combined'
     def color(t):
@@ -46,6 +46,7 @@ def plot(data_list, test_names, graph_dir, metric):
         d = np.array([0.0, 0.33, 0.67])
 
         return a + (b * np.cos(2 * np.pi * (c * t + d)))
+
     sns.set_theme(style="darkgrid")
     custom_palette = {}
     dashes = []

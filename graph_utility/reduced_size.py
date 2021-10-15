@@ -19,10 +19,10 @@ def plot(data_list, test_names, graph_dir):
     test_names = copy.deepcopy(test_names)
 
     # Remove test with no reductions, assume this is named 'no-red'
-    for test_index, name in enumerate(test_names):
-        if 'no-red' in name:
-            data_list.pop(test_index)
-            test_names.pop(test_index)
+    #for test_index, name in enumerate(test_names):
+       # if 'no-red' in name:
+         #   data_list.pop(test_index)
+          #  test_names.pop(test_index)
 
     # Find test instances that no experiment managed to reduce
     rows_to_delete = set()
@@ -69,11 +69,24 @@ def plot(data_list, test_names, graph_dir):
         # Add to the dataframe containing results from all experiments
         reduced_sizes = pd.concat([reduced_sizes, reduced_frame], axis=1)
 
+    def color(t):
+        a = np.array([0.5, 0.5, 0.5])
+        b = np.array([0.5, 0.5, 0.5])
+        c = np.array([1.0, 1.0, 1.0])
+        d = np.array([0.0, 0.33, 0.67])
+
+        return a + (b * np.cos(2 * np.pi * (c * t + d)))
+
+    custom_palette = {}
+    for column_index, column in enumerate(reduced_sizes.columns):
+        custom_palette[column] = color((column_index + 1) / len(reduced_sizes.columns))
+
     # Add the spacing between markers in plot
     marker_interval = int(len(reduced_sizes.index) / 20)
 
     sns.set_theme(style="darkgrid", palette="pastel")
-    plot = sns.lineplot(data=reduced_sizes, markers=True, dashes=False, markevery=marker_interval)
+    plot = sns.lineplot(data=reduced_sizes, markers=True, dashes=False, markevery=marker_interval,
+                        palette=custom_palette)
     plot.set(
         xlabel='test instances',
         ylabel='size in percent',
