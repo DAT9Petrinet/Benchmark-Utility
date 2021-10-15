@@ -60,7 +60,6 @@ def plot(data_list, test_names, graph_dir, metric):
         custom_palette[column] = color((column_index + 1) / len(combined_df.columns))
 
     # Plot the plot
-    print(combined_df)
     plot = sns.lineplot(data=combined_df, palette=custom_palette,
                         dashes=dashes)
     plot.set(
