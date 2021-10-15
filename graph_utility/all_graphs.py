@@ -18,47 +18,46 @@ def plot_all(data_list, test_names, graph_dir, correct_results_name):
     """
     # Get number of files in this directory, remove the ones we do not use
     # Can use this for the prints
-    graphs = os.listdir(os.path.dirname(__file__))
+    graphs = [filename for filename in os.listdir(os.path.dirname(__file__)) if
+              '.py' in filename and filename != 'all_graphs.py']
     graphs.remove('size_ratio_deprecated.py')
-    graphs.remove('__pycache__')
-    graphs.remove('all_graphs.py')
     num_graphs = len(graphs)
     graphs_made = 0
 
     # Call each graph function with relevant data
     answer_simplification_bars.plot(data_list, test_names, graph_dir)
     graphs_made = graphs_made + 1
-    print(f"{graphs_made}/{num_graphs} graphs done")
+    print(f"{graphs_made}/{num_graphs} graphs made")
 
     rule_usage_absolute.plot(data_list, test_names, graph_dir + '\\rule-usage\\')
     graphs_made = graphs_made + 1
-    print(f"{graphs_made}/{num_graphs} graphs done")
+    print(f"{graphs_made}/{num_graphs} graphs made")
 
     rule_usage_percentage.plot(data_list, test_names, graph_dir + '\\rule-usage\\')
     graphs_made = graphs_made + 1
-    print(f"{graphs_made}/{num_graphs} graphs done")
+    print(f"{graphs_made}/{num_graphs} graphs made")
 
     reduced_size.plot(data_list, test_names, graph_dir)
     graphs_made = graphs_made + 1
-    print(f"{graphs_made}/{num_graphs} graphs done")
+    print(f"{graphs_made}/{num_graphs} graphs made")
 
     time_memory_combined.plot(data_list, test_names, graph_dir)
     graphs_made = graphs_made + 1
-    print(f"{graphs_made}/{num_graphs} graphs done")
+    print(f"{graphs_made}/{num_graphs} graphs made")
 
     metrics = ['time', 'memory']
     for metric in metrics:
         time_memory.plot(data_list, test_names, graph_dir, metric)
     graphs_made = graphs_made + 1
-    print(f"{graphs_made}/{num_graphs} graphs done")
+    print(f"{graphs_made}/{num_graphs} graphs made")
 
     reduction_points.plot(data_list, test_names, graph_dir, correct_results_name)
     graphs_made = graphs_made + 1
-    print(f"{graphs_made}/{num_graphs} graphs done")
+    print(f"{graphs_made}/{num_graphs} graphs made")
 
     total_reductions.plot(data_list, test_names, graph_dir)
     graphs_made = graphs_made + 1
-    print(f"{graphs_made}/{num_graphs} graphs done")
+    print(f"{graphs_made}/{num_graphs} graphs made")
 
 
 if __name__ == "__main__":
