@@ -35,5 +35,7 @@ mkdir -p "output/$(basename $BIN)/$NAME"
 
 for MODEL in $(ls $TEST_FOLDER) ; do
 
-	sbatch --mail-user=$(whoami) ./run_tests.sh $NAME $BIN $TEST_FOLDER $MODEL $TIME_OUT "$OPTIONS"
+	sbatch --mail-user=$(whoami) --job-name=$NAME ./run_tests.sh $NAME $BIN $TEST_FOLDER $MODEL $TIME_OUT "$OPTIONS"
 done
+
+sbatch --partition=naples -c 1 --mail-type=FAIL --mail-user=$(whoami) --job-name=$NAME --dependency=singleton ./compile_results.sh $NAME $BIN
