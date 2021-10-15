@@ -6,3 +6,4 @@ MCC2021
 temp
 slurm-*
 __pycache__
+graphs/
