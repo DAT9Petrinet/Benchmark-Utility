@@ -18,6 +18,8 @@ def plot(data_list, test_names, graph_dir, experiment_to_compare_against_name):
     data_list = copy.deepcopy(data_list)
     test_names = copy.deepcopy(test_names)
 
+    print(f"(reduction_points) Using {experiment_to_compare_against_name} to compare against")
+
     # Remove test with no reductions, assume this is named 'no-red'
     for test_index, name in enumerate(test_names):
         if 'no-red' in name:
