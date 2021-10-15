@@ -52,10 +52,14 @@ def plot(data_list, test_names, graph_dir, experiment_to_compare_against_name):
     data_list.pop(base_results_index)
     test_names.pop(base_results_index)
 
-    points = dict()
-    sums = []
+    # List to hold the points for each experiment
+    total_points = []
+    transitions_points = []
+    places_points = []
     for test_index, data in enumerate(data_list):
-        sum = 0
+        total_sum = 0
+        transition_sum = 0
+        place_sum = 0
         for index, row in data.iterrows():
             base_results_row = base_results.loc[index]
 
@@ -68,38 +72,63 @@ def plot(data_list, test_names, graph_dir, experiment_to_compare_against_name):
                 base_results_reduced_size = (
                         base_results_row['post place count'] + base_results_row['post transition count'])
                 reduced_size = row['post place count'] + row['post transition count']
-                sum += np.sign(base_results_reduced_size - reduced_size)
+                total_sum += np.sign(base_results_reduced_size - reduced_size)
+                transition_sum += np.sign(base_results_row['post transition count'] - row['post transition count'])
+                place_sum += np.sign(base_results_row['post place count'] - row['post place count'])
             elif (base_results_row['answer'] == 'NONE') and row['answer'] != 'NONE':
-                sum += 1
+                total_sum += 1
+                transition_sum += 1
+                place_sum += 1
             elif (base_results_row['answer'] != 'NONE') and row['answer'] == 'NONE':
-                sum -= 1
+                total_sum -= 1
+                transition_sum -= 1
+                place_sum -= 1
             elif (base_results_row['answer'] == 'NONE') and row['answer'] == 'NONE':
-                sum += 0
+                total_sum += 0
+                transition_sum += 0
+                place_sum += 0
             else:
                 raise Exception(
                     '(reduction_points) Should not be able to reach this. '
                     'Something went wrong with the checks for "NONE"')
 
-        sums.append(sum)
+        total_points.append(total_sum)
+        transitions_points.append(transition_sum)
+        places_points.append(place_sum)
 
-    points_df = pd.DataFrame({'names': test_names, 'sums': sums})
+    points_df = pd.DataFrame(
+        {'total': total_points, 'transitions': transitions_points, 'places': places_points})
 
+    new_indices = dict()
+    for index, name in enumerate(test_names):
+        new_indices[index] = name
+    points_df.rename(index=new_indices, inplace=True)
+
+    # Plot the plot
     sns.set_theme(style="darkgrid", palette="pastel")
-    plot = sns.barplot(x='sums', y='names', data=points_df)
-    plt.xlabel("Points")
-    plt.ylabel('Experiments')
-    plt.title(f'Points for reduced size=|P|+|T| compared to ({experiment_to_compare_against_name})')
-    plt.tight_layout()
-    # This for-loop puts the number of times each rule has been used, on top of the bar
-    for p in plot.patches:
-        width = p.get_width()  # get bar length
-        plot.text(width + 1,  # set the text at 1 unit right of the bar
-                  p.get_y() + p.get_height() / 2,  # get Y coordinate + X coordinate / 2
-                  int(width),  # set variable to display, 2 decimals
-                  ha='left',  # horizontal alignment
-                  va='center')  # vertical alignment
+    plot = points_df.plot(kind='barh', width=0.75, linewidth=2, figsize=(10, 10))
 
-    plt.savefig(graph_dir + 'reduced_points.png')
+    plt.legend(bbox_to_anchor=(1.02, 1), loc='best', borderaxespad=0)
+
+    plt.xlabel("reductions")
+    plt.ylabel('experiments')
+
+    # Find max width, in order to move the very small numbers away from the bars
+    max_width = 0
+    for p in plot.patches:
+        left, bottom, width, height = p.get_bbox().bounds
+        max_width = max(width, max_width)
+    # Plot the numbers in the bars
+    for p in plot.patches:
+        left, bottom, width, height = p.get_bbox().bounds
+        if width < (max_width / 10):
+            plot.annotate(int(width), xy=(max_width / 12.5, bottom + height / 2),
+                          ha='center', va='center')
+        else:
+            plot.annotate(int(width), xy=(left + width / 2, bottom + height / 2),
+                          ha='center', va='center')
+
+    plt.savefig(graph_dir + 'reduced_points.png', bbox_inches='tight')
     plt.clf()
 
 
