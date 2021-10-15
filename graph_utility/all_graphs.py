@@ -74,6 +74,9 @@ if __name__ == "__main__":
 
     if not os.path.isdir(graph_dir):
         os.makedirs(graph_dir)
+    else:
+        for file in os.listdir(graph_dir):
+            os.remove(os.path.join(graph_dir, file))
 
     # Directory for all our csv
     csv_dir = os.path.join(script_dir, '..\\saved\\')
