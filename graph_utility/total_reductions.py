@@ -9,7 +9,7 @@ from matplotlib import ticker
 
 def plot(data_list, test_names, graph_dir):
     """
-        Just find how much each experiment has reduced the models
+        Plots 3 bars for each experiment, one for how many transitions, places and both has been reduced
     """
 
     # The deepcopies are because in the 'all_graphs' the data_list are used for all plots,
@@ -46,31 +46,39 @@ def plot(data_list, test_names, graph_dir):
     for data in data_list:
         data.drop(rows_to_delete, inplace=True)
 
-    total = []
-    transitions = []
-    places = []
+    # List to hold the reductions for each experiment
+    total_reductions = []
+    transitions_reductions = []
+    places_reductions = []
+    # Go through each experiment
     for test_index, data in enumerate(data_list):
-        total_reduction_row = 0
-        transition_reduction_row = 0
-        place_reduction_row = 0
+        total_reduction_sum = 0
+        transition_reduction_sum = 0
+        place_reduction_sum = 0
+
+        # Calculate the reductions, and add to sums
         for index, row in data.iterrows():
             pre_size = row['prev place count'] + row['prev transition count']
             reduced_size = row['post place count'] + row['post transition count']
-            total_reduction_row += (pre_size - reduced_size)
-            transition_reduction_row += row['prev transition count'] - row['post transition count']
-            place_reduction_row += row['prev place count'] - row['post place count']
-        total.append(total_reduction_row)
-        transitions.append(transition_reduction_row)
-        places.append(place_reduction_row)
+            total_reduction_sum += (pre_size - reduced_size)
+            transition_reduction_sum += row['prev transition count'] - row['post transition count']
+            place_reduction_sum += row['prev place count'] - row['post place count']
 
+        total_reductions.append(total_reduction_sum)
+        transitions_reductions.append(transition_reduction_sum)
+        places_reductions.append(place_reduction_sum)
+
+    # Create dataframe
+    points_df = pd.DataFrame(
+        {'total': total_reductions, 'places': places_reductions, 'transitions': transitions_reductions})
+
+    # Rename indices to be test names, instead of int index
     new_indices = dict()
     for index, name in enumerate(test_names):
         new_indices[index] = name
-
-    points_df = pd.DataFrame({'total': total, 'places': places, 'transitions': transitions})
     points_df.rename(index=new_indices, inplace=True)
-    print(points_df)
 
+    # Plot the plot
     sns.set_theme(style="darkgrid", palette="pastel")
     plot = points_df.plot(kind='barh', width=0.75, linewidth=2, figsize=(10, 10))
 
@@ -78,15 +86,17 @@ def plot(data_list, test_names, graph_dir):
 
     plt.xlabel("reductions")
     plt.ylabel('experiments')
-    # For each patch (basically each rectangle within the bar), add a label.
+
+    # Find max width, in order to move the very small numbers away from the bars
     max_width = 0
     for p in plot.patches:
         left, bottom, width, height = p.get_bbox().bounds
         max_width = max(width, max_width)
+    # Plot the numbers in the bars
     for p in plot.patches:
         left, bottom, width, height = p.get_bbox().bounds
         if width < (max_width / 10):
-            plot.annotate(int(width), xy=(max_width/12.5, bottom + height / 2),
+            plot.annotate(int(width), xy=(max_width / 12.5, bottom + height / 2),
                           ha='center', va='center')
         else:
             plot.annotate(int(width), xy=(left + width / 2, bottom + height / 2),
