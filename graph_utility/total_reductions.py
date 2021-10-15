@@ -4,6 +4,7 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 import copy
+from matplotlib import ticker
 
 
 def plot(data_list, test_names, graph_dir):
@@ -71,17 +72,25 @@ def plot(data_list, test_names, graph_dir):
     print(points_df)
 
     sns.set_theme(style="darkgrid", palette="pastel")
-    plot = points_df.plot(kind='barh', stacked=True)
+    plot = points_df.plot(kind='barh', width=0.75, linewidth=2, figsize=(10, 10))
 
     plt.legend(bbox_to_anchor=(1.02, 1), loc='best', borderaxespad=0)
 
     plt.xlabel("reductions")
     plt.ylabel('experiments')
     # For each patch (basically each rectangle within the bar), add a label.
+    max_width = 0
     for p in plot.patches:
         left, bottom, width, height = p.get_bbox().bounds
-        plot.annotate(int(width), xy=(left + width / 2, bottom + height / 2),
-                      ha='center', va='center')
+        max_width = max(width, max_width)
+    for p in plot.patches:
+        left, bottom, width, height = p.get_bbox().bounds
+        if width < (max_width / 10):
+            plot.annotate(int(width), xy=(max_width/12.5, bottom + height / 2),
+                          ha='center', va='center')
+        else:
+            plot.annotate(int(width), xy=(left + width / 2, bottom + height / 2),
+                          ha='center', va='center')
 
     plt.savefig(graph_dir + 'total_reductions.png', bbox_inches='tight')
     plt.clf()

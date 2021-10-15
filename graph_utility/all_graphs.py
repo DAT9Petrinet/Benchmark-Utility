@@ -22,7 +22,7 @@ def plot_all(data_list, test_names, graph_dir):
     num_graphs = len(graphs)
 
     # Call each graph function with relevant data
-    answer_simplification_bars.plot(data_list, test_names, graph_dir)
+    #answer_simplification_bars.plot(data_list, test_names, graph_dir)
     print(f"1/{num_graphs} graphs done")
     #rule_usage_absolute.plot(data_list, test_names, graph_dir)
     print(f"2/{num_graphs} graphs done")
