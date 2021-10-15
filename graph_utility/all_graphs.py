@@ -30,11 +30,11 @@ def plot_all(data_list, test_names, graph_dir, correct_results_name):
     graphs_made = graphs_made + 1
     print(f"{graphs_made}/{num_graphs} graphs done")
 
-    rule_usage_absolute.plot(data_list, test_names, graph_dir)
+    rule_usage_absolute.plot(data_list, test_names, graph_dir + '\\rule-usage\\')
     graphs_made = graphs_made + 1
     print(f"{graphs_made}/{num_graphs} graphs done")
 
-    rule_usage_percentage.plot(data_list, test_names, graph_dir)
+    rule_usage_percentage.plot(data_list, test_names, graph_dir + '\\rule-usage\\')
     graphs_made = graphs_made + 1
     print(f"{graphs_made}/{num_graphs} graphs done")
 
@@ -72,8 +72,8 @@ if __name__ == "__main__":
     script_dir = os.path.dirname(__file__)
     graph_dir = os.path.join(script_dir, '..\\graphs\\')
 
-    if not os.path.isdir(graph_dir):
-        os.makedirs(graph_dir)
+    if not os.path.isdir(graph_dir + '\\rule-usage\\'):
+        os.makedirs(graph_dir + '\\rule-usage\\')
 
     # Directory for all our csv
     csv_dir = os.path.join(script_dir, '..\\saved\\')
