@@ -46,7 +46,7 @@ def plot(data_list, test_names, graph_dir):
         if index == 0:
             combined_df = memory_time_data
             continue
-        combined_df = combined_df.join(memory_time_data)
+        combined_df = pd.concat([combined_df, memory_time_data], axis=1)
 
     # Recolor lines and choose dashes such that all memory-lines gets dashes, and time-lines are not dashes
     # Also make sure the color matches between the two lines for each experiment
@@ -73,7 +73,6 @@ def plot(data_list, test_names, graph_dir):
                 dashes.append((2, 2))
             else:
                 raise Exception("(time_memory_combined) Should not be able to reach this")
-            test_name = match.groups()[0]
             custom_palette[column] = color((column_index + 1) / len(combined_df.columns))
 
     # Plot the plot
