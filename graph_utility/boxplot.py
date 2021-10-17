@@ -62,7 +62,7 @@ def plot(data_list, test_names, graph_dir, metric):
     plot.set(
         title=f'model checking {metric} per experiment',
         ylabel=f'{unit}',
-        xlabel='test instances', yscale="log")
+        xlabel='experiments', yscale="log")
 
     plt.savefig(graph_dir + f'{metric}_box_per_model.png', bbox_inches='tight')
     plt.clf()
