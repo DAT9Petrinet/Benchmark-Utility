@@ -10,6 +10,7 @@ import time_memory_combined
 import time_memory
 import reduction_points
 import total_reductions
+import boxplot
 
 
 def plot_all(data_list, test_names, graph_dir, correct_results_name):
@@ -52,7 +53,12 @@ def plot_all(data_list, test_names, graph_dir, correct_results_name):
     graphs_made = graphs_made + 1
     print(f"{graphs_made}/{num_graphs} graphs done")
 
-    reduction_points.plot(data_list, test_names, graph_dir, correct_results_name)
+    for metric in metrics:
+        boxplot.plot(data_list, test_names, graph_dir, metric)
+    graphs_made = graphs_made + 1
+    print(f"{graphs_made}/{num_graphs} graphs done")
+
+    # reduction_points.plot(data_list, test_names, graph_dir, correct_results_name)
     graphs_made = graphs_made + 1
     print(f"{graphs_made}/{num_graphs} graphs done")
 
