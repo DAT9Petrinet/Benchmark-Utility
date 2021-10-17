@@ -13,7 +13,7 @@ import reduction_points
 import total_reductions
 
 
-def plot_all(data_list, test_names, graph_dir, correct_results_name):
+def plot_all(data_list, test_names, graph_dir, experiment_to_compare_against_name):
     """
     Will create all plots from all graph functions in this directory, except the deprecated ones
     """
@@ -52,7 +52,7 @@ def plot_all(data_list, test_names, graph_dir, correct_results_name):
     graphs_made = graphs_made + 1
     print(f"{graphs_made}/{num_graphs} graphs made")
 
-    reduction_points.plot(data_list, test_names, graph_dir, correct_results_name)
+    reduction_points.plot(data_list, test_names, graph_dir, experiment_to_compare_against_name)
     graphs_made = graphs_made + 1
     print(f"{graphs_made}/{num_graphs} graphs made")
 
@@ -64,9 +64,9 @@ def plot_all(data_list, test_names, graph_dir, correct_results_name):
 if __name__ == "__main__":
     # Results used for comparisons in reduction_points plot
     if len(sys.argv) == 1:
-        correct_results_name = 'base-rules'
+        experiment_to_compare_against_name = 'base-rules'
     else:
-        correct_results_name = sys.argv[1]
+        experiment_to_compare_against_name = sys.argv[1]
 
     # Find the directory to save figures
     script_dir = os.path.dirname(__file__)
@@ -89,10 +89,10 @@ if __name__ == "__main__":
     data_list = [pd.read_csv(csv_dir + csv) for csv in csvs]
 
     try:
-        correct_results = pd.read_csv(csv_dir + correct_results_name + '.csv')
+        correct_results = pd.read_csv(csv_dir + experiment_to_compare_against_name + '.csv')
     except:
         raise Exception(
-            f'(reduction_points)({correct_results_name}) is not present in saved/ and cannot be used as basis for comparison. '
+            f'(reduction_points)({experiment_to_compare_against_name}) is not present in saved/ and cannot be used as basis for comparison. '
             f'Check if you made a typo in the parameter to the program')
 
-    plot_all(data_list, test_names, graph_dir, correct_results_name)
+    plot_all(data_list, test_names, graph_dir, experiment_to_compare_against_name)

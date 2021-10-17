@@ -159,7 +159,7 @@ if __name__ == "__main__":
     test_names = [os.path.split(os.path.splitext(csv)[0])[1] for csv in csvs]
 
     try:
-        correct_results = pd.read_csv(csv_dir + experiment_to_compare_against_name + '.csv')
+        experiment_to_compare_against_name = pd.read_csv(csv_dir + experiment_to_compare_against_name + '.csv')
     except:
         raise Exception(
             f'(reduction_points)({experiment_to_compare_against_name}) is not present in saved/ and cannot be used as basis for comparison. '
