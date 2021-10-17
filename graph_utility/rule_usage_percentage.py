@@ -44,13 +44,14 @@ def plot(data_list, test_names, graph_dir):
         plot.set(title=f'({test_names[index]}) percentage of models using rules', ylabel='uses in \\%', xlabel='rules')
         # Plots numbers above bars
         for p in plot.patches:
-            plot.annotate(format(p.get_height(), '.1f'),
-                          (p.get_x() + p.get_width() / 2.,
-                           p.get_height()),
-                          ha='center', va='center',
-                          size=10,
-                          xytext=(0, 8),
-                          textcoords='offset points')
+            if p.get_height() != 0.0:
+                plot.annotate(format(p.get_height(), '.1f'),
+                              (p.get_x() + p.get_width() / 2.,
+                               p.get_height()),
+                              ha='center', va='center',
+                              size=10,
+                              xytext=(0, 8),
+                              textcoords='offset points')
         plt.savefig(graph_dir + f'{test_names[index]}_rule_usage_percentage.png')
         plt.clf()
 
