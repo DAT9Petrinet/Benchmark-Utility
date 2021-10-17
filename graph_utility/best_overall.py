@@ -131,7 +131,7 @@ def plot(data_list, test_names, graph_dir):
 
     plt.legend(bbox_to_anchor=(1.02, 1), loc='best', borderaxespad=0)
     plt.xscale('log')
-    plt.xlabel("reductions")
+    plt.xlabel("points")
     plt.ylabel('experiments')
 
     # Plot the numbers in the bars
@@ -149,7 +149,7 @@ def plot(data_list, test_names, graph_dir):
 
     plt.legend(bbox_to_anchor=(1.02, 1), loc='best', borderaxespad=0)
     plt.xscale('log')
-    plt.xlabel("reductions")
+    plt.xlabel("points")
     plt.ylabel('experiments')
 
     # Plot the numbers in the bars
