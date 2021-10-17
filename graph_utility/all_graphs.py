@@ -7,7 +7,7 @@ import rule_usage_absolute
 import rule_usage_percentage
 import reduced_size
 import time_memory_combined
-import time_memory
+import time_memory_lines
 import reduction_points
 import total_reductions
 
@@ -47,7 +47,7 @@ def plot_all(data_list, test_names, graph_dir, correct_results_name):
 
     metrics = ['time', 'memory']
     for metric in metrics:
-        time_memory.plot(data_list, test_names, graph_dir, metric)
+        time_memory_lines.plot(data_list, test_names, graph_dir, metric)
     graphs_made = graphs_made + 1
     print(f"{graphs_made}/{num_graphs} graphs made")
 
