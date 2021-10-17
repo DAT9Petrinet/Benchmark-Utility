@@ -60,7 +60,7 @@ def plot(data_list, test_names, graph_dir, metric):
     # Plot the plot
     plot = sns.boxenplot(data=combined_df, palette=custom_palette)
     plot.set(
-        title=f'model checking {metric} per test instance',
+        title=f'model checking {metric} per experiment',
         ylabel=f'{unit}',
         xlabel='test instances', yscale="log")
 
