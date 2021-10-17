@@ -115,7 +115,7 @@ def plot(data_list, test_names, graph_dir, experiment_to_compare_against_name):
     # Plot the numbers in the bars
     for p in plot.patches:
         left, bottom, width, height = p.get_bbox().bounds
-        if width < (max_width / 10):
+        if 0 < width and width < (max_width / 10):
             plot.annotate(int(width), xy=(max_width / 12.5, bottom + height / 2),
                           ha='center', va='center')
         else:
