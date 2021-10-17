@@ -1,4 +1,3 @@
-import math
 import os
 import sys
 import matplotlib.pyplot as plt
@@ -59,16 +58,21 @@ def plot(data_list, test_names, graph_dir, metric):
             raise Exception("(time_memory) Should not be able to reach this")
         custom_palette[column] = color((column_index + 1) / len(combined_df.columns))
 
+    if metric == 'time':
+        unit = 'seconds'
+    else:
+        unit = 'kB'
+
     # Plot the plot
     plot = sns.lineplot(data=combined_df, palette=custom_palette,
                         dashes=dashes)
     plot.set(
         title=f'model checking {metric} per test instance',
-        ylabel='kB',
+        ylabel=f'{unit}',
         xlabel='test instances', yscale="log")
     plt.legend(bbox_to_anchor=(1.02, 1), loc='best', borderaxespad=0)
 
-    plt.savefig(graph_dir + f'{metric}_per_model.png', bbox_inches='tight')
+    plt.savefig(graph_dir + f'{metric}_lines_per_model.png', bbox_inches='tight')
     plt.clf()
 
 
