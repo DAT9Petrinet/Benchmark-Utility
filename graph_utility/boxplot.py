@@ -22,8 +22,8 @@ def plot(data_list, graph_dir, metric):
     combined_df = pd.DataFrame()
     for index, data in enumerate(data_list):
         # Remove rows where query simplification has been used, or where there isn't an answer
-        data = data.drop(
-            data[(data['solved by query simplification']) | (data.answer == 'NONE')].index)
+        # data = data.drop(
+        #   data[(data['solved by query simplification']) | (data.answer == 'NONE')].index)
 
         # Get data from relevant column sorted
         metric_data = ((data[f'{metric}'].sort_values()).reset_index()).drop(columns=
