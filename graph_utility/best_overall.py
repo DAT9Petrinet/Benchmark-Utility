@@ -138,13 +138,12 @@ def plot(data_list, test_names, graph_dir):
     # Plot the numbers in the bars
     for p in plot.patches:
         left, bottom, width, height = p.get_bbox().bounds
-        plot.annotate(int(width), xy=(left + width / 2, bottom + height / 2), ha='center', va='center')
+        plot.annotate(int(width), xy=(left + width, bottom + height / 2), ha='center', va='center')
 
     plt.savefig(graph_dir + 'best_overall_points.png', bbox_inches='tight')
     plt.clf()
 
     # Plot the second plot
-    # Plot the plot
     sns.set_theme(style="darkgrid", palette="pastel")
     plot = points_eq_df.plot(kind='barh', width=0.75, linewidth=2, figsize=(10, 10))
     plt.title('better or equal results')
@@ -156,7 +155,7 @@ def plot(data_list, test_names, graph_dir):
     # Plot the numbers in the bars
     for p in plot.patches:
         left, bottom, width, height = p.get_bbox().bounds
-        plot.annotate(int(width), xy=(left + width / 2, bottom + height / 2), ha='center', va='center')
+        plot.annotate(int(width), xy=(left + width, bottom + height / 2), ha='center', va='center')
 
     plt.savefig(graph_dir + 'best_or_eq_points.png', bbox_inches='tight')
     plt.clf()
