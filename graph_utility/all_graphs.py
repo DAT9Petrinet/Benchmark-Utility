@@ -54,7 +54,7 @@ def plot_all(data_list, test_names, graph_dir, correct_results_name):
     print(f"{graphs_made}/{num_graphs} graphs done")
 
     for metric in metrics:
-        boxplot.plot(data_list, test_names, graph_dir, metric)
+        boxplot.plot(data_list, graph_dir, metric)
     graphs_made = graphs_made + 1
     print(f"{graphs_made}/{num_graphs} graphs done")
 

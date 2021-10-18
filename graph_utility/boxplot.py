@@ -8,7 +8,7 @@ import copy
 import numpy as np
 
 
-def plot(data_list, test_names, graph_dir, metric):
+def plot(data_list, graph_dir, metric):
     """
     Can be called with a column name, and will plot all values from this column sorted as a line.
     Can be called with multiple csvs, and will plot all lines on same graph
@@ -17,7 +17,6 @@ def plot(data_list, test_names, graph_dir, metric):
     # The deepcopies are because in the 'all_graphs' the data_list are used for all plots,
     # so each function will make their own copy
     data_list = copy.deepcopy(data_list)
-    test_names = copy.deepcopy(test_names)
 
     # Dataframe to hold data from all csvs
     combined_df = pd.DataFrame()
@@ -80,10 +79,7 @@ if __name__ == "__main__":
     paths = sys.argv[1:]
     data_list = [pd.read_csv(path) for path in paths]
 
-    # Find name of the tests
-    test_names = [os.path.split(os.path.splitext(path)[0])[1] for path in paths]
-
     # This plot also takes as argument which column to be used, so here we call with both 'time' and 'memory'
     metrics = ['time', 'memory']
     for metric in metrics:
-        plot(data_list, test_names, graph_dir, metric)
+        plot(data_list, graph_dir, metric)
