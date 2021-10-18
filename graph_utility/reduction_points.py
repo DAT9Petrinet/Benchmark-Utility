@@ -166,11 +166,4 @@ if __name__ == "__main__":
                 '(reduction_points) if you only compare two experiments, one cannot be no-red, as this is ignored due to comparing the reductions. '
                 'Then you end up with no comparisons.')
 
-    try:
-        pd.read_csv(experiment_to_compare_against_path)
-    except:
-        raise Exception(
-            f'(reduction_points) Could not find the file ({experiment_to_compare_against_path}). '
-            f'Check if you made a typo in the parameter to the program')
-
     plot(data_list, test_names, graph_dir, experiment_to_compare_against_name)
