@@ -18,12 +18,6 @@ def plot(data_list, test_names, graph_dir):
     data_list = copy.deepcopy(data_list)
     test_names = copy.deepcopy(test_names)
 
-    # Remove test with no reductions, assume this is named 'no-red'
-    for test_index, name in enumerate(test_names):
-        if 'no-red' in name:
-            data_list.pop(test_index)
-            test_names.pop(test_index)
-
     # Find test instances that no experiment managed to reduce
     rows_to_delete = set()
     for index, data in enumerate(data_list):
@@ -85,23 +79,22 @@ def plot(data_list, test_names, graph_dir):
                 anyone_else_answer = anyone_else_answer or (other_row['answer'] != 'NONE')
 
             if row['answer'] != 'NONE':
-                if row['time'] < best_time:
-                    time_sum += 1
-                if row['memory'] < best_memory:
-                    memory_sum += 1
-                if (row['post place count'] + row['post transition count']) < best_reduction:
-                    reduction_sum += 1
-                if not anyone_else_answer:
-                    unique_answers_sum += 1
-
-            if row['answer'] != 'NONE':
                 answers_sum += 1
                 if row['time'] <= best_time:
                     time_eq_sum += 1
+                    if row['time'] <= 0.9 * best_time:
+                        time_sum += 1
                 if row['memory'] <= best_memory:
                     memory_eq_sum += 1
-                if (row['post place count'] + row['post transition count']) <= best_reduction:
-                    reduction_eq_sum += 1
+                    if row['memory'] <= 0.9 * best_memory:
+                        memory_sum += 1
+                if test_names[test_index] != 'no-red':
+                    if (row['post place count'] + row['post transition count']) <= best_reduction:
+                        reduction_eq_sum += 1
+                        if (row['post place count'] + row['post transition count']) <= 0.9 * best_reduction:
+                            reduction_sum += 1
+                if not anyone_else_answer:
+                    unique_answers_sum += 1
 
         reduction_points.append(reduction_sum)
         time_points.append(time_sum)
