@@ -112,7 +112,7 @@ def plot(data_list, test_names, graph_dir, experiment_to_compare_against_name):
 
     plt.legend(bbox_to_anchor=(1.02, 1), loc='best', borderaxespad=0)
 
-    plt.xlabel("reductions")
+    plt.xlabel("points")
     plt.ylabel('experiments')
 
     # Find max width, in order to move the very small numbers away from the bars
