@@ -130,6 +130,7 @@ def plot(data_list, test_names, graph_dir):
     plot = points_df.plot(kind='barh', width=0.75, linewidth=2, figsize=(10, 10))
 
     plt.legend(bbox_to_anchor=(1.02, 1), loc='best', borderaxespad=0)
+    plt.title('Strictly better results')
     plt.xscale('log')
     plt.xlabel("points")
     plt.ylabel('experiments')
@@ -146,7 +147,7 @@ def plot(data_list, test_names, graph_dir):
     # Plot the plot
     sns.set_theme(style="darkgrid", palette="pastel")
     plot = points_eq_df.plot(kind='barh', width=0.75, linewidth=2, figsize=(10, 10))
-
+    plt.title('better or equal results')
     plt.legend(bbox_to_anchor=(1.02, 1), loc='best', borderaxespad=0)
     plt.xscale('log')
     plt.xlabel("points")
@@ -162,12 +163,6 @@ def plot(data_list, test_names, graph_dir):
 
 
 if __name__ == "__main__":
-    # What we assume to be correct results
-    if len(sys.argv) == 1:
-        experiment_to_compare_against_name = 'base-rules'
-    else:
-        experiment_to_compare_against_name = sys.argv[1]
-
     # Find the directory to save figures
     script_dir = os.path.dirname(__file__)
     graph_dir = os.path.join(script_dir, '..\\graphs\\')
@@ -175,23 +170,11 @@ if __name__ == "__main__":
     if not os.path.isdir(graph_dir):
         os.makedirs(graph_dir)
 
-    # Directory for all our csv
-    csv_dir = os.path.join(script_dir, '..\\saved\\')
+    # Read data given as arguments
+    paths = sys.argv[1:]
+    data_list = [pd.read_csv(path) for path in paths]
 
-    # Read csv data
-    csvs = [file for file in os.listdir(csv_dir) if
-            ('.csv' in file) and (experiment_to_compare_against_name not in file)]
-
-    # Find names of the tests, to be used in graphs and file names
-    test_names = [os.path.split(os.path.splitext(csv)[0])[1] for csv in csvs]
-
-    try:
-        correct_results = pd.read_csv(csv_dir + experiment_to_compare_against_name + '.csv')
-    except:
-        raise Exception(
-            f'(reduction_points)({experiment_to_compare_against_name}) is not present in saved/ and cannot be used as basis for comparison. '
-            f'Check if you made a typo in the parameter to the program')
-
-    data_list = [pd.read_csv(csv_dir + csv) for csv in csvs]
+    # Find name of the tests
+    test_names = [os.path.split(os.path.splitext(path)[0])[1] for path in paths]
 
     plot(data_list, test_names, graph_dir)
