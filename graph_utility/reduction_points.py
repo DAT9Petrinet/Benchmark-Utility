@@ -136,10 +136,15 @@ def plot(data_list, test_names, graph_dir, experiment_to_compare_against_name):
 
 if __name__ == "__main__":
     # What we assume to be correct results
-    if len(sys.argv) == 1:
-        experiment_to_compare_against_name = 'base-rules'
+    if len(sys.argv) <= 2:
+        raise Exception(
+            f'(reduction_points) You need to specify more than one csv, the first will be used as basis for comparison')
     else:
-        experiment_to_compare_against_name = sys.argv[1]
+        experiment_to_compare_against_path = sys.argv[1]
+        experiment_to_compare_against_name = \
+            [os.path.split(os.path.splitext(experiment_to_compare_against_path)[0])[1]][0]
+        if experiment_to_compare_against_name == 'no-red':
+            print('(reduction_points) Cannot use no-red as basis for comparison, as this has no reductions')
 
     # Find the directory to save figures
     script_dir = os.path.dirname(__file__)
@@ -149,22 +154,23 @@ if __name__ == "__main__":
         os.makedirs(graph_dir)
 
     # Directory for all our csv
-    csv_dir = os.path.join(script_dir, '..\\saved\\')
-
-    # Read csv data
-    csvs = [file for file in os.listdir(csv_dir) if
-            ('.csv' in file) and (experiment_to_compare_against_name not in file)]
+    paths = sys.argv[1:]
+    data_list = [pd.read_csv(path) for path in paths]
 
     # Find names of the tests, to be used in graphs and file names
-    test_names = [os.path.split(os.path.splitext(csv)[0])[1] for csv in csvs]
+    test_names = [os.path.split(os.path.splitext(path)[0])[1] for path in paths]
+
+    if len(test_names) == 2:
+        if 'no-red' in test_names:
+            raise Exception(
+                '(reduction_points) if you only compare two experiments, one cannot be no-red, as this is ignored due to comparing the reductions. '
+                'Then you end up with no comparisons.')
 
     try:
-        experiment_to_compare_against_name = pd.read_csv(csv_dir + experiment_to_compare_against_name + '.csv')
+        pd.read_csv(experiment_to_compare_against_path)
     except:
         raise Exception(
-            f'(reduction_points)({experiment_to_compare_against_name}) is not present in saved/ and cannot be used as basis for comparison. '
+            f'(reduction_points) Could not find the file ({experiment_to_compare_against_path}). '
             f'Check if you made a typo in the parameter to the program')
-
-    data_list = [pd.read_csv(csv_dir + csv) for csv in csvs]
 
     plot(data_list, test_names, graph_dir, experiment_to_compare_against_name)

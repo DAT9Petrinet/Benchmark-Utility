@@ -67,6 +67,8 @@ if __name__ == "__main__":
         experiment_to_compare_against_name = 'base-rules'
     else:
         experiment_to_compare_against_name = sys.argv[1]
+        if experiment_to_compare_against_name == 'no-red':
+            print('(reduction_points) Cannot use no-red as basis for comparison, as this has no reductions')
 
     # Find the directory to save figures
     script_dir = os.path.dirname(__file__)
@@ -89,10 +91,10 @@ if __name__ == "__main__":
     data_list = [pd.read_csv(csv_dir + csv) for csv in csvs]
 
     try:
-        correct_results = pd.read_csv(csv_dir + experiment_to_compare_against_name + '.csv')
+        pd.read_csv(csv_dir + experiment_to_compare_against_name + '.csv')
     except:
         raise Exception(
-            f'(reduction_points)({experiment_to_compare_against_name}) is not present in saved/ and cannot be used as basis for comparison. '
+            f'(reduction_points) Could not find the file ({experiment_to_compare_against_name}). '
             f'Check if you made a typo in the parameter to the program')
 
     plot_all(data_list, test_names, graph_dir, experiment_to_compare_against_name)
