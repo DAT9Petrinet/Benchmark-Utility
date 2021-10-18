@@ -18,15 +18,9 @@ def plot(data_list, test_names, graph_dir, experiment_to_compare_against_name):
     data_list = copy.deepcopy(data_list)
     test_names = copy.deepcopy(test_names)
 
-    print(f"(time_memory_points) Using {experiment_to_compare_against_name} to compare against")
+    print(f"(time_memory_points) Using ({experiment_to_compare_against_name}) to compare against")
 
-    # Remove test with no reductions, assume this is named 'no-red'
-    for test_index, name in enumerate(test_names):
-        if 'no-red' in name:
-            data_list.pop(test_index)
-            test_names.pop(test_index)
-
-    # Find test instances that no experiment managed to reduce
+    # Find test instances that no experiment managed to find an answer to
     rows_to_delete = set()
     for index, data in enumerate(data_list):
         # Find all indices where the query has been solved by simplification
@@ -103,7 +97,7 @@ def plot(data_list, test_names, graph_dir, experiment_to_compare_against_name):
     plot = points_df.plot(kind='barh', width=0.75, linewidth=2, figsize=(10, 10))
 
     plt.legend(bbox_to_anchor=(1.02, 1), loc='best', borderaxespad=0)
-
+    plt.title(f'Comparing experiments to ({experiment_to_compare_against_name})')
     plt.xlabel("points")
     plt.ylabel('experiments')
 
@@ -132,8 +126,7 @@ if __name__ == "__main__":
         raise Exception(
             f'(time_memory_points) You need to specify more than one csv, the first will be used as basis for comparison')
     else:
-        experiment_to_compare_against_path = sys.argv[1]
-        experiment_to_compare_against_name = [os.path.split(os.path.splitext(experiment_to_compare_against_path)[0])[1]][0]
+        experiment_to_compare_against_name = [os.path.split(os.path.splitext(sys.argv[1])[0])[1]][0]
 
     # Find the directory to save figures
     script_dir = os.path.dirname(__file__)
@@ -148,12 +141,5 @@ if __name__ == "__main__":
 
     # Find names of the tests, to be used in graphs and file names
     test_names = [os.path.split(os.path.splitext(path)[0])[1] for path in paths]
-
-    try:
-        pd.read_csv(experiment_to_compare_against_path)
-    except:
-        raise Exception(
-            f'(time_memory_points) Could not find the file ({experiment_to_compare_against_path}). '
-            f'Check if you made a typo in the parameter to the program')
 
     plot(data_list, test_names, graph_dir, experiment_to_compare_against_name)
