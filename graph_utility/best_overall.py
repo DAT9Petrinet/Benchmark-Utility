@@ -113,7 +113,8 @@ def plot(data_list, test_names, graph_dir):
         answers.append(answers_sum)
 
     points_df = pd.DataFrame(
-        {'reduction': reduction_points, 'memory': memory_points, 'time': time_points, 'unique answers': unique_answers})
+        {'reduction': reduction_points, 'memory': memory_points, 'time': time_points, 'unique answers': unique_answers,
+         'answers': answers})
 
     points_eq_df = pd.DataFrame(
         {'reduction': reduction_eq_points, 'memory': memory_eq_points, 'time': time_eq_points,
