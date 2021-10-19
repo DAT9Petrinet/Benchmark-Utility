@@ -111,18 +111,21 @@ def plot(data_list, test_names, graph_dir, experiment_to_compare_against_name):
             not_used_size_ratios_inner) if len(not_used_size_ratios_inner) > 0 else np.nan
         rule_not_used_time = sum(not_used_time_ratios_inner) / len(
             not_used_time_ratios_inner) if len(not_used_time_ratios_inner) > 0 else np.nan
-
-        df2 = pd.DataFrame([[rule_used_size, rule_used_time, rule_not_used_size, rule_not_used_time]],
-                           columns=['rule-used-size', 'rule-used-time', 'rule_not_used_size', 'rule_not_used_time'],
-                           index=[f'{experiment_to_compare_against_name}/{test_names[test_index]}'])
+        both_size = (sum(not_used_size_ratios_inner) + sum(size_ratios_inner)) / (
+                    len(not_used_size_ratios_inner) + len(size_ratios_inner))
+        both_time = (sum(not_used_time_ratios_inner) + sum(time_ratios_inner)) / (
+                len(not_used_time_ratios_inner) + len(time_ratios_inner))
+        df2 = pd.DataFrame(
+            [[rule_used_size, rule_used_time, rule_not_used_size, rule_not_used_time, both_size, both_time]],
+            columns=['rule-used-size', 'rule-used-time', 'rule_not_used_size', 'rule_not_used_time', 'both-size',
+                     'both-time'],
+            index=[f'{experiment_to_compare_against_name}/{test_names[test_index]}'])
 
         combined = combined.append(df2)
 
-    print(combined)
-
     # Plot the plot
     sns.set_theme(style="darkgrid", palette="pastel")
-    plot = combined.plot(kind='barh', width=0.75, linewidth=2, figsize=(10, 10))
+    plot = combined.plot(kind='barh', width=0.8, linewidth=2, figsize=(15, 15))
 
     plt.legend(bbox_to_anchor=(1.02, 1), loc='best', borderaxespad=0)
 
