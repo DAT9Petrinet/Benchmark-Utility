@@ -61,8 +61,8 @@ def plot(data_list, test_names, graph_dir, experiment_to_compare_against_name):
         if test_index == base_results_index:
             continue
 
-        size_ratios_inner = pd.DataFrame()
-        time_ratios_inner = pd.DataFrame()
+        size_ratios_inner = []
+        time_ratios_inner = []
         # Iterate through all rows and compute ratio
         for index, row in data.iterrows():
             base_results_row = base_results.loc[index]
@@ -77,30 +77,22 @@ def plot(data_list, test_names, graph_dir, experiment_to_compare_against_name):
                 size_post_reductions = row['post place count'] + row['post transition count']
 
                 size_ratio = (base_reduction_size / size_post_reductions) * 100
-                size_ratios_inner = size_ratios_inner.append(pd.Series(data={'ratio': size_ratio}, name=index),
-                                                             ignore_index=False)
+                size_ratios_inner.append(size_ratio)
 
                 time_ratio = (base_results_row['time'] / row['time']) * 100
-                time_ratios_inner = time_ratios_inner.append(pd.Series(data={'ratio': time_ratio}, name=index),
-                                                             ignore_index=False)
+                time_ratios_inner.append(time_ratio)
             elif (base_results_row['answer'] == 'NONE') and row['answer'] != 'NONE':
                 size_ratio = np.nan
-                size_ratios_inner = size_ratios_inner.append(pd.Series(data={'ratio': size_ratio}, name=index),
-                                                             ignore_index=False)
-                time_ratios_inner = time_ratios_inner.append(pd.Series(data={'ratio': size_ratio}, name=index),
-                                                             ignore_index=False)
+                size_ratios_inner.append(size_ratio)
+                time_ratios_inner.append(size_ratio)
             elif (base_results_row['answer'] != 'NONE') and row['answer'] == 'NONE':
-                size_ratio = np.infty
-                size_ratios_inner = size_ratios_inner.append(pd.Series(data={'ratio': size_ratio}, name=index),
-                                                             ignore_index=False)
-                time_ratios_inner = time_ratios_inner.append(pd.Series(data={'ratio': size_ratio}, name=index),
-                                                             ignore_index=False)
+                size_ratio = np.nan
+                size_ratios_inner.append(size_ratio)
+                time_ratios_inner.append(size_ratio)
             elif (base_results_row['answer'] == 'NONE') and row['answer'] == 'NONE':
-                size_ratio = np.infty
-                size_ratios_inner = size_ratios_inner.append(pd.Series(data={'ratio': size_ratio}, name=index),
-                                                             ignore_index=False)
-                time_ratios_inner = time_ratios_inner.append(pd.Series(data={'ratio': size_ratio}, name=index),
-                                                             ignore_index=False)
+                size_ratio = np.nan
+                size_ratios_inner.append(size_ratio)
+                time_ratios_inner.append(size_ratio)
             else:
                 raise Exception(
                     '(size_time_ratio) Should not be able to reach this. '
@@ -108,16 +100,10 @@ def plot(data_list, test_names, graph_dir, experiment_to_compare_against_name):
 
         # Add ratios to the current dataframe, with the tests being compared as the column name
         size_ratios[
-            f"{experiment_to_compare_against_name}/{test_names[test_index]}"] = size_ratios_inner.sort_values(
-            'ratio').reset_index().drop(
-            columns=
-            'index')
+            f"{experiment_to_compare_against_name}/{test_names[test_index]}"] = np.sort(size_ratios_inner)
 
         time_ratios[
-            f"{experiment_to_compare_against_name}/{test_names[test_index]}"] = time_ratios_inner.sort_values(
-            'ratio').reset_index().drop(
-            columns=
-            'index')
+            f"{experiment_to_compare_against_name}/{test_names[test_index]}"] = np.sort(time_ratios_inner)
 
     # Make sure colors and dashes matches the ones from 'time_memory_combined'
     def color(t):
