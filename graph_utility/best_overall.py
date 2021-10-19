@@ -107,11 +107,11 @@ def plot(data_list, test_names, graph_dir):
 
     points_df = pd.DataFrame(
         {'reduction': reduction_points, 'memory': memory_points, 'time': time_points, 'unique answers': unique_answers,
-         'answers': answers})
+         'answered queries': answers})
 
     points_eq_df = pd.DataFrame(
         {'reduction': reduction_eq_points, 'memory': memory_eq_points, 'time': time_eq_points,
-         'answers': answers})
+         'answered queries': answers})
 
     new_indices = dict()
     for index, name in enumerate(test_names):
@@ -124,7 +124,7 @@ def plot(data_list, test_names, graph_dir):
     plot = points_df.plot(kind='barh', width=0.75, linewidth=2, figsize=(10, 10))
 
     plt.legend(bbox_to_anchor=(1.02, 1), loc='best', borderaxespad=0)
-    plt.title('Strictly better results')
+    plt.title('Point given if at least 10% better than runner-up')
     plt.xscale('log')
     plt.xlabel("points")
     plt.ylabel('experiments')
@@ -134,13 +134,13 @@ def plot(data_list, test_names, graph_dir):
         left, bottom, width, height = p.get_bbox().bounds
         plot.annotate(int(width), xy=(left + width, bottom + height / 2), ha='center', va='center')
 
-    plt.savefig(graph_dir + 'best_overall_points.png', bbox_inches='tight')
+    plt.savefig(graph_dir + '10%_better_points.png', bbox_inches='tight')
     plt.clf()
 
     # Plot the second plot
     sns.set_theme(style="darkgrid", palette="pastel")
     plot = points_eq_df.plot(kind='barh', width=0.75, linewidth=2, figsize=(10, 10))
-    plt.title('better or equal results')
+    plt.title('Point given if at least as good as runner-up')
     plt.legend(bbox_to_anchor=(1.02, 1), loc='best', borderaxespad=0)
     plt.xscale('log')
     plt.xlabel("points")
@@ -151,7 +151,7 @@ def plot(data_list, test_names, graph_dir):
         left, bottom, width, height = p.get_bbox().bounds
         plot.annotate(int(width), xy=(left + width, bottom + height / 2), ha='center', va='center')
 
-    plt.savefig(graph_dir + 'best_or_eq_points.png', bbox_inches='tight')
+    plt.savefig(graph_dir + 'better_or_eq_points.png', bbox_inches='tight')
     plt.clf()
 
 
