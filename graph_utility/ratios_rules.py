@@ -9,7 +9,7 @@ import copy
 
 # The first csv will be used as numerator in the plots
 def plot(data_list, test_names, graph_dir, experiment_to_compare_against_name):
-    print(f"(size_time_ratio) Comparing reduced size and time with ({experiment_to_compare_against_name})")
+    print(f"(size_time_ratio_by_rule) Comparing reduced size/time with our rules")
 
     # The deepcopies are because in the 'all_graphs' the data_list are used for all plots,
     # so each function will make their own copy
@@ -43,21 +43,40 @@ def plot(data_list, test_names, graph_dir, experiment_to_compare_against_name):
     # Get sizes from the data that will be used as numerator
     base_results_index = test_names.index(experiment_to_compare_against_name)
     base_results = data_list[base_results_index]
+    data_list.pop(base_results_index)
+    test_names.pop(base_results_index)
+
+    # Find the rules that we have implemented, that the basis for comparison does not use
+    base_results_rules = [column_name for column_name in base_results.columns if 'rule' in column_name]
+    original_rules = ['rule A', 'rule B', 'rule C', 'rule D', 'rule E', 'rule F', 'rule G', 'rule H', 'rule I',
+                      'rule J', 'rule K']
+
+    # Find the rules that the base_result do not use (that is not part of the original rules)
+    rule_usage_summed = base_results[base_results_rules].agg('sum')
+    non_used_rules = [key for key in rule_usage_summed.keys() if rule_usage_summed.get(key) == 0]
+    base_results_non_used_new_rules = [rules for rules in non_used_rules if rules not in original_rules]
 
     # Dataframe to hold the size ratio between reduced nets
-    size_ratios = pd.DataFrame()
-    time_ratios = pd.DataFrame()
+    combined = pd.DataFrame()
 
     # Go through all other csv and calculate the ratios
     for test_index, data in enumerate(data_list):
-        # Dont compare size against the numerator, would just be 1 and a quite boring line
-        if test_index == base_results_index:
-            continue
+        rules_in_data = [column_name for column_name in data.columns if 'rule' in column_name]
+        new_rules = [rules for rules in rules_in_data if rules not in original_rules]
 
         size_ratios_inner = []
         time_ratios_inner = []
+        not_used_size_ratios_inner = []
+        not_used_time_ratios_inner = []
         # Iterate through all rows and compute ratio
         for index, row in data.iterrows():
+
+            new_rule_used = False
+            for rule in new_rules:
+                if row[rule] > 0:
+                    new_rule_used = True
+
+            # Now we are only dealing with rows, where a new rule has been applied
             base_results_row = base_results.loc[index]
 
             # Sanity check
@@ -69,64 +88,63 @@ def plot(data_list, test_names, graph_dir, experiment_to_compare_against_name):
                 base_reduction_size = base_results_row['post place count'] + base_results_row['post transition count']
                 size_post_reductions = row['post place count'] + row['post transition count']
 
-                size_ratio = (base_reduction_size / size_post_reductions) if size_post_reductions > 0 else np.nan
-                size_ratios_inner.append(size_ratio)
-
+                try:
+                    size_ratio = (base_reduction_size / size_post_reductions)
+                except:
+                    size_ratio = 0
                 time_ratio = (base_results_row['time'] / row['time'])
-                time_ratios_inner.append(time_ratio)
-            elif (base_results_row['answer'] == 'NONE') and row['answer'] != 'NONE':
-                size_ratio = np.nan
-                size_ratios_inner.append(size_ratio)
-                time_ratios_inner.append(size_ratio)
-            elif (base_results_row['answer'] != 'NONE') and row['answer'] == 'NONE':
-                size_ratio = np.nan
-                size_ratios_inner.append(size_ratio)
-                time_ratios_inner.append(size_ratio)
-            elif (base_results_row['answer'] == 'NONE') and row['answer'] == 'NONE':
-                size_ratio = np.nan
-                size_ratios_inner.append(size_ratio)
-                time_ratios_inner.append(size_ratio)
-            else:
-                raise Exception(
-                    '(size_time_ratio) Should not be able to reach this. '
-                    'Something went wrong with the checks for "NONE"')
+
+                if new_rule_used:
+                    size_ratios_inner.append(size_ratio)
+                    time_ratios_inner.append(time_ratio)
+                else:
+                    not_used_size_ratios_inner.append(size_ratio)
+                    not_used_time_ratios_inner.append(time_ratio)
 
         # Add ratios to the current dataframe, with the tests being compared as the column name
-        size_ratios[
-            f"{experiment_to_compare_against_name}/{test_names[test_index]}"] = np.sort(size_ratios_inner)
 
-        time_ratios[
-            f"{experiment_to_compare_against_name}/{test_names[test_index]}"] = np.sort(time_ratios_inner)
+        rule_used_size = sum(size_ratios_inner) / len(
+            size_ratios_inner) if len(size_ratios_inner) > 0 else np.nan
+        rule_used_time = sum(time_ratios_inner) / len(
+            time_ratios_inner) if len(time_ratios_inner) > 0 else np.nan
+        rule_not_used_size = sum(not_used_size_ratios_inner) / len(
+            not_used_size_ratios_inner) if len(not_used_size_ratios_inner) > 0 else np.nan
+        rule_not_used_time = sum(not_used_time_ratios_inner) / len(
+            not_used_time_ratios_inner) if len(not_used_time_ratios_inner) > 0 else np.nan
 
-    # Make sure colors and dashes matches the ones from 'time_memory_combined'
-    def color(t):
-        a = np.array([0.5, 0.5, 0.5])
-        b = np.array([0.5, 0.5, 0.5])
-        c = np.array([1.0, 1.0, 1.0])
-        d = np.array([0.0, 0.33, 0.67])
+        df2 = pd.DataFrame([[rule_used_size, rule_used_time, rule_not_used_size, rule_not_used_time]],
+                           columns=['rule-used-size', 'rule-used-time', 'rule_not_used_size', 'rule_not_used_time'],
+                           index=[f'{experiment_to_compare_against_name}/{test_names[test_index]}'])
 
-        return a + (b * np.cos(2 * np.pi * (c * t + d)))
+        combined = combined.append(df2)
 
-    sns.set_theme(style="darkgrid")
-    custom_palette = {}
+    print(combined)
 
-    for column_index, column in enumerate(size_ratios.columns):
-        custom_palette[column] = color((column_index + 1) / len(size_ratios.columns))
+    # Plot the plot
+    sns.set_theme(style="darkgrid", palette="pastel")
+    plot = combined.plot(kind='barh', width=0.75, linewidth=2, figsize=(10, 10))
 
-    # plot the plot
-    sns.lineplot(data=size_ratios, palette=custom_palette).set(xlabel='test instance', ylabel='size ratio',
-                                                               yscale="log",
-                                                               title=f'Reduced size of nets compared to {experiment_to_compare_against_name}, '
-                                                                     f'under 100 means {experiment_to_compare_against_name} is better')
-    plt.savefig(graph_dir + 'reduced_size_compared.png')
-    plt.clf()
+    plt.legend(bbox_to_anchor=(1.02, 1), loc='best', borderaxespad=0)
 
-    # plot the plot
-    sns.lineplot(data=time_ratios, palette=custom_palette).set(xlabel='test instance', ylabel='time in seconds',
-                                                               yscale="log",
-                                                               title=f'Time compared to {experiment_to_compare_against_name}, '
-                                                                     f'under 100 means {experiment_to_compare_against_name} is better')
-    plt.savefig(graph_dir + 'time_compared.png')
+    plt.xlabel("ratio")
+    plt.ylabel('experiments')
+
+    # Find max width, in order to move the very small numbers away from the bars
+    max_width = 0
+    for p in plot.patches:
+        left, bottom, width, height = p.get_bbox().bounds
+        max_width = max(width, max_width)
+    # Plot the numbers in the bars
+    for p in plot.patches:
+        left, bottom, width, height = p.get_bbox().bounds
+        if width < (max_width / 10):
+            plot.annotate(format(width, '.2f'), xy=(max_width / 12.5, bottom + height / 2),
+                          ha='center', va='center')
+        else:
+            plot.annotate(format(width, '.2f'), xy=(left + width / 2, bottom + height / 2),
+                          ha='center', va='center')
+
+    plt.savefig(graph_dir + 'ratios_rules.png', bbox_inches='tight')
     plt.clf()
 
 

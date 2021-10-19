@@ -93,10 +93,10 @@ def plot(data_list, test_names, graph_dir, experiment_to_compare_against_name):
                 base_reduction_size = base_results_row['post place count'] + base_results_row['post transition count']
                 size_post_reductions = row['post place count'] + row['post transition count']
 
-                size_ratio = (base_reduction_size / size_post_reductions) * 100
+                size_ratio = (base_reduction_size / size_post_reductions)
                 size_ratios_inner.append(size_ratio)
 
-                time_ratio = (base_results_row['time'] / row['time']) * 100
+                time_ratio = (base_results_row['time'] / row['time'])
                 time_ratios_inner.append(time_ratio)
             elif (base_results_row['answer'] == 'NONE') and row['answer'] != 'NONE':
                 size_ratio = np.nan
