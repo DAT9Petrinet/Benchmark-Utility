@@ -28,7 +28,7 @@ def plot_all(data_list, test_names, graph_dir, correct_results_name):
     graphs_made = 0
 
     # Call each graph function with relevant data
-    '''answer_simplification_bars.plot(data_list, test_names, graph_dir)
+    answer_simplification_bars.plot(data_list, test_names, graph_dir)
     graphs_made = graphs_made + 1
     print(f"{graphs_made}/{num_graphs} graphs done")
 
@@ -68,7 +68,7 @@ def plot_all(data_list, test_names, graph_dir, correct_results_name):
 
     size_time_ratio_by_rule.plot(data_list, test_names, graph_dir, correct_results_name)
     graphs_made = graphs_made + 1
-    print(f"{graphs_made}/{num_graphs} graphs done")'''
+    print(f"{graphs_made}/{num_graphs} graphs done")
 
     ratios_rules.plot(data_list, test_names, graph_dir, correct_results_name)
     graphs_made = graphs_made + 1
