@@ -150,7 +150,7 @@ def plot(data_list, test_names, graph_dir, experiment_to_compare_against_name):
             plot.annotate(format(width, '.2f'), xy=(left + width / 2, bottom + height / 2),
                           ha='center', va='center')
 
-    plt.savefig(graph_dir + 'ratios_rules_with.png', bbox_inches='tight')
+    plt.savefig(graph_dir + 'avg_ratios_with.png', bbox_inches='tight')
     plt.clf()
 
     # Plot the plot
@@ -177,7 +177,7 @@ def plot(data_list, test_names, graph_dir, experiment_to_compare_against_name):
             plot.annotate(format(width, '.2f'), xy=(left + width / 2, bottom + height / 2),
                           ha='center', va='center')
 
-    plt.savefig(graph_dir + 'ratios_rules_without.png', bbox_inches='tight')
+    plt.savefig(graph_dir + 'avg_ratios_without.png', bbox_inches='tight')
     plt.clf()
 
 

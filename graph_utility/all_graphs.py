@@ -10,8 +10,8 @@ import time_memory_combined
 import time_memory
 import reduction_points
 import total_reductions
-import size_time_ratio_by_rule
-import ratios_rules
+import time_size_ratios_lineplots
+import time_size_avg_ratios
 
 
 def plot_all(data_list, test_names, graph_dir, correct_results_name):
@@ -61,11 +61,11 @@ def plot_all(data_list, test_names, graph_dir, correct_results_name):
     graphs_made = graphs_made + 1
     print(f"{graphs_made}/{num_graphs} graphs done")
 
-    size_time_ratio_by_rule.plot(data_list, test_names, graph_dir, correct_results_name)
+    time_size_ratios_lineplots.plot(data_list, test_names,graph_dir + '\\size-ratios\\', correct_results_name)
     graphs_made = graphs_made + 1
     print(f"{graphs_made}/{num_graphs} graphs done")
 
-    ratios_rules.plot(data_list, test_names, graph_dir, correct_results_name)
+    time_size_avg_ratios.plot(data_list, test_names, graph_dir + '\\size-ratios\\', correct_results_name)
     graphs_made = graphs_made + 1
     print(f"{graphs_made}/{num_graphs} graphs done")
 
@@ -81,8 +81,8 @@ if __name__ == "__main__":
     script_dir = os.path.dirname(__file__)
     graph_dir = os.path.join(script_dir, '..\\graphs\\')
 
-    if not os.path.isdir(graph_dir):
-        os.makedirs(graph_dir)
+    if not os.path.isdir(graph_dir + '\\size-ratios\\'):
+        os.makedirs(graph_dir + '\\size-ratios\\')
     else:
         for file in os.listdir(graph_dir):
             os.remove(os.path.join(graph_dir, file))

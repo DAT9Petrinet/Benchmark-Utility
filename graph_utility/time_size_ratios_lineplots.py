@@ -162,7 +162,7 @@ def plot(data_list, test_names, graph_dir, experiment_to_compare_against_name):
                                                                          yscale="log",
                                                                          title=f'Reduced size of nets compared to {experiment_to_compare_against_name}, '
                                                                                f'under 1 means {experiment_to_compare_against_name} is better')
-    plt.savefig(graph_dir + 'reduced_size_by_rule_compared.png')
+    plt.savefig(graph_dir + 'new_rules_used_size_ratios.png')
     plt.clf()
 
     # plot the plot
@@ -171,7 +171,7 @@ def plot(data_list, test_names, graph_dir, experiment_to_compare_against_name):
                                                                          yscale="log",
                                                                          title=f'Time compared to {experiment_to_compare_against_name}, '
                                                                                f'under 1 means {experiment_to_compare_against_name} is better')
-    plt.savefig(graph_dir + 'time_by_rule_compared.png')
+    plt.savefig(graph_dir + 'new_rules_used_time_ratios.png')
     plt.clf()
 
     # plot the plot
@@ -180,7 +180,7 @@ def plot(data_list, test_names, graph_dir, experiment_to_compare_against_name):
                                                                              yscale="log",
                                                                              title=f'Reduced size of nets compared to {experiment_to_compare_against_name}, '
                                                                                    f'under 1 means {experiment_to_compare_against_name} is better')
-    plt.savefig(graph_dir + 'reduced_size_by_rule_not_used_compared.png')
+    plt.savefig(graph_dir + 'not_new_rules_used_size_ratios.png')
     plt.clf()
 
     # plot the plot
@@ -189,7 +189,7 @@ def plot(data_list, test_names, graph_dir, experiment_to_compare_against_name):
                                                                              yscale="log",
                                                                              title=f'Time compared to {experiment_to_compare_against_name}, '
                                                                                    f'under 1 means {experiment_to_compare_against_name} is better')
-    plt.savefig(graph_dir + 'time_by_rule_not_used_compared.png')
+    plt.savefig(graph_dir + 'not_new_rules_used_time_ratios.png')
     plt.clf()
 
     # plot the plot
@@ -198,7 +198,7 @@ def plot(data_list, test_names, graph_dir, experiment_to_compare_against_name):
                                                                                 yscale="log",
                                                                                 title=f'Reduced size of nets compared to {experiment_to_compare_against_name}, '
                                                                                       f'under 1 means {experiment_to_compare_against_name} is better')
-    plt.savefig(graph_dir + 'ratios_size_indifferent_to_rules.png')
+    plt.savefig(graph_dir + 'all-rows-size-ratios.png')
     plt.clf()
 
     # plot the plot
@@ -207,7 +207,7 @@ def plot(data_list, test_names, graph_dir, experiment_to_compare_against_name):
                                                                                 yscale="log",
                                                                                 title=f'Time compared to {experiment_to_compare_against_name}, '
                                                                                       f'under 1 means {experiment_to_compare_against_name} is better')
-    plt.savefig(graph_dir + 'ratios_time_indifferent_to_rules.png')
+    plt.savefig(graph_dir + 'all-rows-time-ratios.png')
     plt.clf()
 
 
@@ -220,7 +220,7 @@ if __name__ == "__main__":
 
     # Find the directory to save figures
     script_dir = os.path.dirname(__file__)
-    graph_dir = os.path.join(script_dir, '..\\graphs\\')
+    graph_dir = os.path.join(script_dir, '..\\graphs\\') + '\\ratios\\'
 
     if not os.path.isdir(graph_dir):
         os.makedirs(graph_dir)
