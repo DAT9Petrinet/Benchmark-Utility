@@ -65,15 +65,27 @@ def plot(data_list, test_names, graph_dir):
             best_reduction = np.infty
             anyone_else_answer = False
             for test_index2, data2 in enumerate(data_list):
+
+                # Dont compare against itself
                 if test_index == test_index2:
                     continue
 
+                # Get row to compare with
                 other_row = data2.loc[index]
+
+                # Sanity check
                 if (other_row['model name'] != row['model name']) or (
                         other_row['query index'] != row['query index']):
                     raise Exception('(reduction_points) Comparing wrong rows')
 
-                best_reduction = min(best_reduction, other_row['post place count'] + other_row['post transition count'])
+                if other_row['answer'] == 'NONE':
+                    continue
+
+                # Find the best result among all experiments
+                # Dont compare reduction against no-red, as this always has 0s
+                if test_names[test_index] != 'no-red':
+                    best_reduction = min(best_reduction,
+                                         other_row['post place count'] + other_row['post transition count'])
                 best_time = min(best_time, other_row['time'])
                 best_memory = min(best_memory, other_row['memory'])
                 anyone_else_answer = anyone_else_answer or (other_row['answer'] != 'NONE')
@@ -88,11 +100,10 @@ def plot(data_list, test_names, graph_dir):
                     memory_eq_sum += 1
                     if row['memory'] <= 0.9 * best_memory:
                         memory_sum += 1
-                if test_names[test_index] != 'no-red':
-                    if (row['post place count'] + row['post transition count']) <= best_reduction:
-                        reduction_eq_sum += 1
-                        if (row['post place count'] + row['post transition count']) <= 0.9 * best_reduction:
-                            reduction_sum += 1
+                if (row['post place count'] + row['post transition count']) <= best_reduction:
+                    reduction_eq_sum += 1
+                    if (row['post place count'] + row['post transition count']) <= 0.9 * best_reduction:
+                        reduction_sum += 1
                 if not anyone_else_answer:
                     unique_answers_sum += 1
 
