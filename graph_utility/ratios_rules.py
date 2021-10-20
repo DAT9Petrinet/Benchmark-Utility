@@ -91,7 +91,7 @@ def plot(data_list, test_names, graph_dir, experiment_to_compare_against_name):
                 try:
                     size_ratio = (base_reduction_size / size_post_reductions)
                 except:
-                    size_ratio = 0
+                    size_ratio = np.nan
                 time_ratio = (base_results_row['time'] / row['time'])
 
                 if new_rule_used:
@@ -112,7 +112,7 @@ def plot(data_list, test_names, graph_dir, experiment_to_compare_against_name):
         rule_not_used_time = sum(not_used_time_ratios_inner) / len(
             not_used_time_ratios_inner) if len(not_used_time_ratios_inner) > 0 else np.nan
         both_size = (sum(not_used_size_ratios_inner) + sum(size_ratios_inner)) / (
-                    len(not_used_size_ratios_inner) + len(size_ratios_inner))
+                len(not_used_size_ratios_inner) + len(size_ratios_inner))
         both_time = (sum(not_used_time_ratios_inner) + sum(time_ratios_inner)) / (
                 len(not_used_time_ratios_inner) + len(time_ratios_inner))
         df2 = pd.DataFrame(

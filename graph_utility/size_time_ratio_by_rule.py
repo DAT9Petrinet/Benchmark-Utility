@@ -57,16 +57,24 @@ def plot(data_list, test_names, graph_dir, experiment_to_compare_against_name):
     base_results_non_used_new_rules = [rules for rules in non_used_rules if rules not in original_rules]
 
     # Dataframe to hold the size ratio between reduced nets
-    size_ratios = pd.DataFrame()
-    time_ratios = pd.DataFrame()
+    rule_used_size_ratios = pd.DataFrame()
+    rule_used_time_ratios = pd.DataFrame()
+    rule_not_used_size_ratios = pd.DataFrame()
+    rule_not_used_time_ratios = pd.DataFrame()
+    rule_indifferent_size_ratios = pd.DataFrame()
+    rule_indifferent_time_ratios = pd.DataFrame()
 
     # Go through all other csv and calculate the ratios
     for test_index, data in enumerate(data_list):
         rules_in_data = [column_name for column_name in data.columns if 'rule' in column_name]
         new_rules = [rules for rules in rules_in_data if rules not in original_rules]
 
-        size_ratios_inner = []
-        time_ratios_inner = []
+        rule_used_size_ratios_inner = []
+        rule_used_time_ratios_inner = []
+        rule_not_used_size_ratios_inner = []
+        rule_not_used_time_ratios_inner = []
+        rule_indifferent_size = []
+        rule_indifferent_time = []
         # Iterate through all rows and compute ratio
         for index, row in data.iterrows():
 
@@ -74,12 +82,6 @@ def plot(data_list, test_names, graph_dir, experiment_to_compare_against_name):
             for rule in new_rules:
                 if row[rule] > 0:
                     new_rule_used = True
-
-            if not new_rule_used:
-                size_ratio = np.nan
-                size_ratios_inner.append(size_ratio)
-                time_ratios_inner.append(size_ratio)
-                continue
 
             # Now we are only dealing with rows, where a new rule has been applied
             base_results_row = base_results.loc[index]
@@ -93,34 +95,51 @@ def plot(data_list, test_names, graph_dir, experiment_to_compare_against_name):
                 base_reduction_size = base_results_row['post place count'] + base_results_row['post transition count']
                 size_post_reductions = row['post place count'] + row['post transition count']
 
-                size_ratio = (base_reduction_size / size_post_reductions)
-                size_ratios_inner.append(size_ratio)
-
+                try:
+                    size_ratio = (base_reduction_size / size_post_reductions)
+                except:
+                    size_ratio = np.nan
                 time_ratio = (base_results_row['time'] / row['time'])
-                time_ratios_inner.append(time_ratio)
-            elif (base_results_row['answer'] == 'NONE') and row['answer'] != 'NONE':
-                size_ratio = np.nan
-                size_ratios_inner.append(size_ratio)
-                time_ratios_inner.append(size_ratio)
-            elif (base_results_row['answer'] != 'NONE') and row['answer'] == 'NONE':
-                size_ratio = np.nan
-                size_ratios_inner.append(size_ratio)
-                time_ratios_inner.append(size_ratio)
-            elif (base_results_row['answer'] == 'NONE') and row['answer'] == 'NONE':
-                size_ratio = np.nan
-                size_ratios_inner.append(size_ratio)
-                time_ratios_inner.append(size_ratio)
+
+                rule_indifferent_size.append(size_ratio)
+                rule_indifferent_time.append(time_ratio)
+                if new_rule_used:
+                    rule_used_size_ratios_inner.append(size_ratio)
+                    rule_used_time_ratios_inner.append(time_ratio)
+                    rule_not_used_size_ratios_inner.append(np.nan)
+                    rule_not_used_time_ratios_inner.append(np.nan)
+                else:
+                    rule_used_size_ratios_inner.append(np.nan)
+                    rule_used_time_ratios_inner.append(np.nan)
+                    rule_not_used_size_ratios_inner.append(size_ratio)
+                    rule_not_used_time_ratios_inner.append(time_ratio)
             else:
-                raise Exception(
-                    '(size_time_ratio) Should not be able to reach this. '
-                    'Something went wrong with the checks for "NONE"')
+                ratio = np.nan
+                rule_indifferent_size.append(ratio)
+                rule_indifferent_time.append(ratio)
+                rule_used_size_ratios_inner.append(ratio)
+                rule_used_time_ratios_inner.append(ratio)
+                rule_not_used_size_ratios_inner.append(ratio)
+                rule_not_used_time_ratios_inner.append(ratio)
 
         # Add ratios to the current dataframe, with the tests being compared as the column name
-        size_ratios[
-            f"{experiment_to_compare_against_name}/{test_names[test_index]}"] = np.sort(size_ratios_inner)
+        rule_used_size_ratios[
+            f"{experiment_to_compare_against_name}/{test_names[test_index]}"] = np.sort(rule_used_size_ratios_inner)
 
-        time_ratios[
-            f"{experiment_to_compare_against_name}/{test_names[test_index]}"] = np.sort(time_ratios_inner)
+        rule_used_time_ratios[
+            f"{experiment_to_compare_against_name}/{test_names[test_index]}"] = np.sort(rule_used_time_ratios_inner)
+
+        rule_not_used_size_ratios[
+            f"{experiment_to_compare_against_name}/{test_names[test_index]}"] = np.sort(rule_not_used_size_ratios_inner)
+
+        rule_not_used_time_ratios[
+            f"{experiment_to_compare_against_name}/{test_names[test_index]}"] = np.sort(rule_not_used_time_ratios_inner)
+
+        rule_indifferent_size_ratios[
+            f"{experiment_to_compare_against_name}/{test_names[test_index]}"] = np.sort(rule_indifferent_size)
+
+        rule_indifferent_time_ratios[
+            f"{experiment_to_compare_against_name}/{test_names[test_index]}"] = np.sort(rule_indifferent_time)
 
     # Make sure colors and dashes matches the ones from 'time_memory_combined'
     def color(t):
@@ -134,23 +153,60 @@ def plot(data_list, test_names, graph_dir, experiment_to_compare_against_name):
     sns.set_theme(style="darkgrid")
     custom_palette = {}
 
-    for column_index, column in enumerate(size_ratios.columns):
-        custom_palette[column] = color((column_index + 1) / len(size_ratios.columns))
+    for column_index, column in enumerate(rule_used_size_ratios.columns):
+        custom_palette[column] = color((column_index + 1) / len(rule_used_size_ratios.columns))
 
     # plot the plot
-    sns.lineplot(data=size_ratios, palette=custom_palette).set(xlabel='test instance', ylabel='size ratio',
-                                                               yscale="log",
-                                                               title=f'Reduced size of nets compared to {experiment_to_compare_against_name}, '
-                                                                     f'under 100 means {experiment_to_compare_against_name} is better')
+    sns.lineplot(data=rule_used_size_ratios, palette=custom_palette).set(xlabel='test instance', ylabel='size ratio',
+                                                                         yscale="log",
+                                                                         title=f'Reduced size of nets compared to {experiment_to_compare_against_name}, '
+                                                                               f'under 100 means {experiment_to_compare_against_name} is better')
     plt.savefig(graph_dir + 'reduced_size_by_rule_compared.png')
     plt.clf()
 
     # plot the plot
-    sns.lineplot(data=time_ratios, palette=custom_palette).set(xlabel='test instance', ylabel='time in seconds',
-                                                               yscale="log",
-                                                               title=f'Time compared to {experiment_to_compare_against_name}, '
-                                                                     f'under 100 means {experiment_to_compare_against_name} is better')
+    sns.lineplot(data=rule_used_time_ratios, palette=custom_palette).set(xlabel='test instance',
+                                                                         ylabel='time in seconds',
+                                                                         yscale="log",
+                                                                         title=f'Time compared to {experiment_to_compare_against_name}, '
+                                                                               f'under 100 means {experiment_to_compare_against_name} is better')
     plt.savefig(graph_dir + 'time_by_rule_compared.png')
+    plt.clf()
+
+    # plot the plot
+    sns.lineplot(data=rule_not_used_size_ratios, palette=custom_palette).set(xlabel='test instance',
+                                                                             ylabel='size ratio',
+                                                                             yscale="log",
+                                                                             title=f'Reduced size of nets compared to {experiment_to_compare_against_name}, '
+                                                                                   f'under 100 means {experiment_to_compare_against_name} is better')
+    plt.savefig(graph_dir + 'reduced_size_by_rule_not_used_compared.png')
+    plt.clf()
+
+    # plot the plot
+    sns.lineplot(data=rule_not_used_time_ratios, palette=custom_palette).set(xlabel='test instance',
+                                                                             ylabel='time in seconds',
+                                                                             yscale="log",
+                                                                             title=f'Time compared to {experiment_to_compare_against_name}, '
+                                                                                   f'under 100 means {experiment_to_compare_against_name} is better')
+    plt.savefig(graph_dir + 'time_by_rule_not_used_compared.png')
+    plt.clf()
+
+    # plot the plot
+    sns.lineplot(data=rule_indifferent_size_ratios, palette=custom_palette).set(xlabel='test instance',
+                                                                                ylabel='size ratio',
+                                                                                yscale="log",
+                                                                                title=f'Reduced size of nets compared to {experiment_to_compare_against_name}, '
+                                                                                      f'under 100 means {experiment_to_compare_against_name} is better')
+    plt.savefig(graph_dir + 'ratios_size_indifferent_to_rules.png')
+    plt.clf()
+
+    # plot the plot
+    sns.lineplot(data=rule_indifferent_time_ratios, palette=custom_palette).set(xlabel='test instance',
+                                                                                ylabel='time in seconds',
+                                                                                yscale="log",
+                                                                                title=f'Time compared to {experiment_to_compare_against_name}, '
+                                                                                      f'under 100 means {experiment_to_compare_against_name} is better')
+    plt.savefig(graph_dir + 'ratios_time_indifferent_to_rules.png')
     plt.clf()
 
 
