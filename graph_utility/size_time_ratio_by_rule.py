@@ -75,6 +75,7 @@ def plot(data_list, test_names, graph_dir, experiment_to_compare_against_name):
         rule_not_used_time_ratios_inner = []
         rule_indifferent_size = []
         rule_indifferent_time = []
+
         # Iterate through all rows and compute ratio
         for index, row in data.iterrows():
 
@@ -160,7 +161,7 @@ def plot(data_list, test_names, graph_dir, experiment_to_compare_against_name):
     sns.lineplot(data=rule_used_size_ratios, palette=custom_palette).set(xlabel='test instance', ylabel='size ratio',
                                                                          yscale="log",
                                                                          title=f'Reduced size of nets compared to {experiment_to_compare_against_name}, '
-                                                                               f'under 100 means {experiment_to_compare_against_name} is better')
+                                                                               f'under 1 means {experiment_to_compare_against_name} is better')
     plt.savefig(graph_dir + 'reduced_size_by_rule_compared.png')
     plt.clf()
 
@@ -169,7 +170,7 @@ def plot(data_list, test_names, graph_dir, experiment_to_compare_against_name):
                                                                          ylabel='time in seconds',
                                                                          yscale="log",
                                                                          title=f'Time compared to {experiment_to_compare_against_name}, '
-                                                                               f'under 100 means {experiment_to_compare_against_name} is better')
+                                                                               f'under 1 means {experiment_to_compare_against_name} is better')
     plt.savefig(graph_dir + 'time_by_rule_compared.png')
     plt.clf()
 
@@ -178,7 +179,7 @@ def plot(data_list, test_names, graph_dir, experiment_to_compare_against_name):
                                                                              ylabel='size ratio',
                                                                              yscale="log",
                                                                              title=f'Reduced size of nets compared to {experiment_to_compare_against_name}, '
-                                                                                   f'under 100 means {experiment_to_compare_against_name} is better')
+                                                                                   f'under 1 means {experiment_to_compare_against_name} is better')
     plt.savefig(graph_dir + 'reduced_size_by_rule_not_used_compared.png')
     plt.clf()
 
@@ -187,7 +188,7 @@ def plot(data_list, test_names, graph_dir, experiment_to_compare_against_name):
                                                                              ylabel='time in seconds',
                                                                              yscale="log",
                                                                              title=f'Time compared to {experiment_to_compare_against_name}, '
-                                                                                   f'under 100 means {experiment_to_compare_against_name} is better')
+                                                                                   f'under 1 means {experiment_to_compare_against_name} is better')
     plt.savefig(graph_dir + 'time_by_rule_not_used_compared.png')
     plt.clf()
 
@@ -196,7 +197,7 @@ def plot(data_list, test_names, graph_dir, experiment_to_compare_against_name):
                                                                                 ylabel='size ratio',
                                                                                 yscale="log",
                                                                                 title=f'Reduced size of nets compared to {experiment_to_compare_against_name}, '
-                                                                                      f'under 100 means {experiment_to_compare_against_name} is better')
+                                                                                      f'under 1 means {experiment_to_compare_against_name} is better')
     plt.savefig(graph_dir + 'ratios_size_indifferent_to_rules.png')
     plt.clf()
 
@@ -205,7 +206,7 @@ def plot(data_list, test_names, graph_dir, experiment_to_compare_against_name):
                                                                                 ylabel='time in seconds',
                                                                                 yscale="log",
                                                                                 title=f'Time compared to {experiment_to_compare_against_name}, '
-                                                                                      f'under 100 means {experiment_to_compare_against_name} is better')
+                                                                                      f'under 1 means {experiment_to_compare_against_name} is better')
     plt.savefig(graph_dir + 'ratios_time_indifferent_to_rules.png')
     plt.clf()
 
