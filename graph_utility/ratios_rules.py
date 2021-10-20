@@ -46,23 +46,18 @@ def plot(data_list, test_names, graph_dir, experiment_to_compare_against_name):
     data_list.pop(base_results_index)
     test_names.pop(base_results_index)
 
-    # Find the rules that we have implemented, that the basis for comparison does not use
-    base_results_rules = [column_name for column_name in base_results.columns if 'rule' in column_name]
+    # The original rules, which we will not use as new rules
     original_rules = ['rule A', 'rule B', 'rule C', 'rule D', 'rule E', 'rule F', 'rule G', 'rule H', 'rule I',
                       'rule J', 'rule K']
-
-    # Find the rules that the base_result do not use (that is not part of the original rules)
-    rule_usage_summed = base_results[base_results_rules].agg('sum')
-    non_used_rules = [key for key in rule_usage_summed.keys() if rule_usage_summed.get(key) == 0]
-    base_results_non_used_new_rules = [rules for rules in non_used_rules if rules not in original_rules]
 
     # Dataframe to hold the size ratio between reduced nets
     combined = pd.DataFrame()
 
     # Go through all other csv and calculate the ratios
     for test_index, data in enumerate(data_list):
+        # Find new rules in this experiment
         rules_in_data = [column_name for column_name in data.columns if 'rule' in column_name]
-        new_rules = [rules for rules in rules_in_data if rules not in original_rules]
+        new_rules = [rule for rule in rules_in_data if rule not in original_rules]
 
         size_ratios_inner = []
         time_ratios_inner = []
@@ -102,7 +97,6 @@ def plot(data_list, test_names, graph_dir, experiment_to_compare_against_name):
                     not_used_time_ratios_inner.append(time_ratio)
 
         # Add ratios to the current dataframe, with the tests being compared as the column name
-
         rule_used_size = sum(size_ratios_inner) / len(
             size_ratios_inner) if len(size_ratios_inner) > 0 else np.nan
         rule_used_time = sum(time_ratios_inner) / len(
@@ -123,9 +117,17 @@ def plot(data_list, test_names, graph_dir, experiment_to_compare_against_name):
 
         combined = combined.append(df2)
 
+    columns_with_with = [f'{experiment_to_compare_against_name}/' + test_name for test_name in test_names if
+                         "with" in test_name]
+    columns_not_with_with = [f'{experiment_to_compare_against_name}/' + test_name for test_name in test_names if
+                             "with" not in test_name]
+
+    combined_with_with = combined.drop(columns_not_with_with)
+    combined_without_with = combined.drop(columns_with_with)
+
     # Plot the plot
     sns.set_theme(style="darkgrid", palette="pastel")
-    plot = combined.plot(kind='barh', width=0.8, linewidth=2, figsize=(15, 15))
+    plot = combined_with_with.plot(kind='barh', width=0.8, linewidth=2, figsize=(8, 8))
 
     plt.legend(bbox_to_anchor=(1.02, 1), loc='best', borderaxespad=0)
 
@@ -147,7 +149,34 @@ def plot(data_list, test_names, graph_dir, experiment_to_compare_against_name):
             plot.annotate(format(width, '.2f'), xy=(left + width / 2, bottom + height / 2),
                           ha='center', va='center')
 
-    plt.savefig(graph_dir + 'ratios_rules.png', bbox_inches='tight')
+    plt.savefig(graph_dir + 'ratios_rules_with.png', bbox_inches='tight')
+    plt.clf()
+
+    # Plot the plot
+    sns.set_theme(style="darkgrid", palette="pastel")
+    plot = combined_without_with.plot(kind='barh', width=0.8, linewidth=2, figsize=(8, 8))
+
+    plt.legend(bbox_to_anchor=(1.02, 1), loc='best', borderaxespad=0)
+
+    plt.xlabel("ratio")
+    plt.ylabel('experiments')
+
+    # Find max width, in order to move the very small numbers away from the bars
+    max_width = 0
+    for p in plot.patches:
+        left, bottom, width, height = p.get_bbox().bounds
+        max_width = max(width, max_width)
+    # Plot the numbers in the bars
+    for p in plot.patches:
+        left, bottom, width, height = p.get_bbox().bounds
+        if width < (max_width / 10):
+            plot.annotate(format(width, '.2f'), xy=(max_width / 12.5, bottom + height / 2),
+                          ha='center', va='center')
+        else:
+            plot.annotate(format(width, '.2f'), xy=(left + width / 2, bottom + height / 2),
+                          ha='center', va='center')
+
+    plt.savefig(graph_dir + 'ratios_rules_without.png', bbox_inches='tight')
     plt.clf()
 
 
