@@ -9,7 +9,7 @@ import copy
 
 # The first csv will be used as numerator in the plots
 def plot(data_list, test_names, graph_dir, experiment_to_compare_against_name):
-    print(f"(size_time_ratio_by_rule) Comparing reduced size/time with our rules")
+    print(f"(time_size_avg_ratios) using ({experiment_to_compare_against_name}) results as numerator when computing size/time ratios")
 
     # The deepcopies are because in the 'all_graphs' the data_list are used for all plots,
     # so each function will make their own copy

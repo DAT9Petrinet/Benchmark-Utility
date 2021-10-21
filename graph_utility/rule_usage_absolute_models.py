@@ -44,6 +44,8 @@ def plot(data_list, test_names, graph_dir):
         plot.set(title=f'({test_names[index]}) number of models using rules', ylabel='uses', xlabel='rules')
         # Plots numbers above bars
         for p in plot.patches:
+            if p.get_height() == 0:
+                continue
             plot.annotate(format(p.get_height().astype(int), 'd'),
                           ((p.get_x() + p.get_width() / 2).astype(int), p.get_height().astype(int)),
                           ha='center', va='center',

@@ -36,7 +36,7 @@ def plot_all(data_list, test_names, graph_dir, experiment_to_compare_against_nam
 
     best_overall.plot(data_list, test_names, graph_dir)
     graphs_made = graphs_made + 1
-    print(f"{graphs_made}/{num_graphs} graphs done")
+    print(f"{graphs_made}/{num_graphs} graphs made")
 
     # Plots that has to do with application of rules
     rule_usage_absolute.plot(data_list, test_names, graph_dir + '\\rule-usage\\')
@@ -49,7 +49,7 @@ def plot_all(data_list, test_names, graph_dir, experiment_to_compare_against_nam
 
     rule_usage_absolute_models.plot(data_list, test_names, graph_dir + '\\rule-usage\\')
     graphs_made = graphs_made + 1
-    print(f"{graphs_made}/{num_graphs} graphs done")
+    print(f"{graphs_made}/{num_graphs} graphs made")
 
     # Stuff to do with time and memory
     time_memory_combined.plot(data_list, test_names, graph_dir + '\\time-memory\\')
@@ -64,7 +64,7 @@ def plot_all(data_list, test_names, graph_dir, experiment_to_compare_against_nam
 
     time_memory_points.plot(data_list, test_names, graph_dir + '\\time-memory\\', experiment_to_compare_against_name)
     graphs_made = graphs_made + 1
-    print(f"{graphs_made}/{num_graphs} graphs done")
+    print(f"{graphs_made}/{num_graphs} graphs made")
 
     # Stuff to do with reduction/size
     reduced_size.plot(data_list, test_names, graph_dir + '\\reductions\\')
@@ -83,21 +83,21 @@ def plot_all(data_list, test_names, graph_dir, experiment_to_compare_against_nam
     time_size_ratios_lineplots.plot(data_list, test_names, graph_dir + '\\size-ratios\\',
                                     experiment_to_compare_against_name)
     graphs_made = graphs_made + 1
-    print(f"{graphs_made}/{num_graphs} graphs done")
+    print(f"{graphs_made}/{num_graphs} graphs made")
 
     time_size_avg_ratios.plot(data_list, test_names, graph_dir + '\\size-ratios\\', experiment_to_compare_against_name)
     graphs_made = graphs_made + 1
-    print(f"{graphs_made}/{num_graphs} graphs done")
+    print(f"{graphs_made}/{num_graphs} graphs made")
 
 
 if __name__ == "__main__":
-    # Results used for comparisons in reduction_points plot
+    # Results used for comparisons
     if len(sys.argv) == 1:
         experiment_to_compare_against_name = 'base-rules'
     else:
         experiment_to_compare_against_name = sys.argv[1]
         if experiment_to_compare_against_name == 'no-red':
-            print('(reduction_points) Cannot use no-red as basis for comparison, as this has no reductions')
+            raise Exception('(all_graphs) Cannot use no-red as basis for comparison, as this has no reductions')
 
     # Find the directory to save figures
     script_dir = os.path.dirname(__file__)
@@ -119,16 +119,10 @@ if __name__ == "__main__":
 
     # Read csv data
     csvs = [file for file in os.listdir(csv_dir) if '.csv' in file]
+
     # Find names of the tests, to be used in graphs and file names
     test_names = [os.path.split(os.path.splitext(csv)[0])[1] for csv in csvs]
 
     data_list = [pd.read_csv(csv_dir + csv) for csv in csvs]
-
-    try:
-        pd.read_csv(csv_dir + experiment_to_compare_against_name + '.csv')
-    except:
-        raise Exception(
-            f'(reduction_points) Could not find the file ({experiment_to_compare_against_name}). '
-            f'Check if you made a typo in the parameter to the program')
 
     plot_all(data_list, test_names, graph_dir, experiment_to_compare_against_name)
