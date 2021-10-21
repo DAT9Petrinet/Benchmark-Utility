@@ -21,12 +21,6 @@ def plot(data_list, test_names, graph_dir):
     # and columns are 'not answered', 'simplified', and 'reduced'.
     combined = pd.DataFrame()
 
-    # The actual test names are replaced by their index in 'test_names',
-    # so the mapping from index to test name is printed in console
-    print(f"(answer_simplification_bars) map for x-axis:")
-    for index, test_name in enumerate(test_names):
-        print(f"{index} = {test_name}")
-
     for index, data in enumerate(data_list):
         # Change 'NONE' value to 'not answered', and 'TRUE' and 'FALSE' to 'answered'
         data['answer'] = data['answer'].replace(['TRUE', 'FALSE'], 'answered')
@@ -85,7 +79,7 @@ def plot(data_list, test_names, graph_dir):
     sns.set_theme(style="darkgrid", palette="pastel")
     plot = combined.plot(kind='barh', width=0.75, linewidth=2, figsize=(10, 10), stacked=True)
 
-    plt.legend(bbox_to_anchor=(1.02, 1), loc='best', borderaxespad=0)
+    plt.legend(bbox_to_anchor=(0.35, 1.12), loc='upper left', borderaxespad=0)
     plt.xlabel("test instances")
     plt.ylabel('experiments')
 

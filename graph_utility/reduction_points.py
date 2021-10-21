@@ -109,7 +109,7 @@ def plot(data_list, test_names, graph_dir, experiment_to_compare_against_name):
     # Plot the plot
     sns.set_theme(style="darkgrid", palette="pastel")
     plot = points_df.plot(kind='barh', width=0.75, linewidth=2, figsize=(10, 10))
-    plt.xscale('log')
+    plt.xscale('linear')
     plt.legend(bbox_to_anchor=(1.02, 1), loc='best', borderaxespad=0)
     plt.title(f'Comparing experiments to ({experiment_to_compare_against_name})')
     plt.xlabel("points")

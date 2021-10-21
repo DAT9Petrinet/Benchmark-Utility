@@ -96,7 +96,7 @@ def plot(data_list, test_names, graph_dir):
     for p in plot.patches:
         left, bottom, width, height = p.get_bbox().bounds
         if width < (max_width / 10):
-            plot.annotate(int(width), xy=(max_width / 12.5, bottom + height / 2),
+            plot.annotate(int(width), xy=(left * 2.5, bottom + height / 2),
                           ha='center', va='center')
         else:
             plot.annotate(int(width), xy=(left + width / 2, bottom + height / 2),
