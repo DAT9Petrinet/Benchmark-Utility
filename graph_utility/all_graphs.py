@@ -11,6 +11,11 @@ import time_memory_combined
 import time_memory_lines
 import reduction_points
 import total_reductions
+import time_size_ratios_lineplots
+import time_size_avg_ratios
+import rule_usage_absolute_models
+import time_memory_points
+import best_overall
 
 
 def plot_all(data_list, test_names, graph_dir, experiment_to_compare_against_name):
@@ -21,15 +26,19 @@ def plot_all(data_list, test_names, graph_dir, experiment_to_compare_against_nam
     # Can use this for the prints
     graphs = [filename for filename in os.listdir(os.path.dirname(__file__)) if
               '.py' in filename and filename != 'all_graphs.py']
-    graphs.remove('size_ratio_deprecated.py')
     num_graphs = len(graphs)
     graphs_made = 0
 
-    # Call each graph function with relevant data
+    # General graphs not fitting totally into the next categories
     answer_simplification_bars.plot(data_list, test_names, graph_dir)
     graphs_made = graphs_made + 1
     print(f"{graphs_made}/{num_graphs} graphs made")
 
+    best_overall.plot(data_list, test_names, graph_dir)
+    graphs_made = graphs_made + 1
+    print(f"{graphs_made}/{num_graphs} graphs done")
+
+    # Plots that has to do with application of rules
     rule_usage_absolute.plot(data_list, test_names, graph_dir + '\\rule-usage\\')
     graphs_made = graphs_made + 1
     print(f"{graphs_made}/{num_graphs} graphs made")
@@ -38,27 +47,47 @@ def plot_all(data_list, test_names, graph_dir, experiment_to_compare_against_nam
     graphs_made = graphs_made + 1
     print(f"{graphs_made}/{num_graphs} graphs made")
 
-    reduced_size.plot(data_list, test_names, graph_dir)
+    rule_usage_absolute_models.plot(data_list, test_names, graph_dir + '\\rule-usage\\')
     graphs_made = graphs_made + 1
-    print(f"{graphs_made}/{num_graphs} graphs made")
+    print(f"{graphs_made}/{num_graphs} graphs done")
 
-    time_memory_combined.plot(data_list, test_names, graph_dir)
+    # Stuff to do with time and memory
+    time_memory_combined.plot(data_list, test_names, graph_dir + '\\time-memory\\')
     graphs_made = graphs_made + 1
     print(f"{graphs_made}/{num_graphs} graphs made")
 
     metrics = ['time', 'memory']
     for metric in metrics:
-        time_memory_lines.plot(data_list, test_names, graph_dir, metric)
+        time_memory_lines.plot(data_list, test_names, graph_dir + '\\time-memory\\', metric)
     graphs_made = graphs_made + 1
     print(f"{graphs_made}/{num_graphs} graphs made")
 
-    reduction_points.plot(data_list, test_names, graph_dir, experiment_to_compare_against_name)
+    time_memory_points.plot(data_list, test_names, graph_dir + '\\time-memory\\', experiment_to_compare_against_name)
+    graphs_made = graphs_made + 1
+    print(f"{graphs_made}/{num_graphs} graphs done")
+
+    # Stuff to do with reduction/size
+    reduced_size.plot(data_list, test_names, graph_dir + '\\reductions\\')
     graphs_made = graphs_made + 1
     print(f"{graphs_made}/{num_graphs} graphs made")
 
-    total_reductions.plot(data_list, test_names, graph_dir)
+    reduction_points.plot(data_list, test_names, graph_dir + '\\reductions\\', experiment_to_compare_against_name)
     graphs_made = graphs_made + 1
     print(f"{graphs_made}/{num_graphs} graphs made")
+
+    total_reductions.plot(data_list, test_names, graph_dir + '\\reductions\\')
+    graphs_made = graphs_made + 1
+    print(f"{graphs_made}/{num_graphs} graphs made")
+
+    # Stuff to do with ratios
+    time_size_ratios_lineplots.plot(data_list, test_names, graph_dir + '\\size-ratios\\',
+                                    experiment_to_compare_against_name)
+    graphs_made = graphs_made + 1
+    print(f"{graphs_made}/{num_graphs} graphs done")
+
+    time_size_avg_ratios.plot(data_list, test_names, graph_dir + '\\size-ratios\\', experiment_to_compare_against_name)
+    graphs_made = graphs_made + 1
+    print(f"{graphs_made}/{num_graphs} graphs done")
 
 
 if __name__ == "__main__":
@@ -74,11 +103,16 @@ if __name__ == "__main__":
     script_dir = os.path.dirname(__file__)
     graph_dir = os.path.join(script_dir, '..\\graphs\\')
 
-    if not os.path.isdir(graph_dir + '\\rule-usage\\'):
-        os.makedirs(graph_dir + '\\rule-usage\\')
-    else:
+    # Remove all graphs
+    if os.path.isdir(graph_dir):
         shutil.rmtree(graph_dir)
-        os.makedirs(graph_dir + '\\rule-usage\\')
+
+    # Make new directories
+    os.makedirs(graph_dir)
+    os.makedirs(graph_dir + '\\rule-usage\\')
+    os.makedirs(graph_dir + '\\size-ratios\\')
+    os.makedirs(graph_dir + '\\reductions\\')
+    os.makedirs(graph_dir + '\\time-memory\\')
 
     # Directory for all our csv
     csv_dir = os.path.join(script_dir, '..\\saved\\')
