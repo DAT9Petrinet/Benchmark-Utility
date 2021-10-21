@@ -1,15 +1,17 @@
+import copy
 import os
 import sys
+
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sns
-import copy
 
 
 # The first csv will be used as numerator in the plots
 def plot(data_list, test_names, graph_dir, experiment_to_compare_against_name):
-    print(f"(time_size_avg_ratios) using ({experiment_to_compare_against_name}) results as numerator when computing size/time ratios")
+    print(
+        f"(time_size_avg_ratios) using ({experiment_to_compare_against_name}) results as numerator when computing size/time ratios")
 
     # The deepcopies are because in the 'all_graphs' the data_list are used for all plots,
     # so each function will make their own copy
@@ -111,7 +113,8 @@ def plot(data_list, test_names, graph_dir, experiment_to_compare_against_name):
                 len(not_used_time_ratios_inner) + len(time_ratios_inner))
         df2 = pd.DataFrame(
             [[rule_used_size, rule_used_time, rule_not_used_size, rule_not_used_time, both_size, both_time]],
-            columns=['size ratio when using new rules', 'time ratio when using new rules', 'size ratio when not using new rules',
+            columns=['size ratio when using new rules', 'time ratio when using new rules',
+                     'size ratio when not using new rules',
                      'time ratio when not using new rules', 'overall size ratio',
                      'overall time ratio'],
             index=[f'{experiment_to_compare_against_name}/{test_names[test_index]}'])
@@ -126,59 +129,36 @@ def plot(data_list, test_names, graph_dir, experiment_to_compare_against_name):
     combined_with_with = combined.drop(columns_not_with_with)
     combined_without_with = combined.drop(columns_with_with)
 
-    # Plot the plot
+    data_to_plot = [combined, combined_with_with, combined_without_with]
+    png_names = ['all', 'with', 'without']
+
     sns.set_theme(style="darkgrid", palette="pastel")
-    plot = combined_with_with.plot(kind='barh', width=0.8, linewidth=2, figsize=(8, 8))
+    for index, data in enumerate(data_to_plot):
+        # Plot the plot
+        plot = data.plot(kind='barh', width=0.8, linewidth=2, figsize=(10, 10))
 
-    plt.legend(bbox_to_anchor=(1.02, 1), loc='best', borderaxespad=0)
+        plt.legend(bbox_to_anchor=(1.02, 1), loc='best', borderaxespad=0)
 
-    plt.xlabel("ratio")
-    plt.ylabel('experiments')
+        plt.xlabel("ratio")
+        plt.ylabel('experiments')
 
-    # Find max width, in order to move the very small numbers away from the bars
-    max_width = 0
-    for p in plot.patches:
-        left, bottom, width, height = p.get_bbox().bounds
-        max_width = max(width, max_width)
-    # Plot the numbers in the bars
-    for p in plot.patches:
-        left, bottom, width, height = p.get_bbox().bounds
-        if width < (max_width / 10):
-            plot.annotate(format(width, '.2f'), xy=(max_width / 12.5, bottom + height / 2),
-                          ha='center', va='center')
-        else:
-            plot.annotate(format(width, '.2f'), xy=(left + width / 2, bottom + height / 2),
-                          ha='center', va='center')
+        # Find max width, in order to move the very small numbers away from the bars
+        max_width = 0
+        for p in plot.patches:
+            left, bottom, width, height = p.get_bbox().bounds
+            max_width = max(width, max_width)
+        # Plot the numbers in the bars
+        for p in plot.patches:
+            left, bottom, width, height = p.get_bbox().bounds
+            if width < (max_width / 10):
+                plot.annotate(format(width, '.2f'), xy=(max_width / 12.5, bottom + height / 2),
+                              ha='center', va='center')
+            else:
+                plot.annotate(format(width, '.2f'), xy=(left + width / 2, bottom + height / 2),
+                              ha='center', va='center')
 
-    plt.savefig(graph_dir + 'avg_ratios_with.png', bbox_inches='tight')
-    plt.clf()
-
-    # Plot the plot
-    sns.set_theme(style="darkgrid", palette="pastel")
-    plot = combined_without_with.plot(kind='barh', width=0.8, linewidth=2, figsize=(8, 8))
-
-    plt.legend(bbox_to_anchor=(1.02, 1), loc='best', borderaxespad=0)
-
-    plt.xlabel("ratio")
-    plt.ylabel('experiments')
-
-    # Find max width, in order to move the very small numbers away from the bars
-    max_width = 0
-    for p in plot.patches:
-        left, bottom, width, height = p.get_bbox().bounds
-        max_width = max(width, max_width)
-    # Plot the numbers in the bars
-    for p in plot.patches:
-        left, bottom, width, height = p.get_bbox().bounds
-        if width < (max_width / 10):
-            plot.annotate(format(width, '.2f'), xy=(max_width / 12.5, bottom + height / 2),
-                          ha='center', va='center')
-        else:
-            plot.annotate(format(width, '.2f'), xy=(left + width / 2, bottom + height / 2),
-                          ha='center', va='center')
-
-    plt.savefig(graph_dir + 'avg_ratios_without.png', bbox_inches='tight')
-    plt.clf()
+        plt.savefig(graph_dir + f'avg_ratios_{png_names[index]}.png', bbox_inches='tight')
+        plt.clf()
 
 
 if __name__ == "__main__":

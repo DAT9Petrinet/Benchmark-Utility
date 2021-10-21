@@ -1,24 +1,25 @@
 import os
-import sys
 import shutil
+import sys
 import time
-import pandas as pd
+
 import matplotlib.pyplot as plt
+import pandas as pd
 import seaborn as sns
 
 import answer_simplification_bars
-import rule_usage_absolute
-import rule_usage_percentage
+import best_overall
 import reduced_size
+import reduction_points
+import rule_usage_absolute
+import rule_usage_absolute_models
+import rule_usage_percentage
 import time_memory_combined
 import time_memory_lines
-import reduction_points
-import total_reductions
-import time_size_ratios_lineplots
-import time_size_avg_ratios
-import rule_usage_absolute_models
 import time_memory_points
-import best_overall
+import time_size_avg_ratios
+import time_size_ratios_lineplots
+import total_reductions
 
 
 def plot_all(data_list, test_names, graph_dir, experiment_to_compare_against_name):
@@ -33,91 +34,119 @@ def plot_all(data_list, test_names, graph_dir, experiment_to_compare_against_nam
     graphs_made = 0
 
     times = dict()
-    time_when_started = time.time() * 1000
+    time_when_started = time.time()
     # General graphs not fitting totally into the next categories
-    answer_simplification_bars.plot(data_list, test_names, graph_dir)
-    times[graphs_made] = (round(time.time() * 1000) - time_when_started)
+    answer_simplification_bars.plot(data_list, test_names, graph_dir + '\\best-experiment\\')
+    times['answer/simplification bars'] = (round(time.time()) - time_when_started)
     graphs_made = graphs_made + 1
     print(f"{graphs_made}/{num_graphs} graphs made")
 
-    best_overall.plot(data_list, test_names, graph_dir)
-    times[graphs_made] = (round(time.time() * 1000) - time_when_started)
+    time_when_started = time.time()
+    best_overall.plot(data_list, test_names, graph_dir + '\\best-experiment\\')
+    times['best experiment overall'] = (round(time.time()) - time_when_started)
     graphs_made = graphs_made + 1
     print(f"{graphs_made}/{num_graphs} graphs made")
 
+    time_when_started = time.time()
     # Plots that has to do with application of rules
     rule_usage_absolute.plot(data_list, test_names, graph_dir + '\\rule-usage\\')
-    times[graphs_made] = (round(time.time() * 1000) - time_when_started)
+    times['rule usage absolute'] = (round(time.time()) - time_when_started)
     graphs_made = graphs_made + 1
     print(f"{graphs_made}/{num_graphs} graphs made")
 
+    time_when_started = time.time()
     rule_usage_percentage.plot(data_list, test_names, graph_dir + '\\rule-usage\\')
-    times[graphs_made] = (round(time.time() * 1000) - time_when_started)
+    times['models using rule percentage'] = (round(time.time()) - time_when_started)
     graphs_made = graphs_made + 1
     print(f"{graphs_made}/{num_graphs} graphs made")
 
+    time_when_started = time.time()
     rule_usage_absolute_models.plot(data_list, test_names, graph_dir + '\\rule-usage\\')
-    times[graphs_made] = (round(time.time() * 1000) - time_when_started)
+    times['models using rule absolute'] = (round(time.time()) - time_when_started)
     graphs_made = graphs_made + 1
     print(f"{graphs_made}/{num_graphs} graphs made")
 
+    time_when_started = time.time()
     # Stuff to do with time and memory
     time_memory_combined.plot(data_list, test_names, graph_dir + '\\time-memory\\')
-    times[graphs_made] = (round(time.time() * 1000) - time_when_started)
+    times['time/memory lines combined'] = (round(time.time()) - time_when_started)
     graphs_made = graphs_made + 1
     print(f"{graphs_made}/{num_graphs} graphs made")
 
+    time_when_started = time.time()
     metrics = ['time', 'memory']
     for metric in metrics:
         time_memory_lines.plot(data_list, test_names, graph_dir + '\\time-memory\\', metric)
-    times[graphs_made] = (round(time.time() * 1000) - time_when_started)
+    times['time/memory lines'] = (round(time.time()) - time_when_started)
     graphs_made = graphs_made + 1
     print(f"{graphs_made}/{num_graphs} graphs made")
 
+    time_when_started = time.time()
     time_memory_points.plot(data_list, test_names, graph_dir + '\\time-memory\\', experiment_to_compare_against_name)
-    times[graphs_made] = (round(time.time() * 1000) - time_when_started)
+    times['time/memory points'] = (round(time.time()) - time_when_started)
     graphs_made = graphs_made + 1
     print(f"{graphs_made}/{num_graphs} graphs made")
 
+    time_when_started = time.time()
     # Stuff to do with reduction/size
     reduced_size.plot(data_list, test_names, graph_dir + '\\reductions\\')
-    times[graphs_made] = (round(time.time() * 1000) - time_when_started)
+    times['reduced size'] = (round(time.time()) - time_when_started)
     graphs_made = graphs_made + 1
     print(f"{graphs_made}/{num_graphs} graphs made")
 
+    time_when_started = time.time()
     reduction_points.plot(data_list, test_names, graph_dir + '\\reductions\\', experiment_to_compare_against_name)
-    times[graphs_made] = (round(time.time() * 1000) - time_when_started)
+    times['reduction points'] = (round(time.time()) - time_when_started)
     graphs_made = graphs_made + 1
     print(f"{graphs_made}/{num_graphs} graphs made")
 
+    time_when_started = time.time()
     total_reductions.plot(data_list, test_names, graph_dir + '\\reductions\\')
-    times[graphs_made] = (round(time.time() * 1000) - time_when_started)
+    times['total reductions'] = (round(time.time()) - time_when_started)
     graphs_made = graphs_made + 1
     print(f"{graphs_made}/{num_graphs} graphs made")
 
+    time_when_started = time.time()
     # Stuff to do with ratios
     time_size_ratios_lineplots.plot(data_list, test_names, graph_dir + '\\size-ratios\\',
                                     experiment_to_compare_against_name)
-    times[graphs_made] = (round(time.time() * 1000) - time_when_started)
+    times['ratios lineplots'] = (round(time.time()) - time_when_started)
     graphs_made = graphs_made + 1
     print(f"{graphs_made}/{num_graphs} graphs made")
 
+    time_when_started = time.time()
     time_size_avg_ratios.plot(data_list, test_names, graph_dir + '\\size-ratios\\', experiment_to_compare_against_name)
-    times[graphs_made] = (round(time.time() * 1000) - time_when_started)
+    times['avg ratios'] = (round(time.time()) - time_when_started)
     graphs_made = graphs_made + 1
     print(f"{graphs_made}/{num_graphs} graphs made")
 
     # Print meme graph
     df = pd.DataFrame.from_dict(times, orient='index')
-    plot = sns.lineplot(data=df, legend=False)
-    plot.set(
-        title=f'Time spent making graphs',
-        yscale='linear',
-        ylabel=f'time in ms',
-        xlabel='number of models')
-    plt.legend(bbox_to_anchor=(1.02, 1), loc='best', borderaxespad=0)
+    # Plot the plot
+    sns.set_theme(style="darkgrid", palette="pastel")
+    plot = df.plot(kind='barh', width=0.75, linewidth=2, figsize=(10, 10))
 
-    plt.savefig(graph_dir + 'time_spent_making_graphs', bbox_inches='tight')
+    plt.legend(bbox_to_anchor=(1.02, 1), loc='best', borderaxespad=0)
+    plt.xscale('linear')
+    plt.xlabel("seconds")
+    plt.ylabel('experiments')
+    plt.title('Time in seconds spent making graphs')
+
+    # Find max width, in order to move the very small numbers away from the bars
+    max_width = 0
+    for p in plot.patches:
+        left, bottom, width, height = p.get_bbox().bounds
+        max_width = max(width, max_width)
+    # Plot the numbers in the bars
+    for p in plot.patches:
+        left, bottom, width, height = p.get_bbox().bounds
+        if width < (max_width / 3):
+            left += 1
+            width *= 2
+        plot.annotate(int(width), xy=(left + width / 2, bottom + height / 2),
+                      ha='center', va='center')
+
+    plt.savefig(graph_dir + f'time_spent_making_graphs.png', bbox_inches='tight')
     plt.clf()
 
 
@@ -144,6 +173,7 @@ if __name__ == "__main__":
     os.makedirs(graph_dir + '\\size-ratios\\')
     os.makedirs(graph_dir + '\\reductions\\')
     os.makedirs(graph_dir + '\\time-memory\\')
+    os.makedirs(graph_dir + '\\best-experiment\\')
 
     # Directory for all our csv
     csv_dir = os.path.join(script_dir, '..\\saved\\')

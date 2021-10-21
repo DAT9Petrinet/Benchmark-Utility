@@ -1,10 +1,11 @@
+import copy
 import os
 import sys
+
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sns
-import copy
 
 
 def plot(data_list, test_names, graph_dir):
@@ -19,10 +20,10 @@ def plot(data_list, test_names, graph_dir):
     test_names = copy.deepcopy(test_names)
 
     # Remove test with no reductions, assume this is named 'no-red'
-    #for test_index, name in enumerate(test_names):
-       # if 'no-red' in name:
-         #   data_list.pop(test_index)
-          #  test_names.pop(test_index)
+    # for test_index, name in enumerate(test_names):
+    # if 'no-red' in name:
+    #   data_list.pop(test_index)
+    #  test_names.pop(test_index)
 
     # Find test instances that no experiment managed to reduce
     rows_to_delete = set()
@@ -89,49 +90,29 @@ def plot(data_list, test_names, graph_dir):
     columns_not_with_with = [test_name for test_name in reduced_sizes.columns if
                              "with" not in test_name or ("base-rules" in test_name)]
     columns_to_be_removed_by_with = [column for column in reduced_sizes.columns if column not in columns_with_with]
-    columns_to_be_removed_by_without = [column for column in reduced_sizes.columns if column not in columns_not_with_with]
+    columns_to_be_removed_by_without = [column for column in reduced_sizes.columns if
+                                        column not in columns_not_with_with]
 
     reduced_sizes_without = reduced_sizes.drop(columns_to_be_removed_by_without, axis=1)
     reduced_sizes_with_with = reduced_sizes.drop(columns_to_be_removed_by_with, axis=1)
 
-    sns.set_theme(style="darkgrid", palette="pastel")
-    plot = sns.lineplot(data=reduced_sizes, markers=True, dashes=False, markevery=marker_interval,
-                        palette=custom_palette)
-    plot.set(
-        xlabel='test instances',
-        ylabel='size in percent',
-        yscale="linear",
-        title=f'Reduced size in comparison to pre size, sorted non-decreasingly')
-
-    plt.legend(loc='best')
-    plt.savefig(graph_dir + 'reduced_size.png')
-    plt.clf()
+    data_to_plot = [reduced_sizes, reduced_sizes_with_with, reduced_sizes_without]
+    png_names = ['all', 'with', 'without']
 
     sns.set_theme(style="darkgrid", palette="pastel")
-    plot = sns.lineplot(data=reduced_sizes_without, markers=True, dashes=False, markevery=marker_interval,
-                        palette=custom_palette)
-    plot.set(
-        xlabel='test instances',
-        ylabel='size in percent',
-        yscale="linear",
-        title=f'Reduced size in comparison to pre size, sorted non-decreasingly')
 
-    plt.legend(loc='best')
-    plt.savefig(graph_dir + 'reduced_size_without.png')
-    plt.clf()
+    for index, data in enumerate(data_to_plot):
+        plot = sns.lineplot(data=data, markers=True, dashes=False, markevery=marker_interval,
+                            palette=custom_palette)
+        plot.set(
+            xlabel='test instances',
+            ylabel='size in percent',
+            yscale="linear",
+            title=f'Reduced size in comparison to pre size, sorted non-decreasingly')
 
-    sns.set_theme(style="darkgrid", palette="pastel")
-    plot = sns.lineplot(data=reduced_sizes_with_with, markers=True, dashes=False, markevery=marker_interval,
-                        palette=custom_palette)
-    plot.set(
-        xlabel='test instances',
-        ylabel='size in percent',
-        yscale="linear",
-        title=f'Reduced size in comparison to pre size, sorted non-decreasingly')
-
-    plt.legend(loc='best')
-    plt.savefig(graph_dir + 'reduced_size_with.png')
-    plt.clf()
+        plt.legend(loc='best')
+        plt.savefig(graph_dir + f'reduced_size_{png_names}.png')
+        plt.clf()
 
 
 if __name__ == "__main__":

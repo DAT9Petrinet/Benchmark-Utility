@@ -1,10 +1,11 @@
+import copy
 import os
 import sys
+
 import matplotlib.pyplot as plt
+import numpy as np
 import pandas as pd
 import seaborn as sns
-import copy
-import numpy as np
 
 
 def plot(data_list, test_names, graph_dir, metric):

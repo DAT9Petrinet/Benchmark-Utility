@@ -1,10 +1,11 @@
+import copy
 import os
 import sys
+
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sns
-import copy
 
 
 def plot(data_list, test_names, graph_dir, experiment_to_compare_against_name):
@@ -139,7 +140,7 @@ def plot(data_list, test_names, graph_dir, experiment_to_compare_against_name):
             left, bottom, width, height = p.get_bbox().bounds
             left += 1
             plot.annotate(int(width), xy=(left + width / 2, bottom + height / 2),
-                              ha='center', va='center')
+                          ha='center', va='center')
 
         plt.savefig(graph_dir + f'reduction_points_{png_names[index]}.png', bbox_inches='tight')
         plt.clf()

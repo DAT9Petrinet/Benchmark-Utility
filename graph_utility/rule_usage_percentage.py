@@ -1,10 +1,11 @@
+import copy
 import os
 import re
 import sys
-import pandas as pd
+
 import matplotlib.pyplot as plt
+import pandas as pd
 import seaborn as sns
-import copy
 
 
 def plot(data_list, test_names, graph_dir):
@@ -49,7 +50,7 @@ def plot(data_list, test_names, graph_dir):
                               (p.get_x() + p.get_width() / 2.,
                                p.get_height()),
                               ha='center', va='center',
-                              size=10,
+                              size=12,
                               xytext=(0, 8),
                               textcoords='offset points')
         plt.savefig(graph_dir + f'{test_names[index]}_rule_usage_percentage.png')

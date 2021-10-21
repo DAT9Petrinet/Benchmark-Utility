@@ -1,10 +1,9 @@
+import copy
 import os
+
 import matplotlib.pyplot as plt
-import numpy as np
 import pandas as pd
 import seaborn as sns
-import copy
-from matplotlib import ticker
 
 
 def plot(data_list, test_names, graph_dir):

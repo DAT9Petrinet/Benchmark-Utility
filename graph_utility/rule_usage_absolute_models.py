@@ -1,10 +1,11 @@
+import copy
 import os
 import re
 import sys
-import pandas as pd
+
 import matplotlib.pyplot as plt
+import pandas as pd
 import seaborn as sns
-import copy
 
 
 def plot(data_list, test_names, graph_dir):
@@ -49,7 +50,7 @@ def plot(data_list, test_names, graph_dir):
             plot.annotate(format(p.get_height().astype(int), 'd'),
                           ((p.get_x() + p.get_width() / 2).astype(int), p.get_height().astype(int)),
                           ha='center', va='center',
-                          size=10,
+                          size=12,
                           xytext=(0, 8),
                           textcoords='offset points')
         plt.savefig(graph_dir + f'{test_names[index]}_rule_usage_absolute_models.png')
