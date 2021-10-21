@@ -10,6 +10,7 @@ import time_memory_combined
 import time_memory
 import reduction_points
 import total_reductions
+import rule_usage_absolute_models
 import time_memory_points
 import best_overall
 
@@ -59,6 +60,10 @@ def plot_all(data_list, test_names, graph_dir, correct_results_name):
     print(f"{graphs_made}/{num_graphs} graphs done")
 
     total_reductions.plot(data_list, test_names, graph_dir)
+    graphs_made = graphs_made + 1
+    print(f"{graphs_made}/{num_graphs} graphs done")
+
+    rule_usage_absolute_models.plot(data_list, test_names, graph_dir)
     graphs_made = graphs_made + 1
     print(f"{graphs_made}/{num_graphs} graphs done")
 
