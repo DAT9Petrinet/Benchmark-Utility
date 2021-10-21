@@ -78,32 +78,45 @@ def plot(data_list, test_names, graph_dir):
         new_indices[index] = name
     points_df.rename(index=new_indices, inplace=True)
 
-    # Plot the plot
-    sns.set_theme(style="darkgrid", palette="pastel")
-    plot = points_df.plot(kind='barh', width=0.75, linewidth=2, figsize=(10, 10))
+    columns_with_with = [test_name for test_name in points_df.T.columns if
+                         ("with" in test_name) or ("base-rules" in test_name)]
+    columns_not_with_with = [test_name for test_name in points_df.T.columns if
+                             "with" not in test_name or ("base-rules" in test_name)]
+    columns_to_be_removed_by_with = [column for column in points_df.T.columns if column not in columns_with_with]
+    columns_to_be_removed_by_without = [column for column in points_df.T.columns if column not in columns_not_with_with]
 
-    plt.legend(bbox_to_anchor=(1.02, 1), loc='best', borderaxespad=0)
-    plt.xscale('log')
-    plt.xlabel("reductions")
-    plt.ylabel('experiments')
+    points_df_without = points_df.drop(columns_to_be_removed_by_without)
+    points_df_with_with = points_df.drop(columns_to_be_removed_by_with)
 
-    # Find max width, in order to move the very small numbers away from the bars
-    max_width = 0
-    for p in plot.patches:
-        left, bottom, width, height = p.get_bbox().bounds
-        max_width = max(width, max_width)
-    # Plot the numbers in the bars
-    for p in plot.patches:
-        left, bottom, width, height = p.get_bbox().bounds
-        if width < (max_width / 10):
-            plot.annotate(int(width), xy=(left * 2.5, bottom + height / 2),
-                          ha='center', va='center')
-        else:
+    data_to_plot = [points_df, points_df_with_with, points_df_without]
+    png_names = ['all', 'with', 'without']
+
+    for index, data in enumerate(data_to_plot):
+        # Plot the plot
+        sns.set_theme(style="darkgrid", palette="pastel")
+        plot = data.plot(kind='barh', width=0.75, linewidth=2, figsize=(10, 10))
+
+        plt.legend(bbox_to_anchor=(1.02, 1), loc='best', borderaxespad=0)
+        plt.xscale('log')
+        plt.xlabel("reductions")
+        plt.ylabel('experiments')
+
+        # Find max width, in order to move the very small numbers away from the bars
+        max_width = 0
+        for p in plot.patches:
+            left, bottom, width, height = p.get_bbox().bounds
+            max_width = max(width, max_width)
+        # Plot the numbers in the bars
+        for p in plot.patches:
+            left, bottom, width, height = p.get_bbox().bounds
+            if width < (max_width / 3):
+                left += 1
+                width *= 2
             plot.annotate(int(width), xy=(left + width / 2, bottom + height / 2),
                           ha='center', va='center')
 
-    plt.savefig(graph_dir + 'total_reductions.png', bbox_inches='tight')
-    plt.clf()
+        plt.savefig(graph_dir + f'total_reductions_{png_names[index]}.png', bbox_inches='tight')
+        plt.clf()
 
 
 if __name__ == "__main__":
