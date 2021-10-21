@@ -33,7 +33,7 @@ def plot_all(data_list, test_names, graph_dir, experiment_to_compare_against_nam
     graphs_made = 0
 
     times = dict()
-    time_when_started = time.time()
+    time_when_started = time.time() * 1000
     # General graphs not fitting totally into the next categories
     answer_simplification_bars.plot(data_list, test_names, graph_dir)
     times[graphs_made] = (round(time.time() * 1000) - time_when_started)
@@ -109,7 +109,6 @@ def plot_all(data_list, test_names, graph_dir, experiment_to_compare_against_nam
 
     # Print meme graph
     df = pd.DataFrame.from_dict(times, orient='index')
-    print(df)
     plot = sns.lineplot(data=df)
     plot.set(
         title=f'Time spent making graphs',

@@ -83,7 +83,7 @@ def plot(data_list, test_names, graph_dir):
     plot = points_df.plot(kind='barh', width=0.75, linewidth=2, figsize=(10, 10))
 
     plt.legend(bbox_to_anchor=(1.02, 1), loc='best', borderaxespad=0)
-
+    plt.xscale('log')
     plt.xlabel("reductions")
     plt.ylabel('experiments')
 
