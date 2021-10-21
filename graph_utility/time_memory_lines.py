@@ -63,6 +63,19 @@ def plot(data_list, test_names, graph_dir, metric):
     else:
         unit = 'kB'
 
+    columns_with_with = [test_name for test_name in combined_df.columns if
+                         ("with" in test_name) or ("base-rules" in test_name)]
+    columns_not_with_with = [test_name for test_name in combined_df.columns if
+                             "with" not in test_name or ("base-rules" in test_name)]
+    columns_to_be_removed_by_with = [column for column in combined_df.columns if column not in columns_with_with]
+    columns_to_be_removed_by_without = [column for column in combined_df.columns if column not in columns_not_with_with]
+
+    dashes_without = [dash for index, dash in enumerate(dashes) if combined_df.columns[index] in columns_not_with_with]
+    combined_df_without = combined_df.drop(columns_to_be_removed_by_without, axis=1)
+
+    dashes_with = [dash for index, dash in enumerate(dashes) if combined_df.columns[index] in columns_with_with]
+    combined_df_with_with = combined_df.drop(columns_to_be_removed_by_with, axis=1)
+
     # Plot the plot
     plot = sns.lineplot(data=combined_df, palette=custom_palette,
                         dashes=dashes)
@@ -72,7 +85,31 @@ def plot(data_list, test_names, graph_dir, metric):
         xlabel='test instances', yscale="log")
     plt.legend(bbox_to_anchor=(1.02, 1), loc='best', borderaxespad=0)
 
-    plt.savefig(graph_dir + f'{metric}_lines_per_model.png', bbox_inches='tight')
+    plt.savefig(graph_dir + f'{metric}_lines_per_model_all.png', bbox_inches='tight')
+    plt.clf()
+
+    # Plot the plot
+    plot = sns.lineplot(data=combined_df_with_with, palette=custom_palette,
+                        dashes=dashes_with)
+    plot.set(
+        title=f'model checking {metric} per test instance',
+        ylabel=f'{unit}',
+        xlabel='test instances', yscale="log")
+    plt.legend(bbox_to_anchor=(1.02, 1), loc='best', borderaxespad=0)
+
+    plt.savefig(graph_dir + f'{metric}_lines_per_model_with.png', bbox_inches='tight')
+    plt.clf()
+
+    # Plot the plot
+    plot = sns.lineplot(data=combined_df_without, palette=custom_palette,
+                        dashes=dashes_without)
+    plot.set(
+        title=f'model checking {metric} per test instance',
+        ylabel=f'{unit}',
+        xlabel='test instances', yscale="log")
+    plt.legend(bbox_to_anchor=(1.02, 1), loc='best', borderaxespad=0)
+
+    plt.savefig(graph_dir + f'{metric}_lines_per_model_without.png', bbox_inches='tight')
     plt.clf()
 
 
