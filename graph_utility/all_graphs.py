@@ -10,6 +10,8 @@ import time_memory_combined
 import time_memory
 import reduction_points
 import total_reductions
+import time_size_ratios_lineplots
+import time_size_avg_ratios
 import rule_usage_absolute_models
 import time_memory_points
 import best_overall
@@ -22,7 +24,6 @@ def plot_all(data_list, test_names, graph_dir, correct_results_name):
     # Get number of files in this directory, remove the ones we do not use
     # Can use this for the prints
     graphs = os.listdir(os.path.dirname(__file__))
-    graphs.remove('size_ratio_deprecated.py')
     graphs.remove('__pycache__')
     graphs.remove('all_graphs.py')
     num_graphs = len(graphs)
@@ -63,6 +64,14 @@ def plot_all(data_list, test_names, graph_dir, correct_results_name):
     graphs_made = graphs_made + 1
     print(f"{graphs_made}/{num_graphs} graphs done")
 
+    time_size_ratios_lineplots.plot(data_list, test_names, graph_dir + '\\size-ratios\\', correct_results_name)
+    graphs_made = graphs_made + 1
+    print(f"{graphs_made}/{num_graphs} graphs done")
+
+    time_size_avg_ratios.plot(data_list, test_names, graph_dir + '\\size-ratios\\', correct_results_name)
+    graphs_made = graphs_made + 1
+    print(f"{graphs_made}/{num_graphs} graphs done")
+
     rule_usage_absolute_models.plot(data_list, test_names, graph_dir)
     graphs_made = graphs_made + 1
     print(f"{graphs_made}/{num_graphs} graphs done")
@@ -87,8 +96,8 @@ if __name__ == "__main__":
     script_dir = os.path.dirname(__file__)
     graph_dir = os.path.join(script_dir, '..\\graphs\\')
 
-    if not os.path.isdir(graph_dir):
-        os.makedirs(graph_dir)
+    if not os.path.isdir(graph_dir + '\\size-ratios\\'):
+        os.makedirs(graph_dir + '\\size-ratios\\')
     else:
         for file in os.listdir(graph_dir):
             os.remove(os.path.join(graph_dir, file))
