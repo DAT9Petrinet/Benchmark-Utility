@@ -35,7 +35,7 @@ def plot_all(data_list, test_names, graph_dir, experiment_to_compare_against_nam
     times = dict()
     time_when_started = time.time() * 1000
     # General graphs not fitting totally into the next categories
-    '''answer_simplification_bars.plot(data_list, test_names, graph_dir)
+    answer_simplification_bars.plot(data_list, test_names, graph_dir)
     times[graphs_made] = (round(time.time() * 1000) - time_when_started)
     graphs_made = graphs_made + 1
     print(f"{graphs_made}/{num_graphs} graphs made")
@@ -83,7 +83,7 @@ def plot_all(data_list, test_names, graph_dir, experiment_to_compare_against_nam
     reduced_size.plot(data_list, test_names, graph_dir + '\\reductions\\')
     times[graphs_made] = (round(time.time() * 1000) - time_when_started)
     graphs_made = graphs_made + 1
-    print(f"{graphs_made}/{num_graphs} graphs made")'''
+    print(f"{graphs_made}/{num_graphs} graphs made")
 
     reduction_points.plot(data_list, test_names, graph_dir + '\\reductions\\', experiment_to_compare_against_name)
     times[graphs_made] = (round(time.time() * 1000) - time_when_started)
@@ -95,7 +95,7 @@ def plot_all(data_list, test_names, graph_dir, experiment_to_compare_against_nam
     graphs_made = graphs_made + 1
     print(f"{graphs_made}/{num_graphs} graphs made")
 
-    ''''# Stuff to do with ratios
+    # Stuff to do with ratios
     time_size_ratios_lineplots.plot(data_list, test_names, graph_dir + '\\size-ratios\\',
                                     experiment_to_compare_against_name)
     times[graphs_made] = (round(time.time() * 1000) - time_when_started)
@@ -112,13 +112,13 @@ def plot_all(data_list, test_names, graph_dir, experiment_to_compare_against_nam
     plot = sns.lineplot(data=df, legend=False)
     plot.set(
         title=f'Time spent making graphs',
-        xscale='linear',
+        yscale='linear',
         ylabel=f'time in ms',
-        xlabel='number of models', yscale="log")
+        xlabel='number of models')
     plt.legend(bbox_to_anchor=(1.02, 1), loc='best', borderaxespad=0)
 
     plt.savefig(graph_dir + 'time_spent_making_graphs', bbox_inches='tight')
-    plt.clf()'''
+    plt.clf()
 
 
 if __name__ == "__main__":

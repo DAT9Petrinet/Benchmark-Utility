@@ -76,41 +76,21 @@ def plot(data_list, test_names, graph_dir, metric):
     dashes_with = [dash for index, dash in enumerate(dashes) if combined_df.columns[index] in columns_with_with]
     combined_df_with_with = combined_df.drop(columns_to_be_removed_by_with, axis=1)
 
-    # Plot the plot
-    plot = sns.lineplot(data=combined_df, palette=custom_palette,
-                        dashes=dashes)
-    plot.set(
-        title=f'model checking {metric} per test instance',
-        ylabel=f'{unit}',
-        xlabel='test instances', yscale="log")
-    plt.legend(bbox_to_anchor=(1.02, 1), loc='best', borderaxespad=0)
+    data_to_plot = [(combined_df, dashes), (combined_df_with_with, dashes_with), (combined_df_without, dashes_without)]
+    png_names = ['all', 'with', 'without']
 
-    plt.savefig(graph_dir + f'{metric}_lines_per_model_all.png', bbox_inches='tight')
-    plt.clf()
+    for index, data in enumerate(data_to_plot):
+        # Plot the plot
+        plot = sns.lineplot(data=data[0], palette=custom_palette,
+                            dashes=data[1])
+        plot.set(
+            title=f'model checking {metric} per test instance',
+            ylabel=f'{unit}',
+            xlabel='test instances', yscale="log")
+        plt.legend(bbox_to_anchor=(1.02, 1), loc='best', borderaxespad=0)
 
-    # Plot the plot
-    plot = sns.lineplot(data=combined_df_with_with, palette=custom_palette,
-                        dashes=dashes_with)
-    plot.set(
-        title=f'model checking {metric} per test instance',
-        ylabel=f'{unit}',
-        xlabel='test instances', yscale="log")
-    plt.legend(bbox_to_anchor=(1.02, 1), loc='best', borderaxespad=0)
-
-    plt.savefig(graph_dir + f'{metric}_lines_per_model_with.png', bbox_inches='tight')
-    plt.clf()
-
-    # Plot the plot
-    plot = sns.lineplot(data=combined_df_without, palette=custom_palette,
-                        dashes=dashes_without)
-    plot.set(
-        title=f'model checking {metric} per test instance',
-        ylabel=f'{unit}',
-        xlabel='test instances', yscale="log")
-    plt.legend(bbox_to_anchor=(1.02, 1), loc='best', borderaxespad=0)
-
-    plt.savefig(graph_dir + f'{metric}_lines_per_model_without.png', bbox_inches='tight')
-    plt.clf()
+        plt.savefig(graph_dir + f'{metric}_lines_per_model_{png_names[index]}.png', bbox_inches='tight')
+        plt.clf()
 
 
 if __name__ == "__main__":
