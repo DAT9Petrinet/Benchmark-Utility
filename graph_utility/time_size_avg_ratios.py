@@ -111,8 +111,8 @@ def plot(data_list, test_names, graph_dir, experiment_to_compare_against_name):
                 len(not_used_time_ratios_inner) + len(time_ratios_inner))
         df2 = pd.DataFrame(
             [[rule_used_size, rule_used_time, rule_not_used_size, rule_not_used_time, both_size, both_time]],
-            columns=['size ratio using rules', 'time ratio using rules', 'size ratio not using rules',
-                     'time ratio not using rules', 'overall size ratio',
+            columns=['size ratio when using new rules', 'time ratio when using new rules', 'size ratio when not using new rules',
+                     'time ratio when not using new rules', 'overall size ratio',
                      'overall time ratio'],
             index=[f'{experiment_to_compare_against_name}/{test_names[test_index]}'])
 

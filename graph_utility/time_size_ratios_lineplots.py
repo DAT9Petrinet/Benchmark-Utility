@@ -167,7 +167,7 @@ def plot(data_list, test_names, graph_dir, experiment_to_compare_against_name):
 
     # plot the plot
     sns.lineplot(data=rule_used_time_ratios, palette=custom_palette).set(xlabel='test instance',
-                                                                         ylabel='time in seconds',
+                                                                         ylabel='time ratio',
                                                                          yscale="log",
                                                                          title=f'Time compared to {experiment_to_compare_against_name}, '
                                                                                f'under 1 means {experiment_to_compare_against_name} is better')
@@ -185,7 +185,7 @@ def plot(data_list, test_names, graph_dir, experiment_to_compare_against_name):
 
     # plot the plot
     sns.lineplot(data=rule_not_used_time_ratios, palette=custom_palette).set(xlabel='test instance',
-                                                                             ylabel='time in seconds',
+                                                                             ylabel='time ratio',
                                                                              yscale="log",
                                                                              title=f'Time compared to {experiment_to_compare_against_name}, '
                                                                                    f'under 1 means {experiment_to_compare_against_name} is better')
@@ -203,7 +203,7 @@ def plot(data_list, test_names, graph_dir, experiment_to_compare_against_name):
 
     # plot the plot
     sns.lineplot(data=rule_indifferent_time_ratios, palette=custom_palette).set(xlabel='test instance',
-                                                                                ylabel='time in seconds',
+                                                                                ylabel='time ratio',
                                                                                 yscale="log",
                                                                                 title=f'Time compared to {experiment_to_compare_against_name}, '
                                                                                       f'under 1 means {experiment_to_compare_against_name} is better')
