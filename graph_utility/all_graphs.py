@@ -12,6 +12,9 @@ import reduction_points
 import total_reductions
 import time_size_ratios_lineplots
 import time_size_avg_ratios
+import rule_usage_absolute_models
+import time_memory_points
+import best_overall
 
 
 def plot_all(data_list, test_names, graph_dir, correct_results_name):
@@ -61,11 +64,23 @@ def plot_all(data_list, test_names, graph_dir, correct_results_name):
     graphs_made = graphs_made + 1
     print(f"{graphs_made}/{num_graphs} graphs done")
 
-    time_size_ratios_lineplots.plot(data_list, test_names,graph_dir + '\\size-ratios\\', correct_results_name)
+    time_size_ratios_lineplots.plot(data_list, test_names, graph_dir + '\\size-ratios\\', correct_results_name)
     graphs_made = graphs_made + 1
     print(f"{graphs_made}/{num_graphs} graphs done")
 
     time_size_avg_ratios.plot(data_list, test_names, graph_dir + '\\size-ratios\\', correct_results_name)
+    graphs_made = graphs_made + 1
+    print(f"{graphs_made}/{num_graphs} graphs done")
+
+    rule_usage_absolute_models.plot(data_list, test_names, graph_dir)
+    graphs_made = graphs_made + 1
+    print(f"{graphs_made}/{num_graphs} graphs done")
+
+    best_overall.plot(data_list, test_names, graph_dir)
+    graphs_made = graphs_made + 1
+    print(f"{graphs_made}/{num_graphs} graphs done")
+
+    time_memory_points.plot(data_list, test_names, graph_dir, correct_results_name)
     graphs_made = graphs_made + 1
     print(f"{graphs_made}/{num_graphs} graphs done")
 
