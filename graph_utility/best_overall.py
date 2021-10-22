@@ -19,6 +19,10 @@ def plot(data_list, test_names, graph_dir):
     data_list = copy.deepcopy(data_list)
     test_names = copy.deepcopy(test_names)
 
+    if len(test_names) == 2 and 'no-red' in test_names:
+        print(
+            '(best_overall) beware, probably weird results (in reduction points) in this graph due to comparing only 2 experiments, and one which is no-red')
+
     # Find test instances that no experiment managed to reduce
     rows_to_delete = set()
     for index, data in enumerate(data_list):
@@ -94,7 +98,7 @@ def plot(data_list, test_names, graph_dir):
 
                 # Find the best result among all experiments
                 # Dont compare reduction size against no-red, as this always has 0s, would always win trivially
-                if test_names[test_index] != 'no-red':
+                if test_names[test_index2] != 'no-red':
                     best_reduction = min(best_reduction,
                                          other_row['post place count'] + other_row['post transition count'])
                 best_time = min(best_time, other_row['time'])

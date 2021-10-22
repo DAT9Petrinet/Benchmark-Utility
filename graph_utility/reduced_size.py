@@ -19,11 +19,10 @@ def plot(data_list, test_names, graph_dir):
     data_list = copy.deepcopy(data_list)
     test_names = copy.deepcopy(test_names)
 
-    # Remove test with no reductions, assume this is named 'no-red'
-    # for test_index, name in enumerate(test_names):
-    # if 'no-red' in name:
-    #   data_list.pop(test_index)
-    #  test_names.pop(test_index)
+    for test_index, name in enumerate(test_names):
+        if 'no-red' in name:
+            data_list.pop(test_index)
+            test_names.pop(test_index)
 
     # Find test instances that no experiment managed to reduce
     rows_to_delete = set()
