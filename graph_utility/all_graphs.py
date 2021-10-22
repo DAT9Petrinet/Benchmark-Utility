@@ -157,7 +157,7 @@ if __name__ == "__main__":
         if experiment_to_compare_against_name == 'no-red':
             raise Exception('(all_graphs) Cannot use no-red as basis for comparison, as this has no reductions')
 
-    print(f'(all_graphs) using {experiment_to_compare_against_name} for basis for all comparisons')
+    print(f'(all_graphs) using ({experiment_to_compare_against_name}) for basis for all comparisons')
     # Find the directory to save figures
     script_dir = os.path.dirname(__file__)
     graph_dir = os.path.join(script_dir, '..\\graphs\\')
