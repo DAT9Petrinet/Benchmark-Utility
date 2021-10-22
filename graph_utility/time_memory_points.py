@@ -107,6 +107,8 @@ def plot(data_list, test_names, graph_dir, experiment_to_compare_against_name):
     png_names = ['all', 'with', 'without']
 
     for index, data in enumerate(data_to_plot):
+        if len(data) == 0:
+            continue
         # Plot the plot
         sns.set_theme(style="darkgrid", palette="pastel")
         plot = data.plot(kind='barh', width=0.75, linewidth=2, figsize=(10, 10))

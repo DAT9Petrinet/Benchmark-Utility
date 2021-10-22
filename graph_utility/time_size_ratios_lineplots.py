@@ -215,10 +215,11 @@ def plot(data_list, test_names, graph_dir, experiment_to_compare_against_name):
 
 if __name__ == "__main__":
     # What we assume to be correct results
-    if len(sys.argv) == 1:
-        experiment_to_compare_against_name = 'base-rules'
+    if len(sys.argv) <= 2:
+        raise Exception(
+            f'(time_memory_points) You need to specify more than one csv, the first will be used as basis for comparison')
     else:
-        experiment_to_compare_against_name = sys.argv[1]
+        experiment_to_compare_against_name = [os.path.split(os.path.splitext(sys.argv[1])[0])[1]][0]
 
     # Find the directory to save figures
     script_dir = os.path.dirname(__file__)
@@ -236,13 +237,6 @@ if __name__ == "__main__":
 
     # Find names of the tests, to be used in graphs and file names
     test_names = [os.path.split(os.path.splitext(csv)[0])[1] for csv in csvs]
-
-    try:
-        correct_results = pd.read_csv(csv_dir + experiment_to_compare_against_name + '.csv')
-    except:
-        raise Exception(
-            f'(reduction_points)({experiment_to_compare_against_name}) is not present in saved/ and cannot be used as basis for comparison. '
-            f'Check if you made a typo in the parameter to the program')
 
     data_list = [pd.read_csv(csv_dir + csv) for csv in csvs]
 
