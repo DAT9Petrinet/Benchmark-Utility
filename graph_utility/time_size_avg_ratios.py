@@ -144,20 +144,11 @@ def plot(data_list, test_names, graph_dir, experiment_to_compare_against_name):
         plt.xlabel("ratio")
         plt.ylabel('experiments')
 
-        # Find max width, in order to move the very small numbers away from the bars
-        max_width = 0
-        for p in plot.patches:
-            left, bottom, width, height = p.get_bbox().bounds
-            max_width = max(width, max_width)
         # Plot the numbers in the bars
         for p in plot.patches:
             left, bottom, width, height = p.get_bbox().bounds
-            if width < (max_width / 10):
-                plot.annotate(format(width, '.2f'), xy=(max_width / 12.5, bottom + height / 2),
-                              ha='center', va='center')
-            else:
-                plot.annotate(format(width, '.2f'), xy=(left + width / 2, bottom + height / 2),
-                              ha='center', va='center')
+            plot.annotate(format(width, '.2f'), xy=(left + width, bottom + height / 2),
+                          ha='center', va='center')
 
         plt.savefig(graph_dir + f'avg_ratios_{png_names[index]}.png', bbox_inches='tight')
         plt.clf()

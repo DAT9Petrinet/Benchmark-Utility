@@ -165,6 +165,8 @@ def plot(data_list, test_names, graph_dir):
     png_names = ['all', 'with', 'without']
 
     for index, data in enumerate(data_to_plot):
+        if len(data) == 0:
+            continue
         # Plot the plots
         sns.set_theme(style="darkgrid", palette="pastel")
         plot = data.plot(kind='barh', width=0.75, linewidth=2, figsize=(10, 10))
@@ -183,6 +185,8 @@ def plot(data_list, test_names, graph_dir):
         plt.clf()
 
     for index, data in enumerate(data_to_plot_eq):
+        if len(data) == 0:
+            continue
         # Plot the second plot with with
         plot = data.plot(kind='barh', width=0.75, linewidth=2, figsize=(10, 10))
         plt.legend(bbox_to_anchor=(1.02, 1), loc='best', borderaxespad=0)

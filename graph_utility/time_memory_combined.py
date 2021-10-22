@@ -95,6 +95,8 @@ def plot(data_list, test_names, graph_dir):
 
     # Plot the plot
     for index, data in enumerate(data_to_plot):
+        if len(data) == 0:
+            continue
         plot = sns.lineplot(data=data, palette=custom_palette,
                             dashes=dashes_list[index])
         plot.set(

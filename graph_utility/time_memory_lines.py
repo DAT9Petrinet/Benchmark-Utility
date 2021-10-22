@@ -81,6 +81,8 @@ def plot(data_list, test_names, graph_dir, metric):
     png_names = ['all', 'with', 'without']
 
     for index, data in enumerate(data_to_plot):
+        if len(data) == 0:
+            continue
         # Plot the plot
         plot = sns.lineplot(data=data[0], palette=custom_palette,
                             dashes=data[1])

@@ -144,6 +144,11 @@ def plot(data_list, test_names, graph_dir, experiment_to_compare_against_name):
         rule_indifferent_time_ratios[
             f"{experiment_to_compare_against_name}/{test_names[test_index]}"] = np.sort(rule_indifferent_time)
 
+    size_ratio_dfs = [rule_used_size_ratios, rule_not_used_size_ratios, rule_indifferent_size_ratios]
+    time_ratio_dfs = [rule_used_time_ratios, rule_not_used_time_ratios, rule_indifferent_time_ratios]
+
+    png_names = ['new_rules', 'not_new_rules', 'all']
+
     # Make sure colors and dashes matches the ones from 'time_memory_combined'
     def color(t):
         a = np.array([0.5, 0.5, 0.5])
@@ -159,58 +164,23 @@ def plot(data_list, test_names, graph_dir, experiment_to_compare_against_name):
     for column_index, column in enumerate(rule_used_size_ratios.columns):
         custom_palette[column] = color((column_index + 1) / len(rule_used_size_ratios.columns))
 
-    # plot the plot
-    sns.lineplot(data=rule_used_size_ratios, palette=custom_palette).set(xlabel='test instance', ylabel='size ratio',
+    for i in range(3):
+        # plot the plot
+        sns.lineplot(data=size_ratio_dfs[i], palette=custom_palette).set(xlabel='test instance', ylabel='size ratio',
                                                                          yscale="log",
                                                                          title=f'Reduced size of nets compared to {experiment_to_compare_against_name}, '
                                                                                f'under 1 means {experiment_to_compare_against_name} is better')
-    plt.savefig(graph_dir + 'new_rules_used_size_ratios.png')
-    plt.clf()
+        plt.savefig(graph_dir + f'{png_names[i]}_used_size_ratios.png')
+        plt.clf()
 
-    # plot the plot
-    sns.lineplot(data=rule_used_time_ratios, palette=custom_palette).set(xlabel='test instance',
+        # plot the plot
+        sns.lineplot(data=time_ratio_dfs[i], palette=custom_palette).set(xlabel='test instance',
                                                                          ylabel='time ratio',
                                                                          yscale="log",
                                                                          title=f'Time compared to {experiment_to_compare_against_name}, '
                                                                                f'under 1 means {experiment_to_compare_against_name} is better')
-    plt.savefig(graph_dir + 'new_rules_used_time_ratios.png')
-    plt.clf()
-
-    # plot the plot
-    sns.lineplot(data=rule_not_used_size_ratios, palette=custom_palette).set(xlabel='test instance',
-                                                                             ylabel='size ratio',
-                                                                             yscale="log",
-                                                                             title=f'Reduced size of nets compared to {experiment_to_compare_against_name}, '
-                                                                                   f'under 1 means {experiment_to_compare_against_name} is better')
-    plt.savefig(graph_dir + 'not_new_rules_used_size_ratios.png')
-    plt.clf()
-
-    # plot the plot
-    sns.lineplot(data=rule_not_used_time_ratios, palette=custom_palette).set(xlabel='test instance',
-                                                                             ylabel='time ratio',
-                                                                             yscale="log",
-                                                                             title=f'Time compared to {experiment_to_compare_against_name}, '
-                                                                                   f'under 1 means {experiment_to_compare_against_name} is better')
-    plt.savefig(graph_dir + 'not_new_rules_used_time_ratios.png')
-    plt.clf()
-
-    # plot the plot
-    sns.lineplot(data=rule_indifferent_size_ratios, palette=custom_palette).set(xlabel='test instance',
-                                                                                ylabel='size ratio',
-                                                                                yscale="log",
-                                                                                title=f'Reduced size of nets compared to {experiment_to_compare_against_name}, '
-                                                                                      f'under 1 means {experiment_to_compare_against_name} is better')
-    plt.savefig(graph_dir + 'all-rows-size-ratios.png')
-    plt.clf()
-
-    # plot the plot
-    sns.lineplot(data=rule_indifferent_time_ratios, palette=custom_palette).set(xlabel='test instance',
-                                                                                ylabel='time ratio',
-                                                                                yscale="log",
-                                                                                title=f'Time compared to {experiment_to_compare_against_name}, '
-                                                                                      f'under 1 means {experiment_to_compare_against_name} is better')
-    plt.savefig(graph_dir + 'all-rows-time-ratios.png')
-    plt.clf()
+        plt.savefig(graph_dir + f'{png_names[i]}_used_time_ratios.png')
+        plt.clf()
 
 
 if __name__ == "__main__":

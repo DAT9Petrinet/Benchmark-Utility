@@ -100,18 +100,10 @@ def plot(data_list, test_names, graph_dir):
         plt.xlabel("reductions")
         plt.ylabel('experiments')
 
-        # Find max width, in order to move the very small numbers away from the bars
-        max_width = 0
-        for p in plot.patches:
-            left, bottom, width, height = p.get_bbox().bounds
-            max_width = max(width, max_width)
         # Plot the numbers in the bars
         for p in plot.patches:
             left, bottom, width, height = p.get_bbox().bounds
-            if width < (max_width / 3):
-                left += 1
-                width *= 2
-            plot.annotate(int(width), xy=(left + width / 2, bottom + height / 2),
+            plot.annotate(int(width), xy=(left + width, bottom + height / 2),
                           ha='center', va='center')
 
         plt.savefig(graph_dir + f'total_reductions_{png_names[index]}.png', bbox_inches='tight')

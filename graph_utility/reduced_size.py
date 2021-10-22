@@ -102,6 +102,8 @@ def plot(data_list, test_names, graph_dir):
     sns.set_theme(style="darkgrid", palette="pastel")
 
     for index, data in enumerate(data_to_plot):
+        if len(data) == 0:
+            continue
         plot = sns.lineplot(data=data, markers=True, dashes=False, markevery=marker_interval,
                             palette=custom_palette)
         plot.set(
