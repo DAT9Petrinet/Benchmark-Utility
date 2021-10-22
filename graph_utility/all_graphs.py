@@ -3,9 +3,7 @@ import shutil
 import sys
 import time
 
-import matplotlib.pyplot as plt
 import pandas as pd
-import seaborn as sns
 
 import answer_simplification_bars
 import best_overall
@@ -36,7 +34,7 @@ def plot_all(data_list, test_names, graph_dir, experiment_to_compare_against_nam
     times = dict()
     time_when_started = time.time()
     # General graphs not fitting totally into the next categories
-    '''answer_simplification_bars.plot(data_list, test_names, graph_dir + '\\best-experiment\\')
+    answer_simplification_bars.plot(data_list, test_names, graph_dir + '\\best-experiment\\')
     times['answer/simplification bars'] = (round(time.time()) - time_when_started)
     graphs_made = graphs_made + 1
     print(f"{graphs_made}/{num_graphs} graphs made")
@@ -112,7 +110,7 @@ def plot_all(data_list, test_names, graph_dir, experiment_to_compare_against_nam
                                     experiment_to_compare_against_name)
     times['ratios lineplots'] = (round(time.time()) - time_when_started)
     graphs_made = graphs_made + 1
-    print(f"{graphs_made}/{num_graphs} graphs made")'''
+    print(f"{graphs_made}/{num_graphs} graphs made")
 
     time_when_started = time.time()
     time_size_avg_ratios.plot(data_list, test_names, graph_dir + '\\size-ratios\\', experiment_to_compare_against_name)

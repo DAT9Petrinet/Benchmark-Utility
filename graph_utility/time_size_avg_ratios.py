@@ -86,7 +86,7 @@ def plot(data_list, test_names, graph_dir, experiment_to_compare_against_name):
                 size_post_reductions = row['post place count'] + row['post transition count']
 
                 if size_post_reductions == 0:
-                    size_ratio = (base_reduction_size / size_post_reductions)
+                    size_ratio = np.nan
                 elif size_post_reductions >= 1:
                     size_ratio = (base_reduction_size / size_post_reductions)
                 else:
