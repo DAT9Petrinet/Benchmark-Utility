@@ -45,7 +45,7 @@ echo ""
 
 # ***** Analysis *****
 
-for FILE in $(ls "$DIR/*.out") ; do
+for FILE in $(ls $DIR | grep "\.out$") ; do
 
 	echo "Collecting from $DIR/$FILE"
 
