@@ -60,7 +60,7 @@ def plot(data_list, test_names, graph_dir):
 if __name__ == "__main__":
     # Find the directory to save figures
     script_dir = os.path.dirname(__file__)
-    graph_dir = os.path.join(script_dir, '..\\graphs\\rule-usage\\')
+    graph_dir = os.path.join(script_dir, '..\\graphs\\' + '\\rule-usage\\')
 
     if not os.path.isdir(graph_dir):
         os.makedirs(graph_dir)

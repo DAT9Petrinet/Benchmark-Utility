@@ -160,7 +160,7 @@ if __name__ == "__main__":
 
     # Find the directory to save figures
     script_dir = os.path.dirname(__file__)
-    graph_dir = os.path.join(script_dir, '..\\graphs\\')
+    graph_dir = os.path.join(script_dir, '..\\graphs\\' + '\\reductions\\')
 
     if not os.path.isdir(graph_dir):
         os.makedirs(graph_dir)
