@@ -27,48 +27,23 @@ fi
 DIR="output/$BIN/$NAME"
 OUT="output/$BIN/$NAME.csv"
 
-# ***** Functions *****
+# ***** Setup CSV *****
 
-write_headers() {
-	# First check if the file exists, if not: insert row with headers
-	if ! [[ -f "$OUT" ]] 
-	then
-		col1="model name"
-		col2="query index"
-		col3="time"
-		col4="memory"
-		col5="answer"
-		col6="solved by query simplification"
-		col7="prev place count"
-		col8="prev transition count"
-		col9="post place count"
-		col10="post transition count"
-		col11="rule A"
-		col12="rule B"
-		col13="rule C"
-		col14="rule D"
-		col15="rule E"
-		col16="rule F"
-		col17="rule G"
-		col18="rule H"
-		col19="rule I"
-		col20="rule J"
-		col21="rule K"
-		col22="rule L"
-		col23="rule M"
-		col24="rule N"
-		echo \"$col1\",\"$col2\",\"$col3\",\"$col4\",\"$col5\",\"$col6\",\"$col7\",\"$col8\",\"$col9\",\"${col10}\",\"${col11}\",\"${col12}\",\"${col13}\",\"${col14}\",\"${col15}\",\"${col16}\",\"${col17}\",\"${col18}\",\"${col19}\",\"${col20}\",\"${col21}\",\"${col22}\",\"${col23}\",\"${col24}\" >> $OUT
+RULES=("A" "B" "C" "D" "E" "F" "G" "H" "I" "J" "K" "L" "M" "N" "O" "P" "Q" "R" "S" "T" "U" "V" "W" "X" "Y" "Z" "Æ" "Ø" "Å")
+
+rm -f $OUT
+
+# Write header
+echo -n "model name,query index,time,memory,answer,solved by query simplification,prev place count,prev transition count,post place count,post transition count,reduce time," >> OUT
+for i in ${!RULES[@]} ; do
+	echo -n "rule ${RULES[$i]}"
+	if [[ $i -ne $((${#RULES[@]} - 1)) ]]; then
+		echo -n ","
 	fi
-}
-
-append_row() {
-	echo \"$1\",\"$2\",\"$3\",\"$4\",\"$5\",\"$6\",\"$7\",\"$8\",\"$9\",\"${10}\",\"${11}\",\"${12}\",\"${13}\",\"${14}\",\"${15}\",\"${16}\",\"${17}\",\"${18}\",\"${19}\",\"${20}\",\"${21}\",\"${22}\",\"${23}\",\"${24}\" >> $OUT
-}
-
+done
+echo ""
 
 # ***** Analysis *****
-
-write_headers
 
 for FILE in $(ls "$DIR") ; do
 
@@ -93,55 +68,28 @@ for FILE in $(ls "$DIR") ; do
 	# Was query solved using query reduction?
 	QUERY_SIMPLIFICATION=$([[ -n "$(echo $RES | awk '/Query solved by Query Simplification/')" ]] && echo "TRUE" || echo "FALSE")
 
-	ANY_RULE=$([[ -n "$(echo $RES | awk '/Applications of rule/')" ]] && echo "TRUE" || echo "FALSE")
+    # Total reduction size
+	PREV_PLACE_COUNT=$([[ -n "$(echo $RES | awk '/Size of net before/')" ]] && $(echo $RES | sed -E "s/.*Size of net before[^:]*: ([0-9]+).*/\1/") || echo 0)
+	PREV_TRANS_COUNT=$([[ -n "$(echo $RES | awk '/Size of net before/')" ]] && $(echo $RES | sed -E "s/.*Size of net before[^:]*: [0-9]+ places, ([0-9]+).*/\1/") || echo 0)
+	POST_RED_PLACE_COUNT=$([[ -n "$(echo $RES | awk '/Size of net after/')" ]] && $(echo $RES | sed -E "s/.*Size of net after[^:]*: ([0-9]+).*/\1/") || echo 0)
+	POST_RED_TRANS_COUNT=$([[ -n "$(echo $RES | awk '/Size of net after/')" ]] && $(echo $RES | sed -E "s/.*Size of net after[^:]*: [0-9]+ places, ([0-9]+).*/\1/") || echo 0)
 
-	if [[ $ANSWER = "NONE" || $QUERY_SIMPLIFICATION = "TRUE" || $ANY_RULE = "FALSE" ]]; then
+	# Reduction time
+	RED_TIME=$([[ -n "$(echo $RES | awk '/Structural reduction finished after/')" ]] && $(echo $RES | sed -E "s/.*Structural reduction finished after ([0-9]+(\.[0-9]+)?) s/\1/") || echo 0.0)
 
-		# In this case, no structural reduction was performed
+	echo -n "$MODEL,$Q,$TIME,$MEM,$ANSWER,$QUERY_SIMPLIFICATION,$PREV_PLACE_COUNT,$PREV_TRANS_COUNT,$POST_RED_PLACE_COUNT,$POST_RED_TRANS_COUNT,$RED_TIME" >> OUT
 
-		PREV_PLACE_COUNT=0
-		PREV_TRANS_COUNT=0
-		POST_RED_PLACE_COUNT=0
-		POST_RED_TRANS_COUNT=0
+	# Applications of rules
+	for i in ${!RULES[@]} ; do
 
-		RULE_A=0
-		RULE_B=0
-		RULE_C=0
-		RULE_D=0
-		RULE_E=0
-		RULE_F=0
-		RULE_G=0
-		RULE_H=0
-		RULE_I=0
-		RULE_J=0
-		RULE_K=0
-		RULE_L=0
-		RULE_M=0
-		RULE_N=0
-	
-	else
+		APPLICATIONS=$([[ -n "$(echo $RES | awk "/Applications of rule ${RULES[$i]}/")" ]] && $(echo $RES | sed -E "s/.*Applications of rule ${RULES[$i]}: ([0-9]+).*/\1/") || echo 0)
 
-		PREV_PLACE_COUNT=$(echo $RES | sed -E "s/.*Size of net before[^:]*: ([0-9]+).*/\1/")
-		PREV_TRANS_COUNT=$(echo $RES | sed -E "s/.*Size of net before[^:]*: [0-9]+ places, ([0-9]+).*/\1/")
-		POST_RED_PLACE_COUNT=$(echo $RES | sed -E "s/.*Size of net after[^:]*: ([0-9]+).*/\1/")
-		POST_RED_TRANS_COUNT=$(echo $RES | sed -E "s/.*Size of net after[^:]*: [0-9]+ places, ([0-9]+).*/\1/")
-
-		RULE_A=$(echo $RES | sed -E "s/.*Applications of rule A: ([0-9]+).*/\1/")
-		RULE_B=$(echo $RES | sed -E "s/.*Applications of rule B: ([0-9]+).*/\1/")
-		RULE_C=$(echo $RES | sed -E "s/.*Applications of rule C: ([0-9]+).*/\1/")
-		RULE_D=$(echo $RES | sed -E "s/.*Applications of rule D: ([0-9]+).*/\1/")
-		RULE_E=$(echo $RES | sed -E "s/.*Applications of rule E: ([0-9]+).*/\1/")
-		RULE_F=$(echo $RES | sed -E "s/.*Applications of rule F: ([0-9]+).*/\1/")
-		RULE_G=$(echo $RES | sed -E "s/.*Applications of rule G: ([0-9]+).*/\1/")
-		RULE_H=$(echo $RES | sed -E "s/.*Applications of rule H: ([0-9]+).*/\1/")
-		RULE_I=$(echo $RES | sed -E "s/.*Applications of rule I: ([0-9]+).*/\1/")
-		RULE_J=$(echo $RES | sed -E "s/.*Applications of rule J: ([0-9]+).*/\1/")
-		RULE_K=$(echo $RES | sed -E "s/.*Applications of rule K: ([0-9]+).*/\1/")
-		RULE_L=$(echo $RES | sed -E "s/.*Applications of rule L: ([0-9]+).*/\1/")
-		RULE_M=$(echo $RES | sed -E "s/.*Applications of rule M: ([0-9]+).*/\1/")
-		RULE_N=$(echo $RES | sed -E "s/.*Applications of rule N: ([0-9]+).*/\1/")
-
-	fi
-
-	append_row "$MODEL" "$Q" "$TIME" "$MEM" "$ANSWER" "$QUERY_SIMPLIFICATION" "$PREV_PLACE_COUNT" "$PREV_TRANS_COUNT" "$POST_RED_PLACE_COUNT" "$POST_RED_TRANS_COUNT" "$RULE_A" "$RULE_B" "$RULE_C" "$RULE_D" "$RULE_E" "$RULE_F" "$RULE_G" "$RULE_H" "$RULE_I" "$RULE_J" "$RULE_K" "$RULE_L" "$RULE_M" "$RULE_N"
+		echo -n "$APPLICATIONS"
+		if [[ $i -ne $((${#RULES[@]} - 1)) ]]; then
+			echo -n ","
+		fi
+	done
+	echo ""
 done
+
+echo "Done"
