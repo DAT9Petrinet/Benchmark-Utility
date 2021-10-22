@@ -34,14 +34,14 @@ RULES=("A" "B" "C" "D" "E" "F" "G" "H" "I" "J" "K" "L" "M" "N" "O" "P" "Q" "R" "
 rm -f $OUT
 
 # Write header
-echo -n "model name,query index,time,memory,answer,solved by query simplification,prev place count,prev transition count,post place count,post transition count,reduce time," >> OUT
+echo -n "model name,query index,time,memory,answer,solved by query simplification,prev place count,prev transition count,post place count,post transition count,reduce time," >> $OUT
 for i in ${!RULES[@]} ; do
-	echo -n "rule ${RULES[$i]}"
+	echo -n "rule ${RULES[$i]}" >> $OUT
 	if [[ $i -ne $((${#RULES[@]} - 1)) ]]; then
-		echo -n ","
+		echo -n "," >> $OUT
 	fi
 done
-echo ""
+echo "" >> $OUT
 
 # ***** Analysis *****
 
@@ -77,19 +77,19 @@ for FILE in $(ls "$DIR/*.out") ; do
 	# Reduction time
 	RED_TIME=$([[ -n "$(echo $RES | awk '/Structural reduction finished after/')" ]] && echo $RES | sed -E "s/.*Structural reduction finished after ([0-9]+(\.[0-9]+)?) s.*/\1/" || echo 0.0)
 
-	echo -n "$MODEL,$Q,$TIME,$MEM,$ANSWER,$QUERY_SIMPLIFICATION,$PREV_PLACE_COUNT,$PREV_TRANS_COUNT,$POST_RED_PLACE_COUNT,$POST_RED_TRANS_COUNT,$RED_TIME" >> OUT
+	echo -n "$MODEL,$Q,$TIME,$MEM,$ANSWER,$QUERY_SIMPLIFICATION,$PREV_PLACE_COUNT,$PREV_TRANS_COUNT,$POST_RED_PLACE_COUNT,$POST_RED_TRANS_COUNT,$RED_TIME" >> $OUT
 
 	# Applications of rules
 	for i in ${!RULES[@]} ; do
 
 		APPLICATIONS=$([[ -n "$(echo $RES | awk "/Applications of rule ${RULES[$i]}/")" ]] && echo $RES | sed -E "s/.*Applications of rule ${RULES[$i]}: ([0-9]+).*/\1/" || echo 0)
 
-		echo -n "$APPLICATIONS" >> OUT
+		echo -n "$APPLICATIONS" >> $OUT
 		if [[ $i -ne $((${#RULES[@]} - 1)) ]]; then
-			echo -n "," >> OUT
+			echo -n "," >> $OUT
 		fi
 	done
-	echo "" >> OUT
+	echo "" >> $OUT
 done
 
 echo "Done"
