@@ -102,13 +102,15 @@ def plot(data_list, test_names, graph_dir, experiment_to_compare_against_name):
 
         # Add ratios to the current dataframe, with the tests being compared as the column name
         rule_used_size = np.nansum(size_ratios_inner) / len(
-            size_ratios_inner)
+            size_ratios_inner) if len(
+            size_ratios_inner) else np.nan
         rule_used_time = np.nansum(time_ratios_inner) / len(
-            time_ratios_inner)
+            time_ratios_inner) if len(
+            time_ratios_inner) else np.nan
         rule_not_used_size = np.nansum(not_used_size_ratios_inner) / len(
-            not_used_size_ratios_inner)
+            not_used_size_ratios_inner) if len(not_used_size_ratios_inner) else np.nan
         rule_not_used_time = np.nansum(not_used_time_ratios_inner) / len(
-            not_used_time_ratios_inner)
+            not_used_time_ratios_inner) if len(not_used_time_ratios_inner) else np.nan
         both_size = (np.nansum(not_used_size_ratios_inner) + np.nansum(size_ratios_inner)) / (
                 len(not_used_size_ratios_inner) + len(size_ratios_inner))
         both_time = (np.nansum(not_used_time_ratios_inner) + np.nansum(time_ratios_inner)) / (
