@@ -85,10 +85,12 @@ def plot(data_list, test_names, graph_dir, experiment_to_compare_against_name):
                 base_reduction_size = base_results_row['post place count'] + base_results_row['post transition count']
                 size_post_reductions = row['post place count'] + row['post transition count']
 
-                try:
+                if size_post_reductions == 0:
                     size_ratio = (base_reduction_size / size_post_reductions)
-                except:
-                    size_ratio = np.nan
+                elif size_post_reductions >= 1:
+                    size_ratio = (base_reduction_size / size_post_reductions)
+                else:
+                    raise Exception('(time_size_avg_ratios) Something went wrong with calculating size')
                 time_ratio = (base_results_row['time'] / row['time'])
 
                 if new_rule_used:
@@ -111,6 +113,7 @@ def plot(data_list, test_names, graph_dir, experiment_to_compare_against_name):
                 len(not_used_size_ratios_inner) + len(size_ratios_inner))
         both_time = (np.nansum(not_used_time_ratios_inner) + np.nansum(time_ratios_inner)) / (
                 len(not_used_time_ratios_inner) + len(time_ratios_inner))
+
         df2 = pd.DataFrame(
             [[rule_used_size, rule_used_time, rule_not_used_size, rule_not_used_time, both_size, both_time]],
             columns=['size ratio when using new rules', 'time ratio when using new rules',

@@ -36,7 +36,7 @@ def plot_all(data_list, test_names, graph_dir, experiment_to_compare_against_nam
     times = dict()
     time_when_started = time.time()
     # General graphs not fitting totally into the next categories
-    answer_simplification_bars.plot(data_list, test_names, graph_dir + '\\best-experiment\\')
+    '''answer_simplification_bars.plot(data_list, test_names, graph_dir + '\\best-experiment\\')
     times['answer/simplification bars'] = (round(time.time()) - time_when_started)
     graphs_made = graphs_made + 1
     print(f"{graphs_made}/{num_graphs} graphs made")
@@ -112,7 +112,7 @@ def plot_all(data_list, test_names, graph_dir, experiment_to_compare_against_nam
                                     experiment_to_compare_against_name)
     times['ratios lineplots'] = (round(time.time()) - time_when_started)
     graphs_made = graphs_made + 1
-    print(f"{graphs_made}/{num_graphs} graphs made")
+    print(f"{graphs_made}/{num_graphs} graphs made")'''
 
     time_when_started = time.time()
     time_size_avg_ratios.plot(data_list, test_names, graph_dir + '\\size-ratios\\', experiment_to_compare_against_name)
@@ -120,7 +120,7 @@ def plot_all(data_list, test_names, graph_dir, experiment_to_compare_against_nam
     graphs_made = graphs_made + 1
     print(f"{graphs_made}/{num_graphs} graphs made")
 
-    # Print meme graph
+    '''# Print meme graph
     df = pd.DataFrame.from_dict(times, orient='index')
     # Plot the plot
     sns.set_theme(style="darkgrid", palette="pastel")
@@ -145,7 +145,7 @@ def plot_all(data_list, test_names, graph_dir, experiment_to_compare_against_nam
                       ha='center', va='center')
 
     plt.savefig(graph_dir + f'time_spent_making_graphs.png', bbox_inches='tight')
-    plt.clf()
+    plt.clf()'''
 
 
 if __name__ == "__main__":
@@ -155,7 +155,7 @@ if __name__ == "__main__":
     else:
         experiment_to_compare_against_name = sys.argv[1]
         if experiment_to_compare_against_name == 'no-red':
-            raise Exception('(all_graphs) Cannot use no-red as basis for comparison, as this has no reductions')
+            raise Exception('(all_graphs) Cannot use (no-red) as basis for comparison, as this has no reductions')
 
     print(f'(all_graphs) using ({experiment_to_compare_against_name}) for basis for all comparisons')
     # Find the directory to save figures
