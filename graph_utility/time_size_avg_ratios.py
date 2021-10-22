@@ -79,7 +79,7 @@ def plot(data_list, test_names, graph_dir, experiment_to_compare_against_name):
             # Sanity check
             if (base_results_row['model name'] != row['model name']) or (
                     base_results_row['query index'] != row['query index']):
-                raise Exception('(size_time_ratio) Comparing wrong rows')
+                raise Exception('(time_size_avg_ratios) Comparing wrong rows')
 
             if (base_results_row['answer'] != 'NONE') and row['answer'] != 'NONE':
                 base_reduction_size = base_results_row['post place count'] + base_results_row['post transition count']
@@ -99,17 +99,17 @@ def plot(data_list, test_names, graph_dir, experiment_to_compare_against_name):
                     not_used_time_ratios_inner.append(time_ratio)
 
         # Add ratios to the current dataframe, with the tests being compared as the column name
-        rule_used_size = sum(size_ratios_inner) / len(
-            size_ratios_inner) if len(size_ratios_inner) > 0 else np.nan
-        rule_used_time = sum(time_ratios_inner) / len(
-            time_ratios_inner) if len(time_ratios_inner) > 0 else np.nan
-        rule_not_used_size = sum(not_used_size_ratios_inner) / len(
-            not_used_size_ratios_inner) if len(not_used_size_ratios_inner) > 0 else np.nan
-        rule_not_used_time = sum(not_used_time_ratios_inner) / len(
-            not_used_time_ratios_inner) if len(not_used_time_ratios_inner) > 0 else np.nan
-        both_size = (sum(not_used_size_ratios_inner) + sum(size_ratios_inner)) / (
+        rule_used_size = np.nansum(size_ratios_inner) / len(
+            size_ratios_inner)
+        rule_used_time = np.nansum(time_ratios_inner) / len(
+            time_ratios_inner)
+        rule_not_used_size = np.nansum(not_used_size_ratios_inner) / len(
+            not_used_size_ratios_inner)
+        rule_not_used_time = np.nansum(not_used_time_ratios_inner) / len(
+            not_used_time_ratios_inner)
+        both_size = (np.nansum(not_used_size_ratios_inner) + np.nansum(size_ratios_inner)) / (
                 len(not_used_size_ratios_inner) + len(size_ratios_inner))
-        both_time = (sum(not_used_time_ratios_inner) + sum(time_ratios_inner)) / (
+        both_time = (np.nansum(not_used_time_ratios_inner) + np.nansum(time_ratios_inner)) / (
                 len(not_used_time_ratios_inner) + len(time_ratios_inner))
         df2 = pd.DataFrame(
             [[rule_used_size, rule_used_time, rule_not_used_size, rule_not_used_time, both_size, both_time]],
@@ -138,7 +138,7 @@ def plot(data_list, test_names, graph_dir, experiment_to_compare_against_name):
             continue
         # Plot the plot
         plot = data.plot(kind='barh', width=0.8, linewidth=2, figsize=(10, 10))
-        plt.axvline(x=1, color='r', lw=4, label=1)
+        plt.axvline(x=1, color='r', lw=4)
         plt.legend(bbox_to_anchor=(1.02, 1), loc='best', borderaxespad=0)
 
         plt.xlabel("ratio")
