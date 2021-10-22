@@ -138,7 +138,7 @@ def plot(data_list, test_names, graph_dir, experiment_to_compare_against_name):
             continue
         # Plot the plot
         plot = data.plot(kind='barh', width=0.8, linewidth=2, figsize=(10, 10))
-
+        plt.axvline(x=1, color='r', lw=4, label=1)
         plt.legend(bbox_to_anchor=(1.02, 1), loc='best', borderaxespad=0)
 
         plt.xlabel("ratio")
@@ -147,8 +147,9 @@ def plot(data_list, test_names, graph_dir, experiment_to_compare_against_name):
         # Plot the numbers in the bars
         for p in plot.patches:
             left, bottom, width, height = p.get_bbox().bounds
-            plot.annotate(format(width, '.2f'), xy=(left + width, bottom + height / 2), ha='center', va='center',
-                          size=10)
+            if width > 0:
+                plot.annotate(format(width, '.2f'), xy=(left + width, bottom + height / 2), ha='center', va='center',
+                              size=10)
         plt.savefig(graph_dir + f'avg_ratios_{png_names[index]}.png', bbox_inches='tight')
         plt.clf()
 
