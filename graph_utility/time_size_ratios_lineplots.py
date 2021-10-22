@@ -193,21 +193,16 @@ if __name__ == "__main__":
 
     # Find the directory to save figures
     script_dir = os.path.dirname(__file__)
-    graph_dir = os.path.join(script_dir, '..\\graphs\\' + '\\size-ratios\\')
+    graph_dir = os.path.join(script_dir, '..\\graphs\\' + '\\time-memory\\')
 
     if not os.path.isdir(graph_dir):
         os.makedirs(graph_dir)
 
     # Directory for all our csv
-    csv_dir = os.path.join(script_dir, '..\\saved\\')
-
-    # Read csv data
-    csvs = [file for file in os.listdir(csv_dir) if
-            ('.csv' in file) and (experiment_to_compare_against_name not in file)]
+    paths = sys.argv[1:]
+    data_list = [pd.read_csv(path) for path in paths]
 
     # Find names of the tests, to be used in graphs and file names
-    test_names = [os.path.split(os.path.splitext(csv)[0])[1] for csv in csvs]
-
-    data_list = [pd.read_csv(csv_dir + csv) for csv in csvs]
+    test_names = [os.path.split(os.path.splitext(path)[0])[1] for path in paths]
 
     plot(data_list, test_names, graph_dir, experiment_to_compare_against_name)

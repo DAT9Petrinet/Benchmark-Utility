@@ -152,7 +152,7 @@ if __name__ == "__main__":
     # What we assume to be correct results
     if len(sys.argv) <= 2:
         raise Exception(
-            f'(reduction_points) You need to specify more than one csv, the first will be used as basis for comparison')
+            '(reduction_points) You need to specify more than one csv, the first will be used as basis for comparison')
     else:
         experiment_to_compare_against_path = sys.argv[1]
         experiment_to_compare_against_name = \
