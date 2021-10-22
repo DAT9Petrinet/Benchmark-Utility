@@ -1,10 +1,11 @@
+import copy
 import os
 import re
 import sys
 import warnings
-import copy
-import pandas as pd
+
 import matplotlib.pyplot as plt
+import pandas as pd
 import seaborn as sns
 
 warnings.filterwarnings("error")
@@ -53,7 +54,7 @@ def plot(data_list, test_names, graph_dir):
             plot.annotate(format(p.get_height().astype(int), 'd'),
                           ((p.get_x() + p.get_width() / 2).astype(int), p.get_height().astype(int)),
                           ha='center', va='center',
-                          size=10,
+                          size=12,
                           xytext=(0, 8),
                           textcoords='offset points')
         plt.savefig(graph_dir + f'{test_names[test_index]}_rule_usage_absolute.png')
@@ -63,7 +64,7 @@ def plot(data_list, test_names, graph_dir):
 if __name__ == "__main__":
     # Find the directory to save figures
     script_dir = os.path.dirname(__file__)
-    graph_dir = os.path.join(script_dir, '..\\graphs\\')
+    graph_dir = os.path.join(script_dir, '..\\graphs\\' + '\\rule-usage\\')
 
     if not os.path.isdir(graph_dir):
         os.makedirs(graph_dir)

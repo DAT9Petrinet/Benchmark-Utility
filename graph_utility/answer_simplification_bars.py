@@ -1,9 +1,10 @@
+import copy
 import os
 import sys
+
 import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
-import copy
 
 
 def plot(data_list, test_names, graph_dir):
@@ -21,12 +22,6 @@ def plot(data_list, test_names, graph_dir):
     # and columns are 'not answered', 'simplified', and 'reduced'.
     combined = pd.DataFrame()
 
-    # The actual test names are replaced by their index in 'test_names',
-    # so the mapping from index to test name is printed in console
-    print(f"(answer_simplification_bars) map for x-axis:")
-    for index, test_name in enumerate(test_names):
-        print(f"{index} = {test_name}")
-
     for index, data in enumerate(data_list):
         # Change 'NONE' value to 'not answered', and 'TRUE' and 'FALSE' to 'answered'
         data['answer'] = data['answer'].replace(['TRUE', 'FALSE'], 'answered')
@@ -43,8 +38,8 @@ def plot(data_list, test_names, graph_dir):
         simplifications = (data['solved by query simplification'].value_counts()).to_frame()
 
         # Combine into same dataframe, with column being the test name, and row indices being above metrics
-        answers.rename(columns={'answer': index}, inplace=True)
-        simplifications.rename(columns={'solved by query simplification': index}, inplace=True)
+        answers.rename(columns={'answer': test_names[index]}, inplace=True)
+        simplifications.rename(columns={'solved by query simplification': test_names[index]}, inplace=True)
         temp = answers.append(simplifications)
 
         # Might not have these columns, due to faulty test, so wrap in try-except
@@ -81,33 +76,24 @@ def plot(data_list, test_names, graph_dir):
         # Add data from this experiment, to results from other experiments
         combined = combined.append(temp)
 
-    # Make stacked bar plot
+    # Plot the plot
     sns.set_theme(style="darkgrid", palette="pastel")
-    plot = combined.plot(kind='bar', stacked=True)
-    # For some reason seaborn really wants to rotate the labels, so I un-rotate them
-    for item in plot.get_xticklabels():
-        item.set_rotation(0)
-    # Set legend in the top
-    plt.legend(bbox_to_anchor=(0.35, 1.12), loc='upper left', borderaxespad=0)
+    plot = combined.plot(kind='barh', width=0.75, linewidth=2, figsize=(10, 10), stacked=True)
 
-    plt.ylabel("test instances")
-    plt.xlabel('experiments')
-    # For each patch (basically each rectangle within the bar), add a label.
-    for bar in plot.patches:
-        plot.text(
-            # Put the text in the middle of each bar. get_x returns the start
-            # so we add half the width to get to the middle.
-            bar.get_x() + bar.get_width() / 2,
-            # Vertically, add the height of the bar to the start of the bar,
-            # along with the offset.
-            bar.get_y() if bar.get_height() < 2500 else (bar.get_height() / 2) + bar.get_y(),
-            # This is actual value we'll show.
-            round(bar.get_height()) if round(bar.get_height()) > 0 else "",
-            # Center the labels and style them a bit.
-            ha='center',
-            color='black',
-            size=10
-        )
+    plt.legend(bbox_to_anchor=(0.35, 1.12), loc='upper left', borderaxespad=0)
+    plt.xlabel("test instances")
+    plt.ylabel('experiments')
+
+    # Find max width, in order to move the very small numbers away from the bars
+    max_width = 0
+    for p in plot.patches:
+        left, bottom, width, height = p.get_bbox().bounds
+        max_width = max(width, max_width)
+    # Plot the numbers in the bars
+    for p in plot.patches:
+        left, bottom, width, height = p.get_bbox().bounds
+        plot.annotate(int(width), xy=(left + width / 2, bottom + height / 2),
+                      ha='center', va='center')
     plt.savefig(graph_dir + 'answer_simplification_bars.png')
     plt.clf()
 
@@ -115,7 +101,7 @@ def plot(data_list, test_names, graph_dir):
 if __name__ == "__main__":
     # Find the directory to save figures
     script_dir = os.path.dirname(__file__)
-    graph_dir = os.path.join(script_dir, '..\\graphs\\')
+    graph_dir = os.path.join(script_dir, '..\\graphs\\' + '\\best-experiment\\')
 
     if not os.path.isdir(graph_dir):
         os.makedirs(graph_dir)

@@ -1,11 +1,11 @@
-import math
+import copy
 import os
 import sys
+
 import matplotlib.pyplot as plt
+import numpy as np
 import pandas as pd
 import seaborn as sns
-import copy
-import numpy as np
 
 
 def plot(data_list, test_names, graph_dir, metric):
@@ -59,23 +59,47 @@ def plot(data_list, test_names, graph_dir, metric):
             raise Exception("(time_memory) Should not be able to reach this")
         custom_palette[column] = color((column_index + 1) / len(combined_df.columns))
 
-    # Plot the plot
-    plot = sns.lineplot(data=combined_df, palette=custom_palette,
-                        dashes=dashes)
-    plot.set(
-        title=f'model checking {metric} per test instance',
-        ylabel='kB',
-        xlabel='test instances', yscale="log")
-    plt.legend(bbox_to_anchor=(1.02, 1), loc='best', borderaxespad=0)
+    if metric == 'time':
+        unit = 'seconds'
+    else:
+        unit = 'kB'
 
-    plt.savefig(graph_dir + f'{metric}_per_model.png', bbox_inches='tight')
-    plt.clf()
+    columns_with_with = [test_name for test_name in combined_df.columns if
+                         ("with" in test_name) or ("base-rules" in test_name)]
+    columns_not_with_with = [test_name for test_name in combined_df.columns if
+                             "with" not in test_name or ("base-rules" in test_name)]
+    columns_to_be_removed_by_with = [column for column in combined_df.columns if column not in columns_with_with]
+    columns_to_be_removed_by_without = [column for column in combined_df.columns if column not in columns_not_with_with]
+
+    dashes_without = [dash for index, dash in enumerate(dashes) if combined_df.columns[index] in columns_not_with_with]
+    combined_df_without = combined_df.drop(columns_to_be_removed_by_without, axis=1)
+
+    dashes_with = [dash for index, dash in enumerate(dashes) if combined_df.columns[index] in columns_with_with]
+    combined_df_with_with = combined_df.drop(columns_to_be_removed_by_with, axis=1)
+
+    data_to_plot = [(combined_df, dashes), (combined_df_with_with, dashes_with), (combined_df_without, dashes_without)]
+    png_names = ['all', 'with', 'without']
+
+    for index, data in enumerate(data_to_plot):
+        if len(data[0]) == 0 or len(data[0].columns) == 0:
+            continue
+        # Plot the plot
+        plot = sns.lineplot(data=data[0], palette=custom_palette,
+                            dashes=data[1])
+        plot.set(
+            title=f'model checking {metric} per test instance',
+            ylabel=f'{unit}',
+            xlabel='test instances', yscale="log")
+        plt.legend(bbox_to_anchor=(1.02, 1), loc='best', borderaxespad=0)
+
+        plt.savefig(graph_dir + f'{metric}_lines_per_model_{png_names[index]}.png', bbox_inches='tight')
+        plt.clf()
 
 
 if __name__ == "__main__":
     # Find the directory to save figures
     script_dir = os.path.dirname(__file__)
-    graph_dir = os.path.join(script_dir, '..\\graphs\\')
+    graph_dir = os.path.join(script_dir, '..\\graphs\\' + '\\time-memory\\')
 
     if not os.path.isdir(graph_dir):
         os.makedirs(graph_dir)

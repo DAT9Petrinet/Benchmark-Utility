@@ -1,10 +1,11 @@
+import copy
 import os
 import sys
+
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sns
-import copy
 
 
 def plot(data_list, test_names, graph_dir, experiment_to_compare_against_name):
@@ -18,7 +19,7 @@ def plot(data_list, test_names, graph_dir, experiment_to_compare_against_name):
     data_list = copy.deepcopy(data_list)
     test_names = copy.deepcopy(test_names)
 
-    print(f"(reduction_points) Using {experiment_to_compare_against_name} to compare against")
+    print(f"(reduction_points) using ({experiment_to_compare_against_name}) to compare against")
 
     # Remove test with no reductions, assume this is named 'no-red'
     for test_index, name in enumerate(test_names):
@@ -106,65 +107,77 @@ def plot(data_list, test_names, graph_dir, experiment_to_compare_against_name):
         new_indices[index] = name
     points_df.rename(index=new_indices, inplace=True)
 
-    # Plot the plot
-    sns.set_theme(style="darkgrid", palette="pastel")
-    plot = points_df.plot(kind='barh', width=0.75, linewidth=2, figsize=(10, 10))
+    columns_with_with = [test_name for test_name in points_df.T.columns if
+                         ("with" in test_name) or ("base-rules" in test_name)]
+    columns_not_with_with = [test_name for test_name in points_df.T.columns if
+                             "with" not in test_name or ("base-rules" in test_name)]
+    columns_to_be_removed_by_with = [column for column in points_df.T.columns if column not in columns_with_with]
+    columns_to_be_removed_by_without = [column for column in points_df.T.columns if column not in columns_not_with_with]
 
-    plt.legend(bbox_to_anchor=(1.02, 1), loc='best', borderaxespad=0)
+    points_df_without = points_df.drop(columns_to_be_removed_by_without)
+    points_df_with_with = points_df.drop(columns_to_be_removed_by_with)
 
-    plt.xlabel("reductions")
-    plt.ylabel('experiments')
+    data_to_plot = [points_df, points_df_with_with, points_df_without]
+    png_names = ['all', 'with', 'without']
 
-    # Find max width, in order to move the very small numbers away from the bars
-    max_width = 0
-    for p in plot.patches:
-        left, bottom, width, height = p.get_bbox().bounds
-        max_width = max(width, max_width)
-    # Plot the numbers in the bars
-    for p in plot.patches:
-        left, bottom, width, height = p.get_bbox().bounds
-        if width < (max_width / 10):
-            plot.annotate(int(width), xy=(max_width / 12.5, bottom + height / 2),
-                          ha='center', va='center')
-        else:
+    for index, data in enumerate(data_to_plot):
+        if len(data) == 0:
+            continue
+        # Plot the plot
+        sns.set_theme(style="darkgrid", palette="pastel")
+        plot = data.plot(kind='barh', width=0.75, linewidth=2, figsize=(10, 10))
+        plt.xscale('linear')
+        plt.legend(bbox_to_anchor=(1.02, 1), loc='best', borderaxespad=0)
+        plt.title(f'Comparing experiments to ({experiment_to_compare_against_name})')
+        plt.xlabel("points")
+        plt.ylabel('experiments')
+
+        # Find max width, in order to move the very small numbers away from the bars
+        max_width = 0
+        for p in plot.patches:
+            left, bottom, width, height = p.get_bbox().bounds
+            max_width = max(width, max_width)
+        # Plot the numbers in the bars
+        for p in plot.patches:
+            left, bottom, width, height = p.get_bbox().bounds
+            left += 1
             plot.annotate(int(width), xy=(left + width / 2, bottom + height / 2),
                           ha='center', va='center')
 
-    plt.savefig(graph_dir + 'reduced_points.png', bbox_inches='tight')
-    plt.clf()
+        plt.savefig(graph_dir + f'reduction_points_{png_names[index]}.png', bbox_inches='tight')
+        plt.clf()
 
 
 if __name__ == "__main__":
     # What we assume to be correct results
-    if len(sys.argv) == 1:
-        experiment_to_compare_against_name = 'base-rules'
+    if len(sys.argv) <= 2:
+        raise Exception(
+            '(reduction_points) You need to specify more than one csv, the first will be used as basis for comparison')
     else:
-        experiment_to_compare_against_name = sys.argv[1]
+        experiment_to_compare_against_path = sys.argv[1]
+        experiment_to_compare_against_name = \
+            [os.path.split(os.path.splitext(experiment_to_compare_against_path)[0])[1]][0]
+        if experiment_to_compare_against_name == 'no-red':
+            print('(reduction_points) Cannot use no-red as basis for comparison, as this has no reductions')
 
     # Find the directory to save figures
     script_dir = os.path.dirname(__file__)
-    graph_dir = os.path.join(script_dir, '..\\graphs\\')
+    graph_dir = os.path.join(script_dir, '..\\graphs\\' + '\\reductions\\')
 
     if not os.path.isdir(graph_dir):
         os.makedirs(graph_dir)
 
     # Directory for all our csv
-    csv_dir = os.path.join(script_dir, '..\\saved\\')
-
-    # Read csv data
-    csvs = [file for file in os.listdir(csv_dir) if
-            ('.csv' in file) and (experiment_to_compare_against_name not in file)]
+    paths = sys.argv[1:]
+    data_list = [pd.read_csv(path) for path in paths]
 
     # Find names of the tests, to be used in graphs and file names
-    test_names = [os.path.split(os.path.splitext(csv)[0])[1] for csv in csvs]
+    test_names = [os.path.split(os.path.splitext(path)[0])[1] for path in paths]
 
-    try:
-        correct_results = pd.read_csv(csv_dir + experiment_to_compare_against_name + '.csv')
-    except:
-        raise Exception(
-            f'(reduction_points)({experiment_to_compare_against_name}) is not present in saved/ and cannot be used as basis for comparison. '
-            f'Check if you made a typo in the parameter to the program')
-
-    data_list = [pd.read_csv(csv_dir + csv) for csv in csvs]
+    if len(test_names) == 2:
+        if 'no-red' in test_names:
+            raise Exception(
+                '(reduction_points) if you only compare two experiments, one cannot be no-red, as this is ignored due to comparing the reductions. '
+                'Then you end up with no comparisons.')
 
     plot(data_list, test_names, graph_dir, experiment_to_compare_against_name)

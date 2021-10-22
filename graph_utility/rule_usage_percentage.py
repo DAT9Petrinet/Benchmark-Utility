@@ -1,10 +1,11 @@
+import copy
 import os
 import re
 import sys
-import pandas as pd
+
 import matplotlib.pyplot as plt
+import pandas as pd
 import seaborn as sns
-import copy
 
 
 def plot(data_list, test_names, graph_dir):
@@ -44,13 +45,14 @@ def plot(data_list, test_names, graph_dir):
         plot.set(title=f'({test_names[index]}) percentage of models using rules', ylabel='uses in \\%', xlabel='rules')
         # Plots numbers above bars
         for p in plot.patches:
-            plot.annotate(format(p.get_height(), '.1f'),
-                          (p.get_x() + p.get_width() / 2.,
-                           p.get_height()),
-                          ha='center', va='center',
-                          size=10,
-                          xytext=(0, 8),
-                          textcoords='offset points')
+            if p.get_height() != 0.0:
+                plot.annotate(format(p.get_height(), '.1f'),
+                              (p.get_x() + p.get_width() / 2.,
+                               p.get_height()),
+                              ha='center', va='center',
+                              size=12,
+                              xytext=(0, 8),
+                              textcoords='offset points')
         plt.savefig(graph_dir + f'{test_names[index]}_rule_usage_percentage.png')
         plt.clf()
 
@@ -58,7 +60,7 @@ def plot(data_list, test_names, graph_dir):
 if __name__ == "__main__":
     # Find the directory to save figures
     script_dir = os.path.dirname(__file__)
-    graph_dir = os.path.join(script_dir, '..\\graphs\\')
+    graph_dir = os.path.join(script_dir, '..\\graphs\\' + '\\rule-usage\\')
 
     if not os.path.isdir(graph_dir):
         os.makedirs(graph_dir)

@@ -1,15 +1,17 @@
+import copy
 import os
 import sys
+
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sns
-import copy
 
 
 # The first csv will be used as numerator in the plots
 def plot(data_list, test_names, graph_dir, experiment_to_compare_against_name):
-    print(f"(size_time_ratio_by_rule) Comparing reduced size/time with our rules")
+    print(
+        f"(time_size_avg_ratios) using ({experiment_to_compare_against_name}) results as numerator when computing size/time ratios")
 
     # The deepcopies are because in the 'all_graphs' the data_list are used for all plots,
     # so each function will make their own copy
@@ -77,16 +79,18 @@ def plot(data_list, test_names, graph_dir, experiment_to_compare_against_name):
             # Sanity check
             if (base_results_row['model name'] != row['model name']) or (
                     base_results_row['query index'] != row['query index']):
-                raise Exception('(size_time_ratio) Comparing wrong rows')
+                raise Exception('(time_size_avg_ratios) Comparing wrong rows')
 
             if (base_results_row['answer'] != 'NONE') and row['answer'] != 'NONE':
                 base_reduction_size = base_results_row['post place count'] + base_results_row['post transition count']
                 size_post_reductions = row['post place count'] + row['post transition count']
 
-                try:
+                if size_post_reductions == 0:
                     size_ratio = (base_reduction_size / size_post_reductions)
-                except:
-                    size_ratio = np.nan
+                elif size_post_reductions >= 1:
+                    size_ratio = (base_reduction_size / size_post_reductions)
+                else:
+                    raise Exception('(time_size_avg_ratios) Something went wrong with calculating size')
                 time_ratio = (base_results_row['time'] / row['time'])
 
                 if new_rule_used:
@@ -97,22 +101,24 @@ def plot(data_list, test_names, graph_dir, experiment_to_compare_against_name):
                     not_used_time_ratios_inner.append(time_ratio)
 
         # Add ratios to the current dataframe, with the tests being compared as the column name
-        rule_used_size = sum(size_ratios_inner) / len(
-            size_ratios_inner) if len(size_ratios_inner) > 0 else np.nan
-        rule_used_time = sum(time_ratios_inner) / len(
-            time_ratios_inner) if len(time_ratios_inner) > 0 else np.nan
-        rule_not_used_size = sum(not_used_size_ratios_inner) / len(
-            not_used_size_ratios_inner) if len(not_used_size_ratios_inner) > 0 else np.nan
-        rule_not_used_time = sum(not_used_time_ratios_inner) / len(
-            not_used_time_ratios_inner) if len(not_used_time_ratios_inner) > 0 else np.nan
-        both_size = (sum(not_used_size_ratios_inner) + sum(size_ratios_inner)) / (
+        rule_used_size = np.nansum(size_ratios_inner) / len(
+            size_ratios_inner)
+        rule_used_time = np.nansum(time_ratios_inner) / len(
+            time_ratios_inner)
+        rule_not_used_size = np.nansum(not_used_size_ratios_inner) / len(
+            not_used_size_ratios_inner)
+        rule_not_used_time = np.nansum(not_used_time_ratios_inner) / len(
+            not_used_time_ratios_inner)
+        both_size = (np.nansum(not_used_size_ratios_inner) + np.nansum(size_ratios_inner)) / (
                 len(not_used_size_ratios_inner) + len(size_ratios_inner))
-        both_time = (sum(not_used_time_ratios_inner) + sum(time_ratios_inner)) / (
+        both_time = (np.nansum(not_used_time_ratios_inner) + np.nansum(time_ratios_inner)) / (
                 len(not_used_time_ratios_inner) + len(time_ratios_inner))
+
         df2 = pd.DataFrame(
             [[rule_used_size, rule_used_time, rule_not_used_size, rule_not_used_time, both_size, both_time]],
-            columns=['size ratio using rules', 'time ratio using rules', 'size ratio not using rules',
-                     'time ratio not using rules', 'overall size ratio',
+            columns=['size ratio when using new rules', 'time ratio when using new rules',
+                     'size ratio when not using new rules',
+                     'time ratio when not using new rules', 'overall size ratio',
                      'overall time ratio'],
             index=[f'{experiment_to_compare_against_name}/{test_names[test_index]}'])
 
@@ -126,92 +132,51 @@ def plot(data_list, test_names, graph_dir, experiment_to_compare_against_name):
     combined_with_with = combined.drop(columns_not_with_with)
     combined_without_with = combined.drop(columns_with_with)
 
-    # Plot the plot
+    data_to_plot = [combined, combined_with_with, combined_without_with]
+    png_names = ['all', 'with', 'without']
+
     sns.set_theme(style="darkgrid", palette="pastel")
-    plot = combined_with_with.plot(kind='barh', width=0.8, linewidth=2, figsize=(8, 8))
+    for index, data in enumerate(data_to_plot):
+        if len(data) == 0:
+            continue
+        # Plot the plot
+        plot = data.plot(kind='barh', width=0.8, linewidth=2, figsize=(10, 10))
+        plt.axvline(x=1, color='r', lw=4)
+        plt.legend(bbox_to_anchor=(1.02, 1), loc='best', borderaxespad=0)
 
-    plt.legend(bbox_to_anchor=(1.02, 1), loc='best', borderaxespad=0)
+        plt.xlabel("ratio")
+        plt.ylabel('experiments')
 
-    plt.xlabel("ratio")
-    plt.ylabel('experiments')
-
-    # Find max width, in order to move the very small numbers away from the bars
-    max_width = 0
-    for p in plot.patches:
-        left, bottom, width, height = p.get_bbox().bounds
-        max_width = max(width, max_width)
-    # Plot the numbers in the bars
-    for p in plot.patches:
-        left, bottom, width, height = p.get_bbox().bounds
-        if width < (max_width / 10):
-            plot.annotate(format(width, '.2f'), xy=(max_width / 12.5, bottom + height / 2),
-                          ha='center', va='center')
-        else:
-            plot.annotate(format(width, '.2f'), xy=(left + width / 2, bottom + height / 2),
-                          ha='center', va='center')
-
-    plt.savefig(graph_dir + 'avg_ratios_with.png', bbox_inches='tight')
-    plt.clf()
-
-    # Plot the plot
-    sns.set_theme(style="darkgrid", palette="pastel")
-    plot = combined_without_with.plot(kind='barh', width=0.8, linewidth=2, figsize=(8, 8))
-
-    plt.legend(bbox_to_anchor=(1.02, 1), loc='best', borderaxespad=0)
-
-    plt.xlabel("ratio")
-    plt.ylabel('experiments')
-
-    # Find max width, in order to move the very small numbers away from the bars
-    max_width = 0
-    for p in plot.patches:
-        left, bottom, width, height = p.get_bbox().bounds
-        max_width = max(width, max_width)
-    # Plot the numbers in the bars
-    for p in plot.patches:
-        left, bottom, width, height = p.get_bbox().bounds
-        if width < (max_width / 10):
-            plot.annotate(format(width, '.2f'), xy=(max_width / 12.5, bottom + height / 2),
-                          ha='center', va='center')
-        else:
-            plot.annotate(format(width, '.2f'), xy=(left + width / 2, bottom + height / 2),
-                          ha='center', va='center')
-
-    plt.savefig(graph_dir + 'avg_ratios_without.png', bbox_inches='tight')
-    plt.clf()
+        # Plot the numbers in the bars
+        for p in plot.patches:
+            left, bottom, width, height = p.get_bbox().bounds
+            if width > 0:
+                plot.annotate(format(width, '.2f'), xy=(left + width, bottom + height / 2), ha='center', va='center',
+                              size=10)
+        plt.savefig(graph_dir + f'avg_ratios_{png_names[index]}.png', bbox_inches='tight')
+        plt.clf()
 
 
 if __name__ == "__main__":
     # What we assume to be correct results
-    if len(sys.argv) == 1:
-        experiment_to_compare_against_name = 'base-rules'
+    if len(sys.argv) <= 2:
+        raise Exception(
+            f'(time_memory_points) You need to specify more than one csv, the first will be used as basis for comparison')
     else:
-        experiment_to_compare_against_name = sys.argv[1]
+        experiment_to_compare_against_name = [os.path.split(os.path.splitext(sys.argv[1])[0])[1]][0]
 
     # Find the directory to save figures
     script_dir = os.path.dirname(__file__)
-    graph_dir = os.path.join(script_dir, '..\\graphs\\')
+    graph_dir = os.path.join(script_dir, '..\\graphs\\' + '\\time-memory\\')
 
     if not os.path.isdir(graph_dir):
         os.makedirs(graph_dir)
 
     # Directory for all our csv
-    csv_dir = os.path.join(script_dir, '..\\saved\\')
-
-    # Read csv data
-    csvs = [file for file in os.listdir(csv_dir) if
-            ('.csv' in file) and (experiment_to_compare_against_name not in file)]
+    paths = sys.argv[1:]
+    data_list = [pd.read_csv(path) for path in paths]
 
     # Find names of the tests, to be used in graphs and file names
-    test_names = [os.path.split(os.path.splitext(csv)[0])[1] for csv in csvs]
-
-    try:
-        correct_results = pd.read_csv(csv_dir + experiment_to_compare_against_name + '.csv')
-    except:
-        raise Exception(
-            f'(reduction_points)({experiment_to_compare_against_name}) is not present in saved/ and cannot be used as basis for comparison. '
-            f'Check if you made a typo in the parameter to the program')
-
-    data_list = [pd.read_csv(csv_dir + csv) for csv in csvs]
+    test_names = [os.path.split(os.path.splitext(path)[0])[1] for path in paths]
 
     plot(data_list, test_names, graph_dir, experiment_to_compare_against_name)

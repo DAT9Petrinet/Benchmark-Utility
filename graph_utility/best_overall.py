@@ -1,10 +1,11 @@
+import copy
 import os
 import sys
+
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sns
-import copy
 
 
 def plot(data_list, test_names, graph_dir):
@@ -17,6 +18,10 @@ def plot(data_list, test_names, graph_dir):
     # so each function will make their own copy
     data_list = copy.deepcopy(data_list)
     test_names = copy.deepcopy(test_names)
+
+    if len(test_names) == 2 and 'no-red' in test_names:
+        print(
+            '(best_overall) beware, probably weird results (in reduction points) in this graph due to comparing only 2 experiments, and one which is no-red')
 
     # Find test instances that no experiment managed to reduce
     rows_to_delete = set()
@@ -93,7 +98,7 @@ def plot(data_list, test_names, graph_dir):
 
                 # Find the best result among all experiments
                 # Dont compare reduction size against no-red, as this always has 0s, would always win trivially
-                if test_names[test_index] != 'no-red':
+                if test_names[test_index2] != 'no-red':
                     best_reduction = min(best_reduction,
                                          other_row['post place count'] + other_row['post transition count'])
                 best_time = min(best_time, other_row['time'])
@@ -112,10 +117,11 @@ def plot(data_list, test_names, graph_dir):
                     memory_eq_sum += 1
                     if row['memory'] <= 0.9 * best_memory:
                         memory_sum += 1
-                if (row['post place count'] + row['post transition count']) <= best_reduction:
-                    reduction_eq_sum += 1
-                    if (row['post place count'] + row['post transition count']) <= 0.9 * best_reduction:
-                        reduction_sum += 1
+                if test_names[test_index] != 'no-red':
+                    if (row['post place count'] + row['post transition count']) <= best_reduction:
+                        reduction_eq_sum += 1
+                        if (row['post place count'] + row['post transition count']) <= 0.9 * best_reduction:
+                            reduction_sum += 1
                 if not anyone_else_answer:
                     unique_answers_sum += 1
 
@@ -145,85 +151,67 @@ def plot(data_list, test_names, graph_dir):
     points_df.rename(index=new_indices, inplace=True)
     points_eq_df.rename(index=new_indices, inplace=True)
 
-    columns_with_with = [test_name for test_name in test_names if "with" in test_name]
-    columns_not_with_with = [test_name for test_name in test_names if "with" not in test_name]
+    columns_with_with = [test_name for test_name in points_df.T.columns if
+                         ("with" in test_name) or ("base-rules" in test_name)]
+    columns_not_with_with = [test_name for test_name in points_df.T.columns if
+                             "with" not in test_name or ("base-rules" in test_name)]
+    columns_to_be_removed_by_with = [column for column in points_df.T.columns if column not in columns_with_with]
+    columns_to_be_removed_by_without = [column for column in points_df.T.columns if column not in columns_not_with_with]
 
-    points_df_with_with = points_df.drop(columns_not_with_with)
-    points_eq_df_with_with = points_eq_df.drop(columns_not_with_with)
+    points_df_without = points_df.drop(columns_to_be_removed_by_without)
+    points_df_with_with = points_df.drop(columns_to_be_removed_by_with)
 
-    points_df_without_with = points_df.drop(columns_with_with)
-    points_eq_df_without_with = points_eq_df.drop(columns_with_with)
+    points_eq_df_without = points_eq_df.drop(columns_to_be_removed_by_without)
+    points_eq_df_with = points_eq_df.drop(columns_to_be_removed_by_with)
 
-    # Plot the plots
-    sns.set_theme(style="darkgrid", palette="pastel")
-    plot = points_df_with_with.plot(kind='barh', width=0.75, linewidth=2)
-    plt.legend(bbox_to_anchor=(1.02, 1), loc='best', borderaxespad=0)
-    plt.title('Point given if at least 10% better than runner-up')
-    plt.xscale('log')
-    plt.xlabel("points")
-    plt.ylabel('experiments')
+    data_to_plot = [points_df, points_df_with_with, points_df_without]
+    data_to_plot_eq = [points_eq_df, points_eq_df_with, points_eq_df_without]
+    png_names = ['all', 'with', 'without']
 
-    # Plot the numbers in the bars
-    for p in plot.patches:
-        left, bottom, width, height = p.get_bbox().bounds
-        plot.annotate(int(width), xy=(left + width, bottom + height / 2), ha='center', va='center')
+    for index, data in enumerate(data_to_plot):
+        if len(data) == 0:
+            continue
+        # Plot the plots
+        sns.set_theme(style="darkgrid", palette="pastel")
+        plot = data.plot(kind='barh', width=0.75, linewidth=2, figsize=(10, 10))
+        plt.legend(bbox_to_anchor=(1.02, 1), loc='best', borderaxespad=0)
+        plt.title('Point given if at least 10% better than runner-up')
+        plt.xscale('log')
+        plt.xlabel("points")
+        plt.ylabel('experiments')
 
-    plt.savefig(graph_dir + '10%_better_points_with.png', bbox_inches='tight')
-    plt.clf()
+        # Plot the numbers in the bars
+        for p in plot.patches:
+            left, bottom, width, height = p.get_bbox().bounds
+            plot.annotate(int(width), xy=(left + width, bottom + height / 2), ha='center', va='center', size=10)
 
-    # Plot the second plot with with
-    plot = points_eq_df_with_with.plot(kind='barh', width=0.75, linewidth=2)
-    plt.legend(bbox_to_anchor=(1.02, 1), loc='best', borderaxespad=0)
-    plt.title('Point given if at least as good as runner-up')
-    plt.xscale('log')
-    plt.xlabel("points")
-    plt.ylabel('experiments')
+        plt.savefig(graph_dir + f'10%_better_points_{png_names[index]}.png', bbox_inches='tight')
+        plt.clf()
 
-    # Plot the numbers in the bars
-    for p in plot.patches:
-        left, bottom, width, height = p.get_bbox().bounds
-        plot.annotate(int(width), xy=(left + width, bottom + height / 2), ha='center', va='center')
+    for index, data in enumerate(data_to_plot_eq):
+        if len(data) == 0:
+            continue
+        # Plot the second plot with with
+        plot = data.plot(kind='barh', width=0.75, linewidth=2, figsize=(10, 10))
+        plt.legend(bbox_to_anchor=(1.02, 1), loc='best', borderaxespad=0)
+        plt.title('Point given if at least as good as runner-up')
+        plt.xscale('log')
+        plt.xlabel("points")
+        plt.ylabel('experiments')
 
-    plt.savefig(graph_dir + 'better_or_eq_points_with.png', bbox_inches='tight')
-    plt.clf()
+        # Plot the numbers in the bars
+        for p in plot.patches:
+            left, bottom, width, height = p.get_bbox().bounds
+            plot.annotate(int(width), xy=(left + width, bottom + height / 2), ha='center', va='center', size=10)
 
-    # Plot the plots without with experiments
-    plot = points_df_without_with.plot(kind='barh', width=0.75, linewidth=2)
-    plt.legend(bbox_to_anchor=(1.02, 1), loc='best', borderaxespad=0)
-    plt.title('Point given if at least 10% better than runner-up')
-    plt.xscale('log')
-    plt.xlabel("points")
-    plt.ylabel('experiments')
-
-    # Plot the numbers in the bars
-    for p in plot.patches:
-        left, bottom, width, height = p.get_bbox().bounds
-        plot.annotate(int(width), xy=(left + width, bottom + height / 2), ha='center', va='center')
-
-    plt.savefig(graph_dir + '10%_better_points_without.png', bbox_inches='tight')
-    plt.clf()
-
-    #
-    plot = points_eq_df_without_with.plot(kind='barh', width=0.75, linewidth=2)
-    plt.legend(bbox_to_anchor=(1.02, 1), loc='best', borderaxespad=0)
-    plt.title('Point given if at least as good as runner-up')
-    plt.xscale('log')
-    plt.xlabel("points")
-    plt.ylabel('experiments')
-
-    # Plot the numbers in the bars
-    for p in plot.patches:
-        left, bottom, width, height = p.get_bbox().bounds
-        plot.annotate(int(width), xy=(left + width, bottom + height / 2), ha='center', va='center')
-
-    plt.savefig(graph_dir + 'better_or_eq_points_without.png', bbox_inches='tight')
-    plt.clf()
+        plt.savefig(graph_dir + f'better_or_eq_points_{png_names[index]}.png', bbox_inches='tight')
+        plt.clf()
 
 
 if __name__ == "__main__":
     # Find the directory to save figures
     script_dir = os.path.dirname(__file__)
-    graph_dir = os.path.join(script_dir, '..\\graphs\\')
+    graph_dir = os.path.join(script_dir, '..\\graphs\\' + '\\best-experiment\\')
 
     if not os.path.isdir(graph_dir):
         os.makedirs(graph_dir)

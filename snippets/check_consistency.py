@@ -25,6 +25,7 @@ def check_consistency(correct_results, correct_results_name, data_list, test_nam
 
         if len(inconsistent_rows) == 0:
             print(f"{test_names[test_index]} is consistent with {correct_results_name}\n")
+            print("--------------------------------------------------------------------")
         else:
             print(f"({test_names[test_index]}) is not consistent with ({correct_results_name})\n"
                   f"Found inconsistencies in answers in: {len(inconsistent_rows)} rows\n")
@@ -35,6 +36,7 @@ def check_consistency(correct_results, correct_results_name, data_list, test_nam
             print(f"({test_names[test_index]}) output:")
             print(inconsistent_rows[0][1])
             print("--------------------------------------------------------------------")
+    print("Done checking for consistency")
 
 
 if __name__ == "__main__":
