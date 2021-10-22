@@ -45,7 +45,7 @@ echo ""
 
 # ***** Analysis *****
 
-for FILE in $(ls "$DIR") ; do
+for FILE in $(ls "$DIR/*.out") ; do
 
 	echo "Collecting from $DIR/$FILE"
 
@@ -69,27 +69,27 @@ for FILE in $(ls "$DIR") ; do
 	QUERY_SIMPLIFICATION=$([[ -n "$(echo $RES | awk '/Query solved by Query Simplification/')" ]] && echo "TRUE" || echo "FALSE")
 
     # Total reduction size
-	PREV_PLACE_COUNT=$([[ -n "$(echo $RES | awk '/Size of net before/')" ]] && $(echo $RES | sed -E "s/.*Size of net before[^:]*: ([0-9]+).*/\1/") || echo 0)
-	PREV_TRANS_COUNT=$([[ -n "$(echo $RES | awk '/Size of net before/')" ]] && $(echo $RES | sed -E "s/.*Size of net before[^:]*: [0-9]+ places, ([0-9]+).*/\1/") || echo 0)
-	POST_RED_PLACE_COUNT=$([[ -n "$(echo $RES | awk '/Size of net after/')" ]] && $(echo $RES | sed -E "s/.*Size of net after[^:]*: ([0-9]+).*/\1/") || echo 0)
-	POST_RED_TRANS_COUNT=$([[ -n "$(echo $RES | awk '/Size of net after/')" ]] && $(echo $RES | sed -E "s/.*Size of net after[^:]*: [0-9]+ places, ([0-9]+).*/\1/") || echo 0)
+	PREV_PLACE_COUNT=$([[ -n "$(echo $RES | awk '/Size of net before/')" ]] && echo $RES | sed -E "s/.*Size of net before[^:]*: ([0-9]+).*/\1/" || echo 0)
+	PREV_TRANS_COUNT=$([[ -n "$(echo $RES | awk '/Size of net before/')" ]] && echo $RES | sed -E "s/.*Size of net before[^:]*: [0-9]+ places, ([0-9]+).*/\1/" || echo 0)
+	POST_RED_PLACE_COUNT=$([[ -n "$(echo $RES | awk '/Size of net after/')" ]] && echo $RES | sed -E "s/.*Size of net after[^:]*: ([0-9]+).*/\1/" || echo 0)
+	POST_RED_TRANS_COUNT=$([[ -n "$(echo $RES | awk '/Size of net after/')" ]] && echo $RES | sed -E "s/.*Size of net after[^:]*: [0-9]+ places, ([0-9]+).*/\1/" || echo 0)
 
 	# Reduction time
-	RED_TIME=$([[ -n "$(echo $RES | awk '/Structural reduction finished after/')" ]] && $(echo $RES | sed -E "s/.*Structural reduction finished after ([0-9]+(\.[0-9]+)?) s/\1/") || echo 0.0)
+	RED_TIME=$([[ -n "$(echo $RES | awk '/Structural reduction finished after/')" ]] && echo $RES | sed -E "s/.*Structural reduction finished after ([0-9]+(\.[0-9]+)?) s.*/\1/" || echo 0.0)
 
 	echo -n "$MODEL,$Q,$TIME,$MEM,$ANSWER,$QUERY_SIMPLIFICATION,$PREV_PLACE_COUNT,$PREV_TRANS_COUNT,$POST_RED_PLACE_COUNT,$POST_RED_TRANS_COUNT,$RED_TIME" >> OUT
 
 	# Applications of rules
 	for i in ${!RULES[@]} ; do
 
-		APPLICATIONS=$([[ -n "$(echo $RES | awk "/Applications of rule ${RULES[$i]}/")" ]] && $(echo $RES | sed -E "s/.*Applications of rule ${RULES[$i]}: ([0-9]+).*/\1/") || echo 0)
+		APPLICATIONS=$([[ -n "$(echo $RES | awk "/Applications of rule ${RULES[$i]}/")" ]] && echo $RES | sed -E "s/.*Applications of rule ${RULES[$i]}: ([0-9]+).*/\1/" || echo 0)
 
-		echo -n "$APPLICATIONS"
+		echo -n "$APPLICATIONS" >> OUT
 		if [[ $i -ne $((${#RULES[@]} - 1)) ]]; then
-			echo -n ","
+			echo -n "," >> OUT
 		fi
 	done
-	echo ""
+	echo "" >> OUT
 done
 
 echo "Done"
