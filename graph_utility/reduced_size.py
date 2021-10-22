@@ -111,7 +111,7 @@ def plot(data_list, test_names, graph_dir):
             title=f'Reduced size in comparison to pre size, sorted non-decreasingly')
 
         plt.legend(loc='best')
-        plt.savefig(graph_dir + f'reduced_size_{png_names}.png')
+        plt.savefig(graph_dir + f'reduced_size_{png_names[index]}.png')
         plt.clf()
 
 

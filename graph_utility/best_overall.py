@@ -113,10 +113,11 @@ def plot(data_list, test_names, graph_dir):
                     memory_eq_sum += 1
                     if row['memory'] <= 0.9 * best_memory:
                         memory_sum += 1
-                if (row['post place count'] + row['post transition count']) <= best_reduction:
-                    reduction_eq_sum += 1
-                    if (row['post place count'] + row['post transition count']) <= 0.9 * best_reduction:
-                        reduction_sum += 1
+                if test_names[test_index] != 'no-red':
+                    if (row['post place count'] + row['post transition count']) <= best_reduction:
+                        reduction_eq_sum += 1
+                        if (row['post place count'] + row['post transition count']) <= 0.9 * best_reduction:
+                            reduction_sum += 1
                 if not anyone_else_answer:
                     unique_answers_sum += 1
 

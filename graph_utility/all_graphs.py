@@ -124,12 +124,10 @@ def plot_all(data_list, test_names, graph_dir, experiment_to_compare_against_nam
     df = pd.DataFrame.from_dict(times, orient='index')
     # Plot the plot
     sns.set_theme(style="darkgrid", palette="pastel")
-    plot = df.plot(kind='barh', width=0.75, linewidth=2, figsize=(10, 10))
-
-    plt.legend(bbox_to_anchor=(1.02, 1), loc='best', borderaxespad=0)
+    plot = df.plot(kind='barh', width=0.75, linewidth=2, figsize=(10, 10), legend=False)
     plt.xscale('linear')
     plt.xlabel("seconds")
-    plt.ylabel('experiments')
+    plt.ylabel('graphs')
     plt.title('Time in seconds spent making graphs')
 
     # Find max width, in order to move the very small numbers away from the bars
