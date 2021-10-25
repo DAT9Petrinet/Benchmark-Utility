@@ -7,3 +7,5 @@ temp
 slurm-*
 __pycache__
 graphs/
+sizes/*
+!sizes/query.xml
