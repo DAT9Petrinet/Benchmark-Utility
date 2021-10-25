@@ -45,7 +45,7 @@ echo "" >> $OUT
 
 # ***** Analysis *****
 
-for FILE in $(ls "$DIR/*.out") ; do
+for FILE in $(ls $DIR | grep "\.out$") ; do
 
 	echo "Collecting from $DIR/$FILE"
 
@@ -77,7 +77,7 @@ for FILE in $(ls "$DIR/*.out") ; do
 	# Reduction time
 	RED_TIME=$([[ -n "$(echo $RES | awk '/Structural reduction finished after/')" ]] && echo $RES | sed -E "s/.*Structural reduction finished after ([0-9]+(\.[0-9]+)?) s.*/\1/" || echo 0.0)
 
-	echo -n "$MODEL,$Q,$TIME,$MEM,$ANSWER,$QUERY_SIMPLIFICATION,$PREV_PLACE_COUNT,$PREV_TRANS_COUNT,$POST_RED_PLACE_COUNT,$POST_RED_TRANS_COUNT,$RED_TIME" >> $OUT
+	echo -n "$MODEL,$Q,$TIME,$MEM,$ANSWER,$QUERY_SIMPLIFICATION,$PREV_PLACE_COUNT,$PREV_TRANS_COUNT,$POST_RED_PLACE_COUNT,$POST_RED_TRANS_COUNT,$RED_TIME," >> $OUT
 
 	# Applications of rules
 	for i in ${!RULES[@]} ; do
