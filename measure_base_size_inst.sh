@@ -23,7 +23,7 @@ OUT="sizes/$MODEL.size"
 
 rm -f $OUT
 
-RES=$("timeout ${TIME_OUT}h $CMD")
+RES=$(timeout ${TIME_OUT}h $CMD)
 RES=$(echo $RES | grep -v "^<" | tr '\n' '\r')
 SIZE=$([[ -n "$(echo $RES | awk "/discovered states/")" ]] && echo $RES | sed -E "s/.*discovered states: *([0-9]+).*/\1/" || echo 0)
 

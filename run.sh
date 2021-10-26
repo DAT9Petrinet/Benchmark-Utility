@@ -34,8 +34,11 @@ fi
 mkdir -p "output/$(basename $BIN)/$NAME"
 
 for MODEL in $(ls $TEST_FOLDER) ; do
-
-	sbatch --mail-user=$(whoami) --job-name=$NAME ./run_tests.sh $NAME $BIN $TEST_FOLDER $MODEL $TIME_OUT "$OPTIONS"
+	# Run reductions
+	JOB_ID=$(sbatch --mail-user=$(whoami) --job-name=$NAME ./run_tests.sh $NAME $BIN $TEST_FOLDER $MODEL $TIME_OUT "$OPTIONS")
+	
+	# Measure state space size of reduced net
+	sbatch --mail-user=$(whoami) --job-name=$NAME --dependency=afterany:$JOB_ID ./measure_reduced_size_inst.sh $NAME $BIN $TEST_FOLDER $MODEL 24
 done
 
 sbatch --partition=naples -c 1 --mail-type=FAIL --mail-user=$(whoami) --job-name=$NAME --dependency=singleton ./compile_results.sh $NAME $BIN
