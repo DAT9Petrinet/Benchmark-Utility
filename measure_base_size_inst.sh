@@ -14,11 +14,9 @@ TEST_FOLDER=$2
 MODEL=$3
 TIME_OUT=$4
 
-QUERY="sizes/query.xml"
-
 echo "Measuring state space size of $MODEL"
 
-CMD="./$BIN -q 0 -r 0 -x 1 $TEST_FOLDER/$MODEL/model.pnml $QUERY"
+CMD="./$BIN -q 0 -r 0 $TEST_FOLDER/$MODEL/model.pnml -e"
 OUT="sizes/$MODEL.size"
 
 rm -f $OUT

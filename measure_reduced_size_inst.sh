@@ -16,8 +16,6 @@ TEST_FOLDER=$3
 MODEL=$4
 TIME_OUT=$5
 
-QUERY="sizes/query.xml"
-
 # Find the number of queries for this model by counting how many times "<property>" appears
 NQ=$(grep "<property>" "$TEST_FOLDER/$MODEL/ReachabilityCardinality.xml" | wc -l)
 
@@ -27,7 +25,7 @@ for Q in $(seq 1 $NQ) ; do
 
 	echo "	Q$Q"
 
-	CMD="./$BIN -q 0 -r 0 -x 1 output/$(basename $BIN)/$NAME/$MODEL.$Q.pnml $QUERY"
+	CMD="./$BIN -q 0 -r 0 output/$(basename $BIN)/$NAME/$MODEL.$Q.pnml -e"
 
 	RES=$("timeout ${TIME_OUT}h $CMD")
 	RES=$(echo $RES | grep -v "^<" | tr '\n' '\r')
