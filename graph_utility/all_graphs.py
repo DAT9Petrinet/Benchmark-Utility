@@ -2,8 +2,9 @@ import os
 import shutil
 import sys
 import time
-
+import seaborn as sns
 import pandas as pd
+import matplotlib.pyplot as plt
 
 import answer_simplification_bars
 import best_overall
@@ -118,7 +119,7 @@ def plot_all(data_list, test_names, graph_dir, experiment_to_compare_against_nam
     graphs_made = graphs_made + 1
     print(f"{graphs_made}/{num_graphs} graphs made")
 
-    '''# Print meme graph
+    # Print meme graph
     df = pd.DataFrame.from_dict(times, orient='index')
     # Plot the plot
     sns.set_theme(style="darkgrid", palette="pastel")
@@ -143,7 +144,7 @@ def plot_all(data_list, test_names, graph_dir, experiment_to_compare_against_nam
                       ha='center', va='center')
 
     plt.savefig(graph_dir + f'time_spent_making_graphs.png', bbox_inches='tight')
-    plt.clf()'''
+    plt.clf()
 
 
 if __name__ == "__main__":
