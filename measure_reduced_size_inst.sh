@@ -6,8 +6,9 @@
 #SBATCH -c 2
 
 # Args: <test-name> <binary> <test-folder> <model> <time-out>
-# Do not run this. It is supposed to be run by `run.sh`. This script will run the binary on all the reduced net using the query "EF false",
-# forcing it to explore the whole state space. The size is then stored in `output/<binary>/<test-name>/<model>.size`
+# Do not run this. It is supposed to be run by `run.sh` after the `run_test.sh` job is done. This script will run the binary on
+# the given reduced net using the query "EF false", forcing it to explore the whole state space.
+# The size is then stored in `output/<binary>/<test-name>/<model>.size` and picked up by `compile_results.sh`
 
 NAME=$1
 BIN=$2
