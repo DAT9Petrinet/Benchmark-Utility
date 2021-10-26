@@ -21,6 +21,8 @@ echo "Measuring state space size of $MODEL"
 CMD="./$BIN -q 0 -r 0 -x 1 $TEST_FOLDER/$MODEL/model.pnml $QUERY"
 OUT="sizes/$MODEL.size"
 
+rm -f $OUT
+
 RES=$("timeout ${TIME_OUT}h $CMD")
 RES=$(echo $RES | grep -v "^<" | tr '\n' '\r')
 SIZE=$([[ -n "$(echo $RES | awk "/discovered states/")" ]] && echo $RES | sed -E "s/.*discovered states: *([0-9]+).*/\1/" || echo 0)
