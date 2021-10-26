@@ -75,7 +75,7 @@ for FILE in $(ls $DIR | grep "\.out$") ; do
 	POST_RED_TRANS_COUNT=$([[ -n "$(echo $RES | awk '/Size of net after/')" ]] && echo $RES | sed -E "s/.*Size of net after[^:]*: [0-9]+ places, ([0-9]+).*/\1/" || echo 0)
 
 	# Reduction time
-	RED_TIME=$([[ -n "$(echo $RES | awk '/Structural reduction finished after/')" ]] && echo $RES | sed -E "s/.*Structural reduction finished after ([0-9]+(\.[0-9]+)?) s.*/\1/" || echo 0.0)
+	RED_TIME=$([[ -n "$(echo $RES | awk '/Structural reduction finished after/')" ]] && echo $RES | sed -E "s/.*Structural reduction finished after (([0-9]\.[0-9]e-0[2-9])|([0-9]+(\.[0-9]+)?)) s.*/\1/" || echo 0.0)
 
 	echo -n "$MODEL,$Q,$TIME,$MEM,$ANSWER,$QUERY_SIMPLIFICATION,$PREV_PLACE_COUNT,$PREV_TRANS_COUNT,$POST_RED_PLACE_COUNT,$POST_RED_TRANS_COUNT,$RED_TIME," >> $OUT
 
