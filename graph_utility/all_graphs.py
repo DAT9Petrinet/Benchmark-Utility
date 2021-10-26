@@ -181,6 +181,6 @@ if __name__ == "__main__":
     # Find names of the tests, to be used in graphs and file names
     test_names = [os.path.split(os.path.splitext(csv)[0])[1] for csv in csvs]
 
-    data_list = [pd.read_csv(csv_dir + csv) for csv in csvs]
+    data_list = [pd.read_csv(csv_dir + csv, engine='python') for csv in csvs]
 
     plot_all(data_list, test_names, graph_dir, experiment_to_compare_against_name)
