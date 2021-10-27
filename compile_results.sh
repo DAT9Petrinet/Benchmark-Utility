@@ -112,7 +112,7 @@ for FILE in $(ls $DIR | grep "\.out$") ; do
 		# Extract applications of new rules
 		for i in ${!NEW_RULES[@]} ; do
 
-			APPLICATIONS=$([[ -n "$(echo $RES | awk "/Applications of rule ${RULES[$i]}/")" ]] && echo $RES | sed -E "s/.*Applications of rule ${RULES[$i]}: ([0-9]+).*/\1/" || echo 0)
+			APPLICATIONS=$([[ -n "$(echo $RES | awk "/Applications of rule ${NEW_RULES[$i]}/")" ]] && echo $RES | sed -E "s/.*Applications of rule ${NEW_RULES[$i]}: ([0-9]+).*/\1/" || echo 0)
 			ENTRY+=",$APPLICATIONS"
 
 		done
