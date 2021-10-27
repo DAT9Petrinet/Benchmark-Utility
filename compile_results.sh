@@ -28,17 +28,14 @@ OUT="output/$BIN/$NAME.csv"
 
 # ***** Setup CSV *****
 
-RULES=("A" "B" "C" "D" "E" "F" "G" "H" "I" "J" "K" "L" "M" "N" "O" "P" "Q" "R" "S" "T")
+NEW_RULES=("L" "M" "N" "P" "Q" "R")
 
 rm -f $OUT
 
 # Write header
-echo -n "model name,query index,time,memory,answer,solved by query simplification,prev place count,prev transition count,post place count,post transition count,reduce time,state space size," >> $OUT
-for i in ${!RULES[@]} ; do
-	echo -n "rule ${RULES[$i]}" >> $OUT
-	if [[ $i -ne $((${#RULES[@]} - 1)) ]]; then
-		echo -n "," >> $OUT
-	fi
+echo -n "model name,query index,time,memory,answer,solved by query simplification,prev place count,prev transition count,post place count,post transition count,reduce time,state space size,rule A,rule B,rule C,rule D,rule E,rule F,rule G,rule H,rule I,rule J,rule K" >> $OUT
+for i in ${!NEW_RULES[@]} ; do
+	echo -n ",rule ${NEW_RULES[$i]}" >> $OUT
 done
 echo "" >> $OUT
 
@@ -47,6 +44,8 @@ echo "" >> $OUT
 for FILE in $(ls $DIR | grep "\.out$") ; do
 
 	echo "Collecting from $DIR/$FILE"
+
+	ENTRY=""
 
 	# Model/query data from file name (Expected form is "ModelName.QueryIndex.out")
 	MODEL=$(echo $FILE | sed -E "s/([^\.]*).*/\1/")
@@ -80,19 +79,48 @@ for FILE in $(ls $DIR | grep "\.out$") ; do
 	SIZE_FILE="${FILE%.*}.size"
 	SIZE=$([[ -f $SIZE_FILE ]] && echo $(cat $SIZE_FILE) || echo 0)
 
-	echo -n "$MODEL,$Q,$TIME,$MEM,$ANSWER,$QUERY_SIMPLIFICATION,$PREV_PLACE_COUNT,$PREV_TRANS_COUNT,$POST_RED_PLACE_COUNT,$POST_RED_TRANS_COUNT,$RED_TIME,$SIZE," >> $OUT
+	ENTRY+="$MODEL,$Q,$TIME,$MEM,$ANSWER,$QUERY_SIMPLIFICATION,$PREV_PLACE_COUNT,$PREV_TRANS_COUNT,$POST_RED_PLACE_COUNT,$POST_RED_TRANS_COUNT,$RED_TIME,$SIZE"
 
-	# Applications of rules
-	for i in ${!RULES[@]} ; do
+	ANY_RULE=$([[ -n "$(echo $RES | awk '/Applications of rule/')" ]] && echo "TRUE" || echo "FALSE")
 
-		APPLICATIONS=$([[ -n "$(echo $RES | awk "/Applications of rule ${RULES[$i]}/")" ]] && echo $RES | sed -E "s/.*Applications of rule ${RULES[$i]}: ([0-9]+).*/\1/" || echo 0)
+	if [[ $ANY_RULE = "FALSE" ]]; then
 
-		echo -n "$APPLICATIONS" >> $OUT
-		if [[ $i -ne $((${#RULES[@]} - 1)) ]]; then
-			echo -n "," >> $OUT
-		fi
-	done
-	echo "" >> $OUT
+		# No rules where applied??
+
+		ENTRY+=",0,0,0,0,0,0,0,0,0,0,0"
+		for i in ${!NEW_RULES[@]} ; do
+			ENTRY+=",0"
+		done
+
+	else
+
+		# Extract applications of rules that are always there
+		RULE_A=$(echo $RES | sed -E "s/.*Applications of rule A: ([0-9]+).*/\1/")
+		RULE_B=$(echo $RES | sed -E "s/.*Applications of rule B: ([0-9]+).*/\1/")
+		RULE_C=$(echo $RES | sed -E "s/.*Applications of rule C: ([0-9]+).*/\1/")
+		RULE_D=$(echo $RES | sed -E "s/.*Applications of rule D: ([0-9]+).*/\1/")
+		RULE_E=$(echo $RES | sed -E "s/.*Applications of rule E: ([0-9]+).*/\1/")
+		RULE_F=$(echo $RES | sed -E "s/.*Applications of rule F: ([0-9]+).*/\1/")
+		RULE_G=$(echo $RES | sed -E "s/.*Applications of rule G: ([0-9]+).*/\1/")
+		RULE_H=$(echo $RES | sed -E "s/.*Applications of rule H: ([0-9]+).*/\1/")
+		RULE_I=$(echo $RES | sed -E "s/.*Applications of rule I: ([0-9]+).*/\1/")
+		RULE_J=$(echo $RES | sed -E "s/.*Applications of rule J: ([0-9]+).*/\1/")
+		RULE_K=$(echo $RES | sed -E "s/.*Applications of rule K: ([0-9]+).*/\1/")
+
+		ENTRY+=",$RULE_A,$RULE_B,$RULE_C,$RULE_D,$RULE_E,$RULE_F,$RULE_G,$RULE_H,$RULE_I,$RULE_J,$RULE_K"
+
+		# Extract applications of new rules
+		for i in ${!NEW_RULES[@]} ; do
+
+			APPLICATIONS=$([[ -n "$(echo $RES | awk "/Applications of rule ${RULES[$i]}/")" ]] && echo $RES | sed -E "s/.*Applications of rule ${RULES[$i]}: ([0-9]+).*/\1/" || echo 0)
+			ENTRY+=",$APPLICATIONS"
+
+		done
+
+	fi
+
+	# Add entry to CSV
+	echo $ENTRY >> $OUT
 done
 
 echo "Done"
