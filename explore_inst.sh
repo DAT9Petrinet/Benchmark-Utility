@@ -17,15 +17,17 @@ TIME_OUT=$4
 
 echo "Exploring state space size of $MODEL"
 
-for MODEL_FILE in $(ls "output/$BIN/$NAME" | grep "$MODEL\.[0-9]+\.pnml$") ; do
+for MODEL_FILE in $(ls "output/$(basename $BIN)/$NAME" | egrep "$MODEL\.[0-9]+\.pnml$") ; do
 	
 	Q=$(echo $MODEL_FILE | sed -E "s/.*\.([0-9])+\..*/\1/")
 	echo "	Q$Q"
 
 	CMD="./$BIN -q 0 -r 0 output/$(basename $BIN)/$NAME/$MODEL.$Q.pnml -e"
 
-	RES=$("timeout ${TIME_OUT}h $CMD")
+	RES=$("timeout ${TIME_OUT}m $CMD")
 	RES=$(echo $RES | grep -v "^<" | tr '\n' '\r')
+	echo $RES > "output/$(basename $BIN)/$NAME/$MODEL.$Q.sout"
+
 	SIZE=$([[ -n "$(echo $RES | awk "/discovered states/")" ]] && echo $RES | sed -E "s/.*discovered states: *([0-9]+).*/\1/" || echo 0)
 
 	OUT="output/$(basename $BIN)/$NAME/$MODEL.$Q.size"

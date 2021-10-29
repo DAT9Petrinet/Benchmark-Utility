@@ -45,7 +45,7 @@ fi
 
 DIR="output/$(basename $BIN)/$NAME"
 rm -rf $DIR
-mkdir $DIR
+mkdir -p $DIR
 
 if (( $VERI_TIME_OUT < 1 )); then
 	echo "No verification jobs will be started, since VERI_TIME_OUT set to 0"
@@ -58,15 +58,15 @@ fi
 for MODEL in $(ls $TEST_FOLDER) ; do
 	# Run reductions
 	JOB_ID=$(sbatch --mail-user=$(whoami) --job-name=$NAME ./reduce_inst.sh $NAME $BIN $TEST_FOLDER $MODEL $RED_TIME_OUT "$OPTIONS" | sed 's/Submitted batch job //')
-	ehco "Submitted batch job $JOB_ID for $MODEL"
+	echo "Submitted batch job $JOB_ID for $MODEL"
 
 	# Verify reduced net
-	if (( $VERI_TIME_OUT < 1 )); then
+	if (( $VERI_TIME_OUT > 0 )); then
 		sbatch --mail-user=$(whoami) --job-name=$NAME --dependency=afterok:$JOB_ID ./verify_inst.sh $NAME $BIN $TEST_FOLDER $MODEL $VERI_TIME_OUT
 	fi
 
 	# Measure state space size of reduced net
-	if (( $EXPL_TIME_OUT < 1 )); then
+	if (( $EXPL_TIME_OUT > 0 )); then
 		sbatch --mail-user=$(whoami) --job-name=$NAME --dependency=afterok:$JOB_ID ./explore_inst.sh $NAME $BIN $MODEL $EXPL_TIME_OUT
 	fi
 done
