@@ -152,41 +152,41 @@ def plot_all(data_list, test_names, graph_dir, experiment_to_compare_against_nam
     plt.savefig(graph_dir + f'time_spent_making_graphs.png', bbox_inches='tight')
     plt.clf()
 
-    if __name__ == "__main__":
-        # Results used for comparisons
-        if len(sys.argv) == 1:
-            experiment_to_compare_against_name = 'base-rules'
-        else:
-            experiment_to_compare_against_name = sys.argv[1]
-            if experiment_to_compare_against_name == 'no-red':
-                raise Exception('(all_graphs) Cannot use (no-red) as basis for comparison, as this has no reductions')
+if __name__ == "__main__":
+    # Results used for comparisons
+    if len(sys.argv) == 1:
+        experiment_to_compare_against_name = 'base-rules'
+    else:
+        experiment_to_compare_against_name = sys.argv[1]
+        if experiment_to_compare_against_name == 'no-red':
+            raise Exception('(all_graphs) Cannot use (no-red) as basis for comparison, as this has no reductions')
 
-        print(f'(all_graphs) using ({experiment_to_compare_against_name}) for basis for all comparisons')
-        # Find the directory to save figures
-        script_dir = os.path.dirname(__file__)
-        graph_dir = os.path.join(script_dir, '..\\graphs\\')
+    print(f'(all_graphs) using ({experiment_to_compare_against_name}) for basis for all comparisons')
+    # Find the directory to save figures
+    script_dir = os.path.dirname(__file__)
+    graph_dir = os.path.join(script_dir, '..\\graphs\\')
 
-        # Remove all graphs
-        if os.path.isdir(graph_dir):
-            shutil.rmtree(graph_dir)
+    # Remove all graphs
+    if os.path.isdir(graph_dir):
+        shutil.rmtree(graph_dir)
 
-        # Make new directories
-        os.makedirs(graph_dir)
-        os.makedirs(graph_dir + '\\rule-usage\\')
-        os.makedirs(graph_dir + '\\size-ratios\\')
-        os.makedirs(graph_dir + '\\reductions\\')
-        os.makedirs(graph_dir + '\\time-memory\\')
-        os.makedirs(graph_dir + '\\best-experiment\\')
+    # Make new directories
+    os.makedirs(graph_dir)
+    os.makedirs(graph_dir + '\\rule-usage\\')
+    os.makedirs(graph_dir + '\\size-ratios\\')
+    os.makedirs(graph_dir + '\\reductions\\')
+    os.makedirs(graph_dir + '\\time-memory\\')
+    os.makedirs(graph_dir + '\\best-experiment\\')
 
-        # Directory for all our csv
-        csv_dir = os.path.join(script_dir, '..\\saved\\')
+    # Directory for all our csv
+    csv_dir = os.path.join(script_dir, '..\\saved\\')
 
-        # Read csv data
-        csvs = [file for file in os.listdir(csv_dir) if '.csv' in file]
+    # Read csv data
+    csvs = [file for file in os.listdir(csv_dir) if '.csv' in file]
 
-        # Find names of the tests, to be used in graphs and file names
-        test_names = [os.path.split(os.path.splitext(csv)[0])[1] for csv in csvs]
+    # Find names of the tests, to be used in graphs and file names
+    test_names = [os.path.split(os.path.splitext(csv)[0])[1] for csv in csvs]
 
-        data_list = [pd.read_csv(csv_dir + csv, engine='python') for csv in csvs]
+    data_list = [pd.read_csv(csv_dir + csv, engine='python') for csv in csvs]
 
-        plot_all(data_list, test_names, graph_dir, experiment_to_compare_against_name)
+    plot_all(data_list, test_names, graph_dir, experiment_to_compare_against_name)
