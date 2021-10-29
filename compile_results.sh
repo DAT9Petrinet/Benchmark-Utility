@@ -2,7 +2,7 @@
 
 #SBATCH --time=22:00:00
 #SBATCH --mail-type=FAIL
-#SBATCH --partition=naples
+#SBATCH --partition=cpu
 #SBATCH --mem=15G
 #SBATCH -c 4
 
