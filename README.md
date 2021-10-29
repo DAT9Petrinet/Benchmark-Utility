@@ -4,6 +4,8 @@ Benchmark utility scripts for reduction rules of Petri nets in verifypn.
 
 ## Default pipeline
 
+![Benchmark Flowchat](https://imgur.com/CjDag40.png)
+
 ### Structure
 ```
 saved/*
@@ -19,11 +21,15 @@ verify_inst.sh
 ```
 
 ### Usage
+To run the whole pipeline (including reduction, verification, and state space exploration):
+
 1) Upload binary to `binaries/`using `scp`. E.g. `scp cmake-build-wsl-debug/verifypn-linux64 naje17@student.aau.dk@deismcc:~/dat9/red/bench/binaries/`
 1) Run `./run_pipeline.sh <test-name> <binary> <binary-options> [red-time-out] [veri-time-out] [expl-time-out]`
 1) See more slurm options here: https://github.com/DEIS-Tools/DEIS-MCC/blob/main/usage/CHEAT-SHEET.md
 1) Once all jobs are done, the result is now in stored in `output/<binary>/<test-name>.csv`
 1) You may want to remove all the `slurm-*.out`
+
+Verification and/or state space exploration can be disabled by setting their time-out to 0.
 
 #### run_pipeline.sh
 Arguments: `<test-name> <binary> <binary-options> [test-time-out]`
