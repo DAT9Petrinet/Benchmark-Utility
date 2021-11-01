@@ -62,13 +62,13 @@ for MODEL in $(ls $TEST_FOLDER) ; do
 
 	# Verify reduced net
 	if (( $VERI_TIME_OUT > 0 )); then
-		sbatch --mail-user=$(whoami) --job-name=$NAME --dependency=afterok:$JOB_ID ./verify_inst.sh $NAME $BIN $TEST_FOLDER $MODEL $VERI_TIME_OUT
+		sbatch --mail-user=$(whoami) --job-name=$NAME --dependency=afterany:$JOB_ID ./verify_inst.sh $NAME $BIN $TEST_FOLDER $MODEL $VERI_TIME_OUT
 	fi
 
 	# Measure state space size of reduced net
 	if (( $EXPL_TIME_OUT > 0 )); then
-		sbatch --mail-user=$(whoami) --job-name=$NAME --dependency=afterok:$JOB_ID ./explore_inst.sh $NAME $BIN $MODEL $EXPL_TIME_OUT
+		sbatch --mail-user=$(whoami) --job-name=$NAME --dependency=afterany:$JOB_ID ./explore_inst.sh $NAME $BIN $MODEL $EXPL_TIME_OUT
 	fi
 done
 
-sbatch --partition=naples -c 1 --mail-type=FAIL --mail-user=$(whoami) --job-name=$NAME --dependency=singleton ./compile_results.sh $NAME $BIN
+sbatch --partition=cpu -c 1 --mail-type=FAIL --mail-user=$(whoami) --job-name=$NAME --dependency=singleton ./compile_results.sh $NAME $BIN

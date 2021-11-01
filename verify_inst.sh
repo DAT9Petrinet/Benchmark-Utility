@@ -24,7 +24,7 @@ for MODEL_FILE in $(ls "output/$(basename $BIN)/$NAME" | egrep "$MODEL\.[0-9]+\.
 	Q=$(echo $MODEL_FILE | sed -E "s/.*\.([0-9])+\..*/\1/")
 	echo "	Q$Q"
 
-	CMD="./$BIN -r 0 -q 0 -x $Q $MODEL_FILE $TEST_FOLDER/$MODEL/ReachabilityCardinality.xml"
+	CMD="./$BIN -r 0 -x $Q $MODEL_FILE $TEST_FOLDER/$MODEL/ReachabilityCardinality.xml"
 	OUT="output/$(basename $BIN)/$NAME/$MODEL.$Q.vout"
 	
 	# Verify query and store stdout along with time and memory spent between @@@s
