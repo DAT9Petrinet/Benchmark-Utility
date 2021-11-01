@@ -24,7 +24,7 @@ for MODEL_FILE in $(ls "output/$(basename $BIN)/$NAME" | egrep "$MODEL\.[0-9]+\.
 
 	CMD="./$BIN -q 0 -r 0 output/$(basename $BIN)/$NAME/$MODEL.$Q.pnml -e"
 
-	RES=$("timeout ${TIME_OUT}m $CMD")
+	RES=$(eval "timeout ${TIME_OUT}m $CMD")
 	RES=$(echo $RES | grep -v "^<" | tr '\n' '\r')
 	echo $RES > "output/$(basename $BIN)/$NAME/$MODEL.$Q.sout"
 
