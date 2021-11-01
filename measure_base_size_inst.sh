@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #SBATCH --mail-type=FAIL
-#SBATCH --partition=naples
+#SBATCH --partition=cpu
 #SBATCH --mem=15G
 #SBATCH -c 2
 
@@ -14,14 +14,14 @@ TEST_FOLDER=$2
 MODEL=$3
 TIME_OUT=$4
 
-QUERY="sizes/query.xml"
-
 echo "Measuring state space size of $MODEL"
 
-CMD="./$BIN -q 0 -r 0 -x 1 $TEST_FOLDER/$MODEL/model.pnml $QUERY"
+CMD="./$BIN -q 0 -r 0 $TEST_FOLDER/$MODEL/model.pnml -e"
 OUT="sizes/$MODEL.size"
 
-RES=$("timeout ${TIME_OUT}h $CMD")
+rm -f $OUT
+
+RES=$(timeout ${TIME_OUT}h $CMD)
 RES=$(echo $RES | grep -v "^<" | tr '\n' '\r')
 SIZE=$([[ -n "$(echo $RES | awk "/discovered states/")" ]] && echo $RES | sed -E "s/.*discovered states: *([0-9]+).*/\1/" || echo 0)
 
