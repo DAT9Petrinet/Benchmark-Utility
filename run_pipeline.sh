@@ -23,6 +23,10 @@ if [ -z "$BIN" ] ; then
 	exit
 fi
 
+if [ ! -f "$BIN" ] ; then
+	echo "Binary does not exist"
+fi
+
 if [ -z "$OPTIONS" ] ; then
 	echo "Missing binary options"
 	exit
