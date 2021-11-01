@@ -51,5 +51,5 @@ models = [model for model in Path(MCC_DIRECTORY).rglob('*.pnml')]
 chunks = np.array_split(models, NUM_THREADS)
 for i in range(NUM_THREADS):
     chunk = [chunks[i]][0]
-    threading.Thread(target=add_inhibitors, name=f"{i}",
+    threading.Thread(target=add_inhibitors, name=f"T{i}",
                      args=[chunk]).start()
