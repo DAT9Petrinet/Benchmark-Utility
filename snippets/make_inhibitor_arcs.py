@@ -19,7 +19,6 @@ def add_inhibitors(models):
     converted_models = 0
 
     for model in models:
-        print(model)
         if converted_models % 10 == 0:
             print(f"{threading.current_thread().getName()}: Converted models: {converted_models}/{num_models}")
         ET.register_namespace('', 'http://www.pnml.org/version-2009/grammar/pnml')
