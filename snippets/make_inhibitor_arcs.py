@@ -3,10 +3,10 @@ import sys
 import threading
 import xml.etree.ElementTree as ET
 from pathlib import Path
+
 import numpy as np
 
-NAMESPACE = 'http://www.pnml.org/version-2009/grammar/pnml'
-ET.register_namespace('', NAMESPACE)
+NAMESPACE = '{http://www.pnml.org/version-2009/grammar/pnml}'
 INHIB_PERCENTAGE = 10
 MCC_DIRECTORY = sys.argv[1]
 NUM_THREADS = 3
@@ -19,8 +19,10 @@ def add_inhibitors(models):
     converted_models = 0
 
     for model in models:
+        print(model)
         if converted_models % 10 == 0:
             print(f"{threading.current_thread().getName()}: Converted models: {converted_models}/{num_models}")
+        ET.register_namespace('', 'http://www.pnml.org/version-2009/grammar/pnml')
         mytree = ET.parse(model)
         myroot = mytree.getroot()
 
@@ -48,5 +50,6 @@ def add_inhibitors(models):
 models = [model for model in Path(MCC_DIRECTORY).rglob('*.pnml')]
 chunks = np.array_split(models, NUM_THREADS)
 for i in range(NUM_THREADS):
+    chunk = [chunks[i]][0]
     threading.Thread(target=add_inhibitors, name=f"{i}",
-                     args=(chunks[i])).start()
+                     args=[chunk]).start()
