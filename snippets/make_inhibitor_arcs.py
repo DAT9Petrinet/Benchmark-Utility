@@ -49,4 +49,4 @@ models = [model for model in Path(MCC_DIRECTORY).rglob('*.pnml')]
 chunks = np.array_split(models, NUM_THREADS)
 for i in range(NUM_THREADS):
     threading.Thread(target=add_inhibitors, name=f"{i}",
-                     args=()).start()
+                     args=(chunks[i])).start()
