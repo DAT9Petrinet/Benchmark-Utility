@@ -3,7 +3,8 @@ import sys
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
-ET.register_namespace('', 'http://www.pnml.org/version-2009/grammar/pnml')
+NAMESPACE = 'http://www.pnml.org/version-2009/grammar/pnml'
+ET.register_namespace('', NAMESPACE)
 INHIB_PERCENTAGE = 10
 MCC_DIRECTORY = sys.argv[1]
 if len(sys.argv) < 2:
@@ -15,14 +16,14 @@ num_models = len(models)
 converted_models = 0
 
 for model in models:
-    if converted_models % 100 == 0:
+    if converted_models % 10 == 0:
         print(f"Converted models: {converted_models}/{num_models}")
     mytree = ET.parse(model)
     myroot = mytree.getroot()
 
     page = myroot[0][0]
-    arcs = page.findall('{http://www.pnml.org/version-2009/grammar/pnml}' + 'arc')
-    transitions = page.findall('{http://www.pnml.org/version-2009/grammar/pnml}' + 'transition')
+    arcs = page.findall(f'{NAMESPACE}' + 'arc')
+    transitions = page.findall(f'{NAMESPACE}' + 'transition')
 
     transition_ids = [transition.attrib.get('id') for transition in transitions]
     arcs_to_transitions = [arc for arc in arcs if arc.attrib.get('target') in transition_ids]
