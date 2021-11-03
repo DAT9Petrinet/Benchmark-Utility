@@ -82,7 +82,7 @@ for RED_RES_FILE in $(ls $DIR | grep "\.rout$") ; do
 	POST_RED_TRANS_COUNT=$([[ -n "$(echo $ROUT | awk '/Size of net after/')" ]] && echo $ROUT | sed -E "s/.*Size of net after[^:]*: [0-9]+ places, ([0-9]+).*/\1/" || echo 0)
 
 	# Reduction time
-	RED_TIME=$([[ -n "$(echo $ROUT | awk '/Structural reduction finished after/')" ]] && echo $ROUT | sed -E "s/.*Structural reduction finished after (([0-9]\.[0-9]e-0[2-9])|([0-9]+(\.[0-9]+)?)) s.*/\1/" || echo 0.0)
+	RED_TIME=$([[ -n "$(echo $ROUT | awk '/Structural reduction finished after/')" ]] && echo $ROUT | sed -E "s/.*Structural reduction finished after (([0-9](\.[0-9])?e-0[2-9])|([0-9]+(\.[0-9]+)?)) s.*/\1/" || echo 0.0)
 
 	# Reduction state space size
 	SIZE_FILE="$DIR/$MODEL.$Q.size"

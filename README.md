@@ -53,12 +53,24 @@ Do not run this. It is supposed to be run by `run_pipeline.sh`, after `reduce_in
 This script will verify the queries for the given model using the reduced net `output/<binary>/<test-name>/<model>.<query>.pnml`.
 The raw output of the binary will be stored at `output/<binary>/<test-name>/<model>.<query>.vout`
 
+##### verify_all.sh
+Arguments: `<test-name> <binary> [time-out]`
+
+Starts a number of slurm jobs each solving the queries of the reduced nets.
+This does not start `compile_results.sh` afterwards.
+
 #### explore_inst.sh
 Arguments: `<test-name> <binary> <test-folder> <model> <time-out>`
 
 Do not run this. It is supposed to be run by `run_pipeline.sh`, after `reduce_inst.sh` has run. This script will run the
 binary on the given reduced model+query using the query "EF false", forcing it to explore the whole state space.
 The size is then stored in `output/<binary>/<test-name>/<model>.<query>.size`
+
+##### explore_all.sh
+Arguments: `<test-name> <binary> [time-out]`
+
+Starts a number of slurm jobs each exploring the state spaces of the reduced nets in order to find their size.
+This does not start `compile_results.sh` afterwards.
 
 #### compile_results.sh
 Arguments: `<test-name> <binary>`
