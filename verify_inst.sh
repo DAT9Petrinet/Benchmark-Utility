@@ -28,7 +28,7 @@ for MODEL_FILE in $(ls "output/$(basename $BIN)/$NAME" | egrep "$MODEL\.[0-9]+\.
 	OUT="output/$(basename $BIN)/$NAME/$MODEL.$Q.vout"
 	
 	# Verify query and store stdout along with time and memory spent between @@@s
-	eval "/usr/bin/time -f "@@@%e,%M@@@" timeout ${TIME_OUT}m $CMD" &> "$OUT"
+	eval "/usr/bin/time -f '@@@%e,%M@@@' timeout ${TIME_OUT}m $CMD" &> "$OUT"
 	
 done
 
