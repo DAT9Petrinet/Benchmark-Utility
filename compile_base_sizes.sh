@@ -9,7 +9,9 @@ echo "model,size" >> $OUT
 
 for MODEL in $(ls "sizes" | grep "\.size$") ; do
 
-	SIZE=$(cat $SIZE_FILE)
+	echo -n "."
+
+	SIZE=$(cat "sizes/$MODEL.size")
 	echo "$MODEL,$SIZE" >> $OUT
 
 done
