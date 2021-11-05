@@ -42,3 +42,5 @@ for model in models:
     tree = ET.ElementTree(myroot)
     tree.write(model, xml_declaration=True)
     converted_models += 1
+    
+print("Done converting to inhibitor arcs")
