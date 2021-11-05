@@ -21,7 +21,7 @@ echo "Verifying the reduced nets of $MODEL"
 
 for MODEL_FILE in $(ls "output/$(basename $BIN)/$NAME" | egrep "$MODEL\.[0-9]+\.pnml$") ; do
 	
-	Q=$(echo $MODEL_FILE | sed -E "s/.*\.([0-9])+\..*/\1/")
+	Q=$(echo $MODEL_FILE | sed -E "s/.*\.([0-9]+)\..*/\1/")
 	echo "	Q$Q"
 
 	CMD="./$BIN -r 0 -x $Q output/$(basename $BIN)/$NAME/$MODEL_FILE $TEST_FOLDER/$MODEL/ReachabilityCardinality.xml"

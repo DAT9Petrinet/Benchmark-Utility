@@ -32,4 +32,4 @@ for MODEL in $(ls $TEST_FOLDER) ; do
 	sbatch --mail-user=$(whoami) --job-name=$NAME ./explore_inst.sh $NAME $BIN $MODEL $TIME_OUT
 done
 
-# sbatch --partition=cpu -c 1 --mail-type=FAIL --mail-user=$(whoami) --job-name=$NAME --dependency=singleton ./compile_results.sh $NAME $BIN
+# sbatch --partition=cpu --exclude=naples0[1-9] -c 1 --mail-type=FAIL --mail-user=$(whoami) --job-name=$NAME --dependency=singleton ./compile_results.sh $NAME $BIN

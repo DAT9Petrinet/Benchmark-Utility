@@ -3,6 +3,7 @@
 #SBATCH --time=22:00:00
 #SBATCH --mail-type=FAIL
 #SBATCH --partition=cpu
+#SBATCH --exclude=naples0[1-9]
 #SBATCH --mem=15G
 #SBATCH -c 4
 
