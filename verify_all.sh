@@ -21,15 +21,16 @@ fi
 
 if [ -z "$TIME_OUT" ] ; then
 	echo "No TIME_OUT given, using 5 minute per query"
-	VERI_TIME_OUT=5
+	TIME_OUT=5
 fi
 
 if (( $TIME_OUT < 1 )); then
 	echo "Aborting due to TIME_OUT of 0"
+	exit
 fi
 
 for MODEL in $(ls $TEST_FOLDER) ; do
 	sbatch --mail-user=$(whoami) --job-name=$NAME ./verify_inst.sh $NAME $BIN $TEST_FOLDER $MODEL $TIME_OUT
 done
 
-# sbatch --partition=cpu -c 1 --mail-type=FAIL --mail-user=$(whoami) --job-name=$NAME --dependency=singleton ./compile_results.sh $NAME $BIN
+# sbatch --partition=cpu --exclude=naples0[1-9] -c 1 --mail-type=FAIL --mail-user=$(whoami) --job-name=$NAME --dependency=singleton ./compile_results.sh $NAME $BIN
