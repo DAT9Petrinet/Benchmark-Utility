@@ -21,11 +21,12 @@ fi
 
 if [ -z "$TIME_OUT" ] ; then
 	echo "No TIME_OUT given, using 10 minute per query"
-	VERI_TIME_OUT=10
+	TIME_OUT=10
 fi
 
 if (( $TIME_OUT < 1 )); then
 	echo "Aborting due to TIME_OUT of 0"
+	exit
 fi
 
 for MODEL in $(ls $TEST_FOLDER) ; do
