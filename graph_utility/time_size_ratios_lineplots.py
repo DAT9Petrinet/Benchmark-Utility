@@ -10,6 +10,7 @@ import seaborn as sns
 
 # The first csv will be used as numerator in the plots
 def plot(data_list, test_names, graph_dir, experiment_to_compare_against_name):
+    cutoff = 0.9
     print(
         f"(time_size_ratios_lineplots) using ({experiment_to_compare_against_name}) results as numerator when computing size/time ratios")
 
@@ -165,22 +166,33 @@ def plot(data_list, test_names, graph_dir, experiment_to_compare_against_name):
         custom_palette[column] = color((column_index + 1) / len(rule_used_size_ratios.columns))
 
     for i in range(3):
-        # plot the plot
-        sns.lineplot(data=size_ratio_dfs[i], palette=custom_palette).set(xlabel='test instance', ylabel='size ratio',
-                                                                         yscale="log",
-                                                                         title=f'Reduced size of nets compared to {experiment_to_compare_against_name}, '
-                                                                               f'under 1 means {experiment_to_compare_against_name} is better')
-        plt.savefig(graph_dir + f'{png_names[i]}_used_size_ratios.png')
-        plt.clf()
+        for j in range(1):
+            data_cutoff = ""
+            if j == 1:
+                data_cutoff = f"_{100-cutoff*100}%_largest"
+                size_ratio_dfs[i].drop(index=size_ratio_dfs[i].index[:int(len(size_ratio_dfs[i]) * cutoff)],
+                             axis=0,
+                             inplace=True)
+                time_ratio_dfs[i].drop(index=time_ratio_dfs[i].index[:int(len(time_ratio_dfs[i]) * cutoff)],
+                                       axis=0,
+                                       inplace=True)
 
-        # plot the plot
-        sns.lineplot(data=time_ratio_dfs[i], palette=custom_palette).set(xlabel='test instance',
-                                                                         ylabel='time ratio',
-                                                                         yscale="log",
-                                                                         title=f'Time compared to {experiment_to_compare_against_name}, '
-                                                                               f'under 1 means {experiment_to_compare_against_name} is better')
-        plt.savefig(graph_dir + f'{png_names[i]}_used_time_ratios.png')
-        plt.clf()
+            # plot the plot
+            sns.lineplot(data=size_ratio_dfs[i], palette=custom_palette).set(xlabel='test instance', ylabel='size ratio',
+                                                                             yscale="log",
+                                                                             title=f'Reduced size of nets compared to {experiment_to_compare_against_name}, '
+                                                                                   f'under 1 means {experiment_to_compare_against_name} is better')
+            plt.savefig(graph_dir + f'{png_names[i]}_used_size_ratios{data_cutoff}.png')
+            plt.clf()
+
+            # plot the plot
+            sns.lineplot(data=time_ratio_dfs[i], palette=custom_palette).set(xlabel='test instance',
+                                                                             ylabel='time ratio',
+                                                                             yscale="log",
+                                                                             title=f'Time compared to {experiment_to_compare_against_name}, '
+                                                                                   f'under 1 means {experiment_to_compare_against_name} is better')
+            plt.savefig(graph_dir + f'{png_names[i]}_used_time_ratios{data_cutoff}.png')
+            plt.clf()
 
 
 if __name__ == "__main__":

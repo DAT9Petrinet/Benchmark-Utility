@@ -10,6 +10,7 @@ import seaborn as sns
 
 
 def plot(data_list, test_names, graph_dir):
+    cutoff = 0.9
     """
     Plots both memory and time for each experiment on same graph
     """
@@ -95,18 +96,25 @@ def plot(data_list, test_names, graph_dir):
 
     # Plot the plot
     for index, data in enumerate(data_to_plot):
-        if len(data) == 0 or len(data.columns) == 0:
-            continue
-        plot = sns.lineplot(data=data, palette=custom_palette,
-                            dashes=dashes_list[index])
-        plot.set(
-            title=f'model checking time and memory per test instance',
-            ylabel='seconds or kB',
-            xlabel='test instances', yscale="log")
-        plt.legend(bbox_to_anchor=(1.02, 1), loc='best', borderaxespad=0)
+        for i in range(2):
+            data_cutoff = ""
+            if i == 1:
+                data_cutoff = f"_{100-cutoff*100}%_largest"
+                data.drop(index=data.index[:int(len(data) * cutoff)],
+                          axis=0,
+                          inplace=True)
+            if len(data) == 0 or len(data.columns) == 0:
+                continue
+            plot = sns.lineplot(data=data, palette=custom_palette,
+                                dashes=dashes_list[index])
+            plot.set(
+                title=f'model checking time and memory per test instance',
+                ylabel='seconds or kB',
+                xlabel='test instances', yscale="log")
+            plt.legend(bbox_to_anchor=(1.02, 1), loc='best', borderaxespad=0)
 
-        plt.savefig(graph_dir + f'time-memory_per_model_{png_names[index]}.png', bbox_inches='tight')
-        plt.clf()
+            plt.savefig(graph_dir + f'time-memory_per_model_{png_names[index]}{data_cutoff}.png', bbox_inches='tight')
+            plt.clf()
 
 
 if __name__ == "__main__":

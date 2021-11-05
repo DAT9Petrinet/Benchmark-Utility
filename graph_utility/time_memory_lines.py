@@ -9,6 +9,7 @@ import seaborn as sns
 
 
 def plot(data_list, test_names, graph_dir, metric):
+    cutoff = 0.9
     """
     Can be called with a column name, and will plot all values from this column sorted as a line.
     Can be called with multiple csvs, and will plot all lines on same graph
@@ -81,19 +82,26 @@ def plot(data_list, test_names, graph_dir, metric):
     png_names = ['all', 'with', 'without']
 
     for index, data in enumerate(data_to_plot):
-        if len(data[0]) == 0 or len(data[0].columns) == 0:
-            continue
-        # Plot the plot
-        plot = sns.lineplot(data=data[0], palette=custom_palette,
-                            dashes=data[1])
-        plot.set(
-            title=f'model checking {metric} per test instance',
-            ylabel=f'{unit}',
-            xlabel='test instances', yscale="log")
-        plt.legend(bbox_to_anchor=(1.02, 1), loc='best', borderaxespad=0)
+        for i in range(2):
+            data_cutoff = ""
+            if i == 1:
+                data_cutoff = f"_{100-cutoff*100}%_largest"
+                data[0].drop(index=data[0].index[:int(len(data[0]) * cutoff)],
+                             axis=0,
+                             inplace=True)
+            if len(data[0]) == 0 or len(data[0].columns) == 0:
+                continue
+            # Plot the plot
+            plot = sns.lineplot(data=data[0], palette=custom_palette,
+                                dashes=data[1])
+            plot.set(
+                title=f'model checking {metric} per test instance',
+                ylabel=f'{unit}',
+                xlabel='test instances', yscale="log")
+            plt.legend(bbox_to_anchor=(1.02, 1), loc='best', borderaxespad=0)
 
-        plt.savefig(graph_dir + f'{metric}_lines_per_model_{png_names[index]}.png', bbox_inches='tight')
-        plt.clf()
+            plt.savefig(graph_dir + f'{metric}_lines_per_model_{png_names[index]}{data_cutoff}.png', bbox_inches='tight')
+            plt.clf()
 
 
 if __name__ == "__main__":
