@@ -58,7 +58,7 @@ for RED_RES_FILE in $(ls $DIR | grep "\.rout$") ; do
 
 	# Get stdout of model, filter out transition and place-bound statistics, and replace new lines such that regex will work
 	ROUT=$(cat "$DIR/$RED_RES_FILE" | grep -v "^<" | tr '\n' '\r')
-	VOUT=$([[ -f VERI_RES_FILE ]] && cat VERI_RES_FILE | grep -v "^<" | tr '\n' '\r' || echo "@@@0,0@@@")
+	VOUT=$([[ -f $VERI_RES_FILE ]] && cat $VERI_RES_FILE | grep -v "^<" | tr '\n' '\r' || echo "@@@0,0@@@")
 
 	# ----- Verification extraction -------
 
