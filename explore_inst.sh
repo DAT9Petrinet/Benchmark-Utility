@@ -2,6 +2,7 @@
 
 #SBATCH --mail-type=FAIL
 #SBATCH --partition=cpu
+#SBATCH --exclude=naples0[1-9]
 #SBATCH --mem=15G
 #SBATCH -c 2
 
@@ -19,12 +20,12 @@ echo "Exploring state space size of $MODEL"
 
 for MODEL_FILE in $(ls "output/$(basename $BIN)/$NAME" | egrep "$MODEL\.[0-9]+\.pnml$") ; do
 	
-	Q=$(echo $MODEL_FILE | sed -E "s/.*\.([0-9])+\..*/\1/")
+	Q=$(echo $MODEL_FILE | sed -E "s/.*\.([0-9]+)\..*/\1/")
 	echo "	Q$Q"
 
 	CMD="./$BIN -q 0 -r 0 output/$(basename $BIN)/$NAME/$MODEL.$Q.pnml -e"
 
-	RES=$("timeout ${TIME_OUT}m $CMD")
+	RES=$(eval "timeout ${TIME_OUT}m $CMD")
 	RES=$(echo $RES | grep -v "^<" | tr '\n' '\r')
 	echo $RES > "output/$(basename $BIN)/$NAME/$MODEL.$Q.sout"
 
