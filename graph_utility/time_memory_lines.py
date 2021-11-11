@@ -22,9 +22,15 @@ def plot(data_list, test_names, graph_dir, metric):
     # Dataframe to hold data from all csvs
     combined_df = pd.DataFrame()
     for index, data in enumerate(data_list):
+
         # Remove rows where query simplification has been used, or where there isn't an answer
-        data = data.drop(
-            data[(data['solved by query simplification']) | (data.answer == 'NONE')].index)
+        if metric in ['verification time', 'verification memory']:
+            data = data.drop(
+                data[(data['solved by query simplification']) | (data.answer == 'NONE')].index)
+
+        if metric == 'state space size':
+            data = data.drop(
+                data[(data['state space size'] == 0)].index)
 
         # Get data from relevant column sorted
         metric_data = ((data[f'{metric}'].sort_values()).reset_index()).drop(columns=
@@ -101,7 +107,7 @@ def plot(data_list, test_names, graph_dir, metric):
 if __name__ == "__main__":
     # Find the directory to save figures
     script_dir = os.path.dirname(__file__)
-    graph_dir = os.path.join(script_dir, '..\\graphs\\' + '\\time-memory\\')
+    graph_dir = os.path.join(script_dir, '..\\graphs\\' + '\\time-memory-size\\')
 
     if not os.path.isdir(graph_dir):
         os.makedirs(graph_dir)
