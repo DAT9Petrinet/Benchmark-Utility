@@ -102,7 +102,11 @@ def plot(data_list, test_names, graph_dir, experiment_to_compare_against_name):
                     size_ratio = (base_reduction_size / size_post_reductions)
                 except:
                     size_ratio = np.nan
-                time_ratio = (base_results_row['time'] / row['time'])
+
+                try:
+                    time_ratio = (base_results_row['verification time'] / row['verification time'])
+                except:
+                    time_ratio = np.nan
 
                 rule_indifferent_size.append(size_ratio)
                 rule_indifferent_time.append(time_ratio)

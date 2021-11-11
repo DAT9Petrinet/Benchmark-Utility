@@ -34,7 +34,7 @@ NEW_RULES=("L" "M" "N" "P" "Q" "R")
 rm -f $OUT
 
 # Write header
-echo -n "model name,query index,verifcation time,verifcation memory,answer,solved by query simplification,prev place count,prev transition count,post place count,post transition count,reduce time,state space size,rule A,rule B,rule C,rule D,rule E,rule F,rule G,rule H,rule I,rule J,rule K" >> $OUT
+echo -n "model name,query index,verifcation time,verification memory,answer,solved by query simplification,prev place count,prev transition count,post place count,post transition count,reduce time,state space size,rule A,rule B,rule C,rule D,rule E,rule F,rule G,rule H,rule I,rule J,rule K" >> $OUT
 for i in ${!NEW_RULES[@]} ; do
 	echo -n ",rule ${NEW_RULES[$i]}" >> $OUT
 done

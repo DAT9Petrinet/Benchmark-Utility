@@ -101,21 +101,21 @@ def plot(data_list, test_names, graph_dir):
                 if test_names[test_index2] != 'no-red':
                     best_reduction = min(best_reduction,
                                          other_row['post place count'] + other_row['post transition count'])
-                best_time = min(best_time, other_row['time'])
-                best_memory = min(best_memory, other_row['memory'])
+                best_time = min(best_time, other_row['verification time'])
+                best_memory = min(best_memory, other_row['verification memory'])
                 anyone_else_answer = anyone_else_answer or (other_row['answer'] != 'NONE')
 
             # Update the sums for the experiment, based on the results of all other experiments
             # But only if we have answered the test instance ourselves (this check could probably be moved before above for-loop)
             if row['answer'] != 'NONE':
                 answers_sum += 1
-                if row['time'] <= best_time:
+                if row['verification time'] <= best_time:
                     time_eq_sum += 1
-                    if row['time'] <= 0.9 * best_time:
+                    if row['verification time'] <= 0.9 * best_time:
                         time_sum += 1
-                if row['memory'] <= best_memory:
+                if row['verification memory'] <= best_memory:
                     memory_eq_sum += 1
-                    if row['memory'] <= 0.9 * best_memory:
+                    if row['verification memory'] <= 0.9 * best_memory:
                         memory_sum += 1
                 if test_names[test_index] != 'no-red':
                     if (row['post place count'] + row['post transition count']) <= best_reduction:
@@ -137,11 +137,11 @@ def plot(data_list, test_names, graph_dir):
 
     # Create a dataframe for each type of graph
     points_df = pd.DataFrame(
-        {'reduction': reduction_points, 'memory': memory_points, 'time': time_points, 'unique answers': unique_answers,
+        {'reduction': reduction_points, 'verification memory': memory_points, 'verification time': time_points, 'unique answers': unique_answers,
          'answered queries': answers})
 
     points_eq_df = pd.DataFrame(
-        {'reduction': reduction_eq_points, 'memory': memory_eq_points, 'time': time_eq_points,
+        {'reduction': reduction_eq_points, 'verification memory': memory_eq_points, 'verification time': time_eq_points,
          'answered queries': answers})
 
     # Rename rows in the dataframe to be names of the experiments
