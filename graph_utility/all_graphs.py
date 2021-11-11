@@ -73,7 +73,7 @@ def plot_all(data_list, test_names, graph_dir, experiment_to_compare_against_nam
     print(f"{graphs_made}/{num_graphs} graphs made")
 
     time_when_started = time.time()
-    metrics = ['verification time', 'verification memory']
+    metrics = ['verification time', 'verification memory', 'state space size']
     for metric in metrics:
         time_memory_lines.plot(data_list, test_names, graph_dir + '\\time-memory\\', metric)
     times['time/memory lines'] = (round(time.time()) - time_when_started)

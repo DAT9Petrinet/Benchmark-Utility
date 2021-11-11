@@ -51,7 +51,7 @@ def plot(data_list, test_names, graph_dir, metric):
     custom_palette = {}
     dashes = []
     for column_index, column in enumerate(combined_df.columns):
-        if metric == "verification time":
+        if metric == "verification time" or metric == "state space size":
             dashes.append((1, 0))
         elif metric == "verification memory":
             dashes.append((2, 2))
@@ -59,10 +59,12 @@ def plot(data_list, test_names, graph_dir, metric):
             raise Exception("(time_memory) Should not be able to reach this")
         custom_palette[column] = color((column_index + 1) / len(combined_df.columns))
 
-    if metric == 'time':
+    if metric == "verification time":
         unit = 'seconds'
-    else:
+    elif metric == 'verification memory':
         unit = 'kB'
+    elif metric == 'state space size':
+        unit = 'antallet af states'
 
     columns_with_with = [test_name for test_name in combined_df.columns if
                          ("with" in test_name) or ("base-rules" in test_name)]
@@ -92,7 +94,7 @@ def plot(data_list, test_names, graph_dir, metric):
             xlabel='test instances', yscale="log")
         plt.legend(bbox_to_anchor=(1.02, 1), loc='best', borderaxespad=0)
 
-        plt.savefig(graph_dir + f'verification_{metric}_lines_per_model_{png_names[index]}.png', bbox_inches='tight')
+        plt.savefig(graph_dir + f'{metric}_lines_per_model_{png_names[index]}.png', bbox_inches='tight')
         plt.clf()
 
 
@@ -112,6 +114,6 @@ if __name__ == "__main__":
     test_names = [os.path.split(os.path.splitext(path)[0])[1] for path in paths]
 
     # This plot also takes as argument which column to be used, so here we call with both 'time' and 'memory'
-    metrics = ['verification time', 'verification memory']
+    metrics = ['verification time', 'verification memory', 'state space size']
     for metric in metrics:
         plot(data_list, test_names, graph_dir, metric)
