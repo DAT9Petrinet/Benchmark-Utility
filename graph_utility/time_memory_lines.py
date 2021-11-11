@@ -22,15 +22,22 @@ def plot(data_list, test_names, graph_dir, metric):
     # Dataframe to hold data from all csvs
     combined_df = pd.DataFrame()
     for index, data in enumerate(data_list):
+        cutoff = -1
+        if metric == 'state space size':
+            cutoff = 0
+        if metric == 'verification time':
+            cutoff = 10
+        if metric == 'verification memory':
+            cutoff = 10000
 
         # Remove rows where query simplification has been used, or where there isn't an answer
         if metric in ['verification time', 'verification memory']:
             data = data.drop(
                 data[(data['solved by query simplification']) | (data.answer == 'NONE')].index)
 
-        if metric == 'state space size':
+        if cutoff != -1:
             data = data.drop(
-                data[(data['state space size'] == 0)].index)
+                data[(data[metric] <= cutoff)].index)
 
         # Get data from relevant column sorted
         metric_data = ((data[f'{metric}'].sort_values()).reset_index()).drop(columns=
