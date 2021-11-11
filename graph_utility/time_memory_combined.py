@@ -29,16 +29,16 @@ def plot(data_list, test_names, graph_dir):
             data[(data['solved by query simplification']) | (data.answer == 'NONE')].index)
 
         # Get data from time column sorted
-        time_data = ((data['time'].sort_values()).reset_index()).drop(columns=
+        time_data = ((data['verification time'].sort_values()).reset_index()).drop(columns=
                                                                       'index')
         # Rename the column to include the name of the test
-        time_data.rename(columns={'time': f"{test_names[index]}-time"}, inplace=True)
+        time_data.rename(columns={'verification time': f"{test_names[index]}-time"}, inplace=True)
 
         # Get data from memory column sorted
-        memory_data = ((data['memory'].sort_values()).reset_index()).drop(columns=
+        memory_data = ((data['verification memory'].sort_values()).reset_index()).drop(columns=
                                                                           'index')
         # Rename the column to include the name of the test
-        memory_data.rename(columns={'memory': f"{test_names[index]}-memory"}, inplace=True)
+        memory_data.rename(columns={'verification memory': f"{test_names[index]}-memory"}, inplace=True)
 
         # Join the time and memory dataframes
         memory_time_data = time_data.join(memory_data)

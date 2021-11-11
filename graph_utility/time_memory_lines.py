@@ -51,9 +51,9 @@ def plot(data_list, test_names, graph_dir, metric):
     custom_palette = {}
     dashes = []
     for column_index, column in enumerate(combined_df.columns):
-        if metric == "time":
+        if metric == "verification time":
             dashes.append((1, 0))
-        elif metric == "memory":
+        elif metric == "verification memory":
             dashes.append((2, 2))
         else:
             raise Exception("(time_memory) Should not be able to reach this")
@@ -87,12 +87,12 @@ def plot(data_list, test_names, graph_dir, metric):
         plot = sns.lineplot(data=data[0], palette=custom_palette,
                             dashes=data[1])
         plot.set(
-            title=f'model checking {metric} per test instance',
+            title=f'model checking verification {metric} per test instance',
             ylabel=f'{unit}',
             xlabel='test instances', yscale="log")
         plt.legend(bbox_to_anchor=(1.02, 1), loc='best', borderaxespad=0)
 
-        plt.savefig(graph_dir + f'{metric}_lines_per_model_{png_names[index]}.png', bbox_inches='tight')
+        plt.savefig(graph_dir + f'verification_{metric}_lines_per_model_{png_names[index]}.png', bbox_inches='tight')
         plt.clf()
 
 
@@ -112,6 +112,6 @@ if __name__ == "__main__":
     test_names = [os.path.split(os.path.splitext(path)[0])[1] for path in paths]
 
     # This plot also takes as argument which column to be used, so here we call with both 'time' and 'memory'
-    metrics = ['time', 'memory']
+    metrics = ['verification time', 'verification memory']
     for metric in metrics:
         plot(data_list, test_names, graph_dir, metric)

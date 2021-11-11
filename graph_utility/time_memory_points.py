@@ -66,8 +66,8 @@ def plot(data_list, test_names, graph_dir, experiment_to_compare_against_name):
                 raise Exception('(time_memory_points) Comparing wrong rows')
 
             if (base_results_row['answer'] != 'NONE') and row['answer'] != 'NONE':
-                time_sum += np.sign(base_results_row['time'] - row['time'])
-                memory_sum += np.sign(base_results_row['memory'] - row['memory'])
+                time_sum += np.sign(base_results_row['verification time'] - row['verification time'])
+                memory_sum += np.sign(base_results_row['verification memory'] - row['verification memory'])
             elif (base_results_row['answer'] == 'NONE') and row['answer'] != 'NONE':
                 time_sum += 1
                 memory_sum += 1
@@ -86,7 +86,7 @@ def plot(data_list, test_names, graph_dir, experiment_to_compare_against_name):
         memory_points.append(memory_sum)
 
     points_df = pd.DataFrame(
-        {'time': time_points, 'memory': memory_points})
+        {'verification time': time_points, 'verification memory': memory_points})
 
     new_indices = dict()
     for index, name in enumerate(test_names):

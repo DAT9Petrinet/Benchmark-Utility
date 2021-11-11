@@ -1,4 +1,4 @@
-model name,query index,verifcation time,verifcation memory,answer,solved by query simplification,prev place count,prev transition count,post place count,post transition count,reduce time,state space size,rule A,rule B,rule C,rule D,rule E,rule F,rule G,rule H,rule I,rule J,rule K,rule L,rule M,rule N,rule P,rule Q,rule R
+model name,query index,verification time,verification memory,answer,solved by query simplification,prev place count,prev transition count,post place count,post transition count,reduce time,state space size,rule A,rule B,rule C,rule D,rule E,rule F,rule G,rule H,rule I,rule J,rule K,rule L,rule M,rule N,rule P,rule Q,rule R
 ARMCacheCoherence-PT-none,1,0.17,6196,FALSE,TRUE,87,33676,67,802,0.585463,208946562,17,0,0,32831,0,0,17,3,1,0,0,0,0,0,0,0,0
 ARMCacheCoherence-PT-none,10,0.10,6180,TRUE,TRUE,87,33676,67,762,0.582091,320497762,18,0,0,32873,0,0,17,2,1,0,0,0,0,0,0,0,0
 ARMCacheCoherence-PT-none,11,0.04,5920,FALSE,TRUE,87,33676,61,698,0.583278,136500801,23,0,0,32929,0,0,17,3,1,0,0,0,0,0,0,0,0
