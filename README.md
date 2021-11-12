@@ -4,7 +4,10 @@ Benchmark utility scripts for reduction rules of Petri nets in verifypn.
 
 ## Default pipeline
 
-![Benchmark Flowchat](https://imgur.com/CjDag40.png)
+![Benchmark Flowchart](https://imgur.com/CjDag40.png)
+
+## Default pipeline in TAPAAL
+![Benchmark Flowchart tapaal](https://i.imgur.com/Cn1eKch.png)
 
 ### Structure
 ```
