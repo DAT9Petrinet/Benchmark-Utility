@@ -3,9 +3,10 @@ import os
 import sys
 
 import matplotlib.pyplot as plt
-import numpy as np
 import pandas as pd
 import seaborn as sns
+
+import utility
 
 
 def plot(data_list, test_names, graph_dir, metric):
@@ -21,20 +22,7 @@ def plot(data_list, test_names, graph_dir, metric):
 
     # Find test instances that all managed to get a result to
     if metric in ['verification time', 'verification memory']:
-        rows_to_delete = set()
-        for index, data in enumerate(data_list):
-            # Find all rows where we have 'NONE' answer
-            answer_indices = set((data.index[data['answer'] == 'NONE']).tolist())
-
-            # Add to rows that we want to delete
-            if index == 0:
-                rows_to_delete = answer_indices
-            else:
-                rows_to_delete = rows_to_delete.union(answer_indices)
-
-        # Delete all the rows
-        for data in data_list:
-            data.drop(rows_to_delete, inplace=True)
+        data_list = utility.common_answers(data_list)
 
     cutoff = 0.9
     # Dataframe to hold data from all csvs
@@ -56,15 +44,6 @@ def plot(data_list, test_names, graph_dir, metric):
             continue
         combined_df = pd.concat([combined_df, metric_data], axis=1)
 
-    # Make sure colors and dashes matches the ones from 'time_memory_combined'
-    def color(t):
-        a = np.array([0.5, 0.5, 0.5])
-        b = np.array([0.5, 0.5, 0.5])
-        c = np.array([1.0, 1.0, 1.0])
-        d = np.array([0.0, 0.33, 0.67])
-
-        return a + (b * np.cos(2 * np.pi * (c * t + d)))
-
     sns.set_theme(style="darkgrid")
     custom_palette = {}
     dashes = []
@@ -75,7 +54,7 @@ def plot(data_list, test_names, graph_dir, metric):
             dashes.append((2, 2))
         else:
             raise Exception("(time_memory) Should not be able to reach this")
-        custom_palette[column] = color((column_index + 1) / len(combined_df.columns))
+        custom_palette[column] = utility.color((column_index + 1) / len(combined_df.columns))
 
     if metric == "verification time":
         unit = 'seconds'

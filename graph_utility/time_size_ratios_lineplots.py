@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sns
+import utility
 
 
 # The first csv will be used as numerator in the plots
@@ -153,20 +154,12 @@ def plot(data_list, test_names, graph_dir, experiment_to_compare_against_name):
 
     png_names = ['new_rules', 'not_new_rules', 'all']
 
-    # Make sure colors and dashes matches the ones from 'time_memory_combined'
-    def color(t):
-        a = np.array([0.5, 0.5, 0.5])
-        b = np.array([0.5, 0.5, 0.5])
-        c = np.array([1.0, 1.0, 1.0])
-        d = np.array([0.0, 0.33, 0.67])
-
-        return a + (b * np.cos(2 * np.pi * (c * t + d)))
 
     sns.set_theme(style="darkgrid")
     custom_palette = {}
 
     for column_index, column in enumerate(rule_used_size_ratios.columns):
-        custom_palette[column] = color((column_index + 1) / len(rule_used_size_ratios.columns))
+        custom_palette[column] = utility.color((column_index + 1) / len(rule_used_size_ratios.columns))
 
     for i in range(3):
         # plot the plot

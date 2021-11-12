@@ -7,6 +7,8 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 
+import utility
+
 
 def plot(data_list, test_names, graph_dir):
     """
@@ -24,27 +26,7 @@ def plot(data_list, test_names, graph_dir):
             '(best_overall) beware, probably weird results (in reduction points) in this graph due to comparing only 2 experiments, and one which is no-red')
 
     # Find test instances that no experiment managed to reduce
-    rows_to_delete = set()
-    for index, data in enumerate(data_list):
-        # Find all indices where the query has been solved by simplification
-        simplification_indices = set((data.index[data['solved by query simplification']]).tolist())
-
-        # Find all rows where we have 'NONE' answer
-        answer_indices = set((data.index[data['answer'] == 'NONE']).tolist())
-
-        # Take the union
-        combined_indices = answer_indices.union(simplification_indices)
-
-        # Only interested in finding the rows that NO experiment managed to reduce
-        # So take intersection
-        if index == 0:
-            rows_to_delete = combined_indices
-        else:
-            rows_to_delete = rows_to_delete.intersection(combined_indices)
-
-    # Remove the rows from all data files
-    for data in data_list:
-        data.drop(rows_to_delete, inplace=True)
+    data_list = utility.filter_out_no_answers(data_list)
 
     # Holds results for the 'strictly better' graph
     reduction_points = []
@@ -137,7 +119,8 @@ def plot(data_list, test_names, graph_dir):
 
     # Create a dataframe for each type of graph
     points_df = pd.DataFrame(
-        {'reduction': reduction_points, 'verification memory': memory_points, 'verification time': time_points, 'unique answers': unique_answers,
+        {'reduction': reduction_points, 'verification memory': memory_points, 'verification time': time_points,
+         'unique answers': unique_answers,
          'answered queries': answers})
 
     points_eq_df = pd.DataFrame(
