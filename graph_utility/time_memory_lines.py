@@ -14,6 +14,7 @@ def plot(data_list, test_names, graph_dir, metric):
     Can be called with multiple csvs, and will plot all lines on same graph
     """
 
+    cutoff = 0.9
     # The deepcopies are because in the 'all_graphs' the data_list are used for all plots,
     # so each function will make their own copy
     data_list = copy.deepcopy(data_list)
@@ -22,28 +23,23 @@ def plot(data_list, test_names, graph_dir, metric):
     # Dataframe to hold data from all csvs
     combined_df = pd.DataFrame()
     for index, data in enumerate(data_list):
-        cutoff = -1
-        if metric == 'state space size':
-            cutoff = 0
-        if metric == 'verification time':
-            cutoff = 10
-        if metric == 'verification memory':
-            cutoff = 10000
 
         # Remove rows where query simplification has been used, or where there isn't an answer
         if metric in ['verification time', 'verification memory']:
             data = data.drop(
                 data[(data['solved by query simplification']) | (data.answer == 'NONE')].index)
 
-        if cutoff != -1:
-            data = data.drop(
-                data[(data[metric] <= cutoff)].index)
-
         # Get data from relevant column sorted
         metric_data = ((data[f'{metric}'].sort_values()).reset_index()).drop(columns=
                                                                              'index')
+
+        metric_data = metric_data.drop(index=metric_data.index[:int(len(metric_data) * cutoff)],
+                                       axis=0)
+
         # Rename the column to include the name of the test
         metric_data.rename(columns={f'{metric}': f"{test_names[index]}-{metric}"}, inplace=True)
+
+        print(metric_data)
 
         # Either initialize or add to the combined dataframe for all csvs
         if index == 0:
@@ -77,7 +73,7 @@ def plot(data_list, test_names, graph_dir, metric):
     elif metric == 'verification memory':
         unit = 'kB'
     elif metric == 'state space size':
-        unit = 'antallet af states'
+        unit = 'number of states'
 
     columns_with_with = [test_name for test_name in combined_df.columns if
                          ("with" in test_name) or ("base-rules" in test_name)]
@@ -102,7 +98,7 @@ def plot(data_list, test_names, graph_dir, metric):
         plot = sns.lineplot(data=data[0], palette=custom_palette,
                             dashes=data[1])
         plot.set(
-            title=f'model checking verification {metric} per test instance',
+            title=f'model checking {metric} per test instance',
             ylabel=f'{unit}',
             xlabel='test instances', yscale="log")
         plt.legend(bbox_to_anchor=(1.02, 1), loc='best', borderaxespad=0)
