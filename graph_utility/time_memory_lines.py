@@ -19,18 +19,20 @@ def plot(data_list, test_names, graph_dir, metric):
     data_list = copy.deepcopy(data_list)
     test_names = copy.deepcopy(test_names)
 
-    # Find test instances that no experiment managed to reduce
+    # Find test instances that all managed to get a result to
     if metric in ['verification time', 'verification memory']:
         rows_to_delete = set()
         for index, data in enumerate(data_list):
             # Find all rows where we have 'NONE' answer
             answer_indices = set((data.index[data['answer'] == 'NONE']).tolist())
 
+            # Add to rows that we want to delete
             if index == 0:
                 rows_to_delete = answer_indices
             else:
                 rows_to_delete = rows_to_delete.union(answer_indices)
 
+        # Delete all the rows
         for data in data_list:
             data.drop(rows_to_delete, inplace=True)
 
@@ -38,12 +40,6 @@ def plot(data_list, test_names, graph_dir, metric):
     # Dataframe to hold data from all csvs
     combined_df = pd.DataFrame()
     for index, data in enumerate(data_list):
-
-        # Remove rows where query simplification has been used, or where there isn't an answer
-        if metric in ['verification time', 'verification memory']:
-            data = data.drop(
-                data[data.answer == 'NONE'].index)
-
         # Get data from relevant column sorted
         metric_data = ((data[f'{metric}'].sort_values()).reset_index()).drop(columns=
                                                                              'index')
@@ -105,6 +101,7 @@ def plot(data_list, test_names, graph_dir, metric):
     png_names = ['all', 'with', 'without']
 
     for index, data in enumerate(data_to_plot):
+        print(data[0])
         if len(data[0]) == 0 or len(data[0].columns) == 0:
             continue
         # Plot the plot
