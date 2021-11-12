@@ -14,12 +14,27 @@ def plot(data_list, test_names, graph_dir, metric):
     Can be called with multiple csvs, and will plot all lines on same graph
     """
 
-    cutoff = 0.9
     # The deepcopies are because in the 'all_graphs' the data_list are used for all plots,
     # so each function will make their own copy
     data_list = copy.deepcopy(data_list)
     test_names = copy.deepcopy(test_names)
 
+    # Find test instances that no experiment managed to reduce
+    if metric in ['verification time', 'verification memory']:
+        rows_to_delete = set()
+        for index, data in enumerate(data_list):
+            # Find all rows where we have 'NONE' answer
+            answer_indices = set((data.index[data['answer'] == 'NONE']).tolist())
+
+            if index == 0:
+                rows_to_delete = answer_indices
+            else:
+                rows_to_delete = rows_to_delete.union(answer_indices)
+
+        for data in data_list:
+            data.drop(rows_to_delete, inplace=True)
+
+    cutoff = 0.9
     # Dataframe to hold data from all csvs
     combined_df = pd.DataFrame()
     for index, data in enumerate(data_list):
@@ -27,7 +42,7 @@ def plot(data_list, test_names, graph_dir, metric):
         # Remove rows where query simplification has been used, or where there isn't an answer
         if metric in ['verification time', 'verification memory']:
             data = data.drop(
-                data[(data['solved by query simplification']) | (data.answer == 'NONE')].index)
+                data[data.answer == 'NONE'].index)
 
         # Get data from relevant column sorted
         metric_data = ((data[f'{metric}'].sort_values()).reset_index()).drop(columns=
@@ -38,8 +53,6 @@ def plot(data_list, test_names, graph_dir, metric):
 
         # Rename the column to include the name of the test
         metric_data.rename(columns={f'{metric}': f"{test_names[index]}-{metric}"}, inplace=True)
-
-        print(metric_data)
 
         # Either initialize or add to the combined dataframe for all csvs
         if index == 0:
