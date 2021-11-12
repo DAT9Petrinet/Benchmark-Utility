@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<pnml xmlns="http://www.informatik.hu-berlin.de/top/pnml/ptNetb">
+  <net active="true" id="TAPN1" type="P/T net">
+    <place displayName="true" id="tests" initialMarking="0" invariant="&lt; inf" name="tests" nameOffsetX="0" nameOffsetY="0" positionX="330" positionY="120"/>
+    <place displayName="true" id="ready_to_explore_state_space" initialMarking="0" invariant="&lt; inf" name="ready_to_explore_state_space" nameOffsetX="1" nameOffsetY="0" positionX="390" positionY="390"/>
+    <place displayName="true" id="reduction" initialMarking="0" invariant="&lt; inf" name="reduction" nameOffsetX="0" nameOffsetY="0" positionX="450" positionY="225"/>
+    <place displayName="true" id="explored" initialMarking="0" invariant="&lt; inf" name="explored" nameOffsetX="0" nameOffsetY="0" positionX="390" positionY="570"/>
+    <place displayName="true" id="verified" initialMarking="0" invariant="&lt; inf" name="verified" nameOffsetX="0" nameOffsetY="0" positionX="495" positionY="570"/>
+    <place displayName="true" id="exploration_done" initialMarking="0" invariant="&lt; inf" name="exploration_done" nameOffsetX="0" nameOffsetY="0" positionX="390" positionY="735"/>
+    <place displayName="true" id="verify_done" initialMarking="0" invariant="&lt; inf" name="verify_done" nameOffsetX="0" nameOffsetY="0" positionX="495" positionY="735"/>
+    <place displayName="true" id="compilation_done" initialMarking="0" invariant="&lt; inf" name="compilation_done" nameOffsetX="0" nameOffsetY="0" positionX="435" positionY="870"/>
+    <place displayName="true" id="ready_to_verify" initialMarking="0" invariant="&lt; inf" name="ready_to_verify" nameOffsetX="96" nameOffsetY="-7" positionX="495" positionY="390"/>
+    <place displayName="true" id="threads" initialMarking="16" invariant="&lt; inf" name="threads" nameOffsetX="0" nameOffsetY="0" positionX="630" positionY="570"/>
+    <place displayName="true" id="experiments" initialMarking="5" invariant="&lt; inf" name="experiments" nameOffsetX="0" nameOffsetY="0" positionX="697" positionY="120"/>
+    <transition angle="0" displayName="true" id="begin_reduction" infiniteServer="false" name="begin_reduction" nameOffsetX="44" nameOffsetY="42" player="0" positionX="330" positionY="225" priority="0" urgent="false"/>
+    <transition angle="0" displayName="true" id="end_reduction" infiniteServer="false" name="end_reduction" nameOffsetX="46" nameOffsetY="-10" player="0" positionX="450" positionY="300" priority="0" urgent="false"/>
+    <transition angle="0" displayName="true" id="explore_state_space" infiniteServer="false" name="explore_state_space" nameOffsetX="0" nameOffsetY="0" player="0" positionX="390" positionY="495" priority="0" urgent="false"/>
+    <transition angle="0" displayName="true" id="verify" infiniteServer="false" name="verify" nameOffsetX="0" nameOffsetY="0" player="0" positionX="495" positionY="495" priority="0" urgent="false"/>
+    <transition angle="0" displayName="true" id="end_exploration" infiniteServer="false" name="end_exploration" nameOffsetX="0" nameOffsetY="0" player="0" positionX="390" positionY="645" priority="0" urgent="false"/>
+    <transition angle="0" displayName="true" id="end_verification" infiniteServer="false" name="end_verification" nameOffsetX="10" nameOffsetY="-9" player="0" positionX="495" positionY="645" priority="0" urgent="false"/>
+    <transition angle="0" displayName="true" id="begin_compilation_of_csv" infiniteServer="false" name="begin_compilation_of_csv" nameOffsetX="1" nameOffsetY="9" player="0" positionX="435" positionY="795" priority="0" urgent="false"/>
+    <transition angle="0" displayName="true" id="return_thread" infiniteServer="false" name="return_thread" nameOffsetX="0" nameOffsetY="0" player="0" positionX="630" positionY="870" priority="0" urgent="false"/>
+    <transition angle="0" displayName="true" id="start_experiment" infiniteServer="false" name="start_experiment" nameOffsetX="52" nameOffsetY="-4" player="0" positionX="494" positionY="115" priority="0" urgent="false"/>
+    <arc id="A0" inscription="[0,inf)" nameOffsetX="0" nameOffsetY="0" source="tests" target="begin_reduction" type="timed" weight="1">
+      <arcpath arcPointType="false" id="0" xCoord="345" yCoord="150"/>
+      <arcpath arcPointType="false" id="1" xCoord="345" yCoord="225"/>
+    </arc>
+    <arc id="A1" inscription="1" nameOffsetX="0" nameOffsetY="0" source="begin_reduction" target="reduction" type="normal" weight="1">
+      <arcpath arcPointType="false" id="0" xCoord="349" yCoord="240"/>
+      <arcpath arcPointType="false" id="1" xCoord="450" yCoord="240"/>
+    </arc>
+    <arc id="A2" inscription="[0,inf)" nameOffsetX="0" nameOffsetY="0" source="reduction" target="end_reduction" type="timed" weight="1">
+      <arcpath arcPointType="false" id="0" xCoord="465" yCoord="255"/>
+      <arcpath arcPointType="false" id="1" xCoord="465" yCoord="300"/>
+    </arc>
+    <arc id="A5" inscription="1" nameOffsetX="0" nameOffsetY="0" source="end_reduction" target="ready_to_explore_state_space" type="normal" weight="1">
+      <arcpath arcPointType="false" id="0" xCoord="459" yCoord="315"/>
+      <arcpath arcPointType="false" id="1" xCoord="412" yCoord="392"/>
+    </arc>
+    <arc id="A6" inscription="1" nameOffsetX="0" nameOffsetY="0" source="end_reduction" target="ready_to_verify" type="normal" weight="1">
+      <arcpath arcPointType="false" id="0" xCoord="465" yCoord="330"/>
+      <arcpath arcPointType="false" id="1" xCoord="502" yCoord="392"/>
+    </arc>
+    <arc id="A7" inscription="[0,inf)" nameOffsetX="0" nameOffsetY="0" source="ready_to_verify" target="verify" type="timed" weight="1">
+      <arcpath arcPointType="false" id="0" xCoord="510" yCoord="420"/>
+      <arcpath arcPointType="false" id="1" xCoord="510" yCoord="495"/>
+    </arc>
+    <arc id="A8" inscription="[0,inf)" nameOffsetX="0" nameOffsetY="0" source="ready_to_explore_state_space" target="explore_state_space" type="timed" weight="1">
+      <arcpath arcPointType="false" id="0" xCoord="405" yCoord="420"/>
+      <arcpath arcPointType="false" id="1" xCoord="405" yCoord="495"/>
+    </arc>
+    <arc id="A11" inscription="1" nameOffsetX="0" nameOffsetY="0" source="verify" target="verified" type="normal" weight="1">
+      <arcpath arcPointType="false" id="0" xCoord="510" yCoord="525"/>
+      <arcpath arcPointType="false" id="1" xCoord="510" yCoord="570"/>
+    </arc>
+    <arc id="A12" inscription="1" nameOffsetX="0" nameOffsetY="0" source="explore_state_space" target="explored" type="normal" weight="1">
+      <arcpath arcPointType="false" id="0" xCoord="405" yCoord="525"/>
+      <arcpath arcPointType="false" id="1" xCoord="405" yCoord="570"/>
+    </arc>
+    <arc id="A13" inscription="[0,inf)" nameOffsetX="0" nameOffsetY="0" source="explored" target="end_exploration" type="timed" weight="1">
+      <arcpath arcPointType="false" id="0" xCoord="405" yCoord="600"/>
+      <arcpath arcPointType="false" id="1" xCoord="405" yCoord="645"/>
+    </arc>
+    <arc id="A14" inscription="[0,inf)" nameOffsetX="0" nameOffsetY="0" source="verified" target="end_verification" type="timed" weight="1">
+      <arcpath arcPointType="false" id="0" xCoord="510" yCoord="600"/>
+      <arcpath arcPointType="false" id="1" xCoord="510" yCoord="645"/>
+    </arc>
+    <arc id="A15" inscription="1" nameOffsetX="0" nameOffsetY="0" source="end_exploration" target="exploration_done" type="normal" weight="1">
+      <arcpath arcPointType="false" id="0" xCoord="405" yCoord="675"/>
+      <arcpath arcPointType="false" id="1" xCoord="405" yCoord="735"/>
+    </arc>
+    <arc id="A16" inscription="1" nameOffsetX="0" nameOffsetY="0" source="end_verification" target="verify_done" type="normal" weight="1">
+      <arcpath arcPointType="false" id="0" xCoord="510" yCoord="675"/>
+      <arcpath arcPointType="false" id="1" xCoord="510" yCoord="735"/>
+    </arc>
+    <arc id="A17" inscription="[0,inf)" nameOffsetX="0" nameOffsetY="0" source="exploration_done" target="begin_compilation_of_csv" type="timed" weight="1">
+      <arcpath arcPointType="false" id="0" xCoord="413" yCoord="762"/>
+      <arcpath arcPointType="false" id="1" xCoord="444" yCoord="810"/>
+    </arc>
+    <arc id="A18" inscription="1" nameOffsetX="0" nameOffsetY="0" source="begin_compilation_of_csv" target="compilation_done" type="normal" weight="1">
+      <arcpath arcPointType="false" id="0" xCoord="450" yCoord="825"/>
+      <arcpath arcPointType="false" id="1" xCoord="450" yCoord="870"/>
+    </arc>
+    <arc id="A19" inscription="[0,inf)" nameOffsetX="0" nameOffsetY="0" source="verify_done" target="begin_compilation_of_csv" type="timed" weight="1">
+      <arcpath arcPointType="false" id="0" xCoord="499" yCoord="760"/>
+      <arcpath arcPointType="false" id="1" xCoord="455" yCoord="802"/>
+    </arc>
+    <arc id="A20" inscription="[0,inf)" nameOffsetX="0" nameOffsetY="0" source="compilation_done" target="return_thread" type="timed" weight="1">
+      <arcpath arcPointType="false" id="0" xCoord="465" yCoord="885"/>
+      <arcpath arcPointType="false" id="1" xCoord="639" yCoord="885"/>
+    </arc>
+    <arc id="A21" inscription="1" nameOffsetX="0" nameOffsetY="0" source="return_thread" target="threads" type="normal" weight="1">
+      <arcpath arcPointType="false" id="0" xCoord="645" yCoord="870"/>
+      <arcpath arcPointType="false" id="1" xCoord="645" yCoord="600"/>
+    </arc>
+    <arc id="A22" inscription="1" nameOffsetX="0" nameOffsetY="0" source="end_verification" target="threads" type="normal" weight="1">
+      <arcpath arcPointType="false" id="0" xCoord="514" yCoord="660"/>
+      <arcpath arcPointType="false" id="1" xCoord="641" yCoord="659"/>
+      <arcpath arcPointType="false" id="2" xCoord="644" yCoord="599"/>
+    </arc>
+    <arc id="A23" inscription="1" nameOffsetX="0" nameOffsetY="0" source="end_exploration" target="threads" type="normal" weight="1">
+      <arcpath arcPointType="false" id="0" xCoord="409" yCoord="660"/>
+      <arcpath arcPointType="false" id="1" xCoord="639" yCoord="659"/>
+      <arcpath arcPointType="false" id="2" xCoord="643" yCoord="599"/>
+    </arc>
+    <arc id="A24" inscription="[0,inf)" nameOffsetX="0" nameOffsetY="0" source="threads" target="begin_compilation_of_csv" type="timed" weight="1">
+      <arcpath arcPointType="false" id="0" xCoord="644" yCoord="599"/>
+      <arcpath arcPointType="false" id="1" xCoord="644" yCoord="809"/>
+      <arcpath arcPointType="false" id="2" xCoord="455" yCoord="809"/>
+    </arc>
+    <arc id="A25" inscription="[0,inf)" nameOffsetX="0" nameOffsetY="0" source="threads" target="verify" type="timed" weight="1">
+      <arcpath arcPointType="false" id="0" xCoord="645" yCoord="570"/>
+      <arcpath arcPointType="false" id="1" xCoord="646" yCoord="510"/>
+      <arcpath arcPointType="false" id="2" xCoord="515" yCoord="505"/>
+    </arc>
+    <arc id="A26" inscription="[0,inf)" nameOffsetX="0" nameOffsetY="0" source="threads" target="explore_state_space" type="timed" weight="1">
+      <arcpath arcPointType="false" id="0" xCoord="645" yCoord="570"/>
+      <arcpath arcPointType="false" id="1" xCoord="646" yCoord="507"/>
+      <arcpath arcPointType="false" id="2" xCoord="410" yCoord="505"/>
+    </arc>
+    <arc id="A27" inscription="1" nameOffsetX="0" nameOffsetY="0" source="end_reduction" target="threads" type="normal" weight="1">
+      <arcpath arcPointType="false" id="0" xCoord="469" yCoord="315"/>
+      <arcpath arcPointType="false" id="1" xCoord="641" yCoord="317"/>
+      <arcpath arcPointType="false" id="2" xCoord="644" yCoord="570"/>
+    </arc>
+    <arc id="A28" inscription="[0,inf)" nameOffsetX="0" nameOffsetY="0" source="threads" target="begin_reduction" type="timed" weight="1">
+      <arcpath arcPointType="false" id="0" xCoord="644" yCoord="570"/>
+      <arcpath arcPointType="false" id="1" xCoord="642" yCoord="181"/>
+      <arcpath arcPointType="false" id="2" xCoord="358" yCoord="182"/>
+      <arcpath arcPointType="false" id="3" xCoord="345" yCoord="225"/>
+    </arc>
+    <arc id="A29" inscription="[0,inf)" nameOffsetX="0" nameOffsetY="0" source="experiments" target="start_experiment" type="timed" weight="1">
+      <arcpath arcPointType="false" id="0" xCoord="697" yCoord="135"/>
+      <arcpath arcPointType="false" id="1" xCoord="513" yCoord="135"/>
+    </arc>
+    <arc id="A30" inscription="1" nameOffsetX="9" nameOffsetY="-5" source="start_experiment" target="tests" type="normal" weight="18897">
+      <arcpath arcPointType="false" id="0" xCoord="503" yCoord="130"/>
+      <arcpath arcPointType="false" id="1" xCoord="359" yCoord="134"/>
+    </arc>
+  </net>
+  <k-bound bound="3"/>
+  <feature isGame="false" isTimed="false"/>
+</pnml>
