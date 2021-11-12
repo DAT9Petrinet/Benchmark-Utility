@@ -35,7 +35,7 @@ To run the whole pipeline (including reduction, verification, and state space ex
 Verification and/or state space exploration can be disabled by setting their time-out to 0.
 
 #### run_pipeline.sh
-Arguments: `<test-name> <binary> <binary-options> [test-time-out]`
+Arguments: `<test-name> <binary> <binary-options> [test-folder] [red-time-out] [veri-time-out] [expl-time-out]`
 
 Starts a number of slurm jobs each solving the queries of one model in the test folder.
 Each of those jobs are then followed by another job running the reduced net too in order to determine the size of the state space.
@@ -57,7 +57,7 @@ This script will verify the queries for the given model using the reduced net `o
 The raw output of the binary will be stored at `output/<binary>/<test-name>/<model>.<query>.vout`
 
 ##### verify_all.sh
-Arguments: `<test-name> <binary> [time-out]`
+Arguments: `<test-name> <binary> [test-folder] [time-out]`
 
 Starts a number of slurm jobs each solving the queries of the reduced nets.
 This does not start `compile_results.sh` afterwards.
@@ -70,7 +70,7 @@ binary on the given reduced model+query using the query "EF false", forcing it t
 The size is then stored in `output/<binary>/<test-name>/<model>.<query>.size`
 
 ##### explore_all.sh
-Arguments: `<test-name> <binary> [time-out]`
+Arguments: `<test-name> <binary> [test-folder] [time-out]`
 
 Starts a number of slurm jobs each exploring the state spaces of the reduced nets in order to find their size.
 This does not start `compile_results.sh` afterwards.

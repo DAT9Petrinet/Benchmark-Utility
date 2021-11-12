@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Args: <test-name> <binary> <bin-options> [red-time-out] [veri-time-out] [expl-time-out]
+# Args: <test-name> <binary> <bin-options> [test-folder] [red-time-out] [veri-time-out] [expl-time-out]
 # Starts a number of slurm jobs each solving the queries of one model in the test folder.
 # Each of those jobs are then followed by another job running the reduced net too in order to determine the size of the state space.
 # When all jobs are done, the results are compiled into a single csv.
@@ -8,10 +8,10 @@
 NAME=$1
 BIN=$2
 OPTIONS=$3
-RED_TIME_OUT=$4
-VERI_TIME_OUT=$5
-EXPL_TIME_OUT=$6
-TEST_FOLDER="MCC2021"
+TEST_FOLDER=$4
+RED_TIME_OUT=$5
+VERI_TIME_OUT=$6
+EXPL_TIME_OUT=$7
 
 if [ -z "$NAME" ] ; then
 	echo "Missing benchmark name"
@@ -31,6 +31,11 @@ fi
 if [ -z "$OPTIONS" ] ; then
 	echo "Missing binary options"
 	exit
+fi
+
+if [ -z "$TEST_FOLDER" ] ; then
+	echo "No TEST_FOLDER given, using MCC2021"
+	TEST_FOLDER="MCC2021"
 fi
 
 if [ -z "$RED_TIME_OUT" ] ; then
