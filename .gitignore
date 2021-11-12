@@ -3,6 +3,8 @@ binaries/
 output/
 snippets/results.csv
 MCC2021
+mcc2021_inhib
+MCC2021_inhib
 temp
 slurm-*
 __pycache__
