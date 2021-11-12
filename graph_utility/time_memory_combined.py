@@ -30,13 +30,13 @@ def plot(data_list, test_names, graph_dir):
 
         # Get data from time column sorted
         time_data = ((data['verification time'].sort_values()).reset_index()).drop(columns=
-                                                                      'index')
+                                                                                   'index')
         # Rename the column to include the name of the test
         time_data.rename(columns={'verification time': f"{test_names[index]}-time"}, inplace=True)
 
         # Get data from memory column sorted
         memory_data = ((data['verification memory'].sort_values()).reset_index()).drop(columns=
-                                                                          'index')
+                                                                                       'index')
         # Rename the column to include the name of the test
         memory_data.rename(columns={'verification memory': f"{test_names[index]}-memory"}, inplace=True)
 
@@ -105,7 +105,7 @@ def plot(data_list, test_names, graph_dir):
             xlabel='test instances', yscale="log")
         plt.legend(bbox_to_anchor=(1.02, 1), loc='best', borderaxespad=0)
 
-        plt.savefig(graph_dir + f'time-memory_per_model_{png_names[index]}.png', bbox_inches='tight')
+        plt.savefig(graph_dir + f'verification_time-memory_per_model_{png_names[index]}.png', bbox_inches='tight')
         plt.clf()
 
 

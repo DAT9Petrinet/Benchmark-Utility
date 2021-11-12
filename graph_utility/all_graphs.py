@@ -67,21 +67,21 @@ def plot_all(data_list, test_names, graph_dir, experiment_to_compare_against_nam
 
     time_when_started = time.time()
     # Stuff to do with time and memory
-    time_memory_combined.plot(data_list, test_names, graph_dir + '\\time-memory\\')
+    time_memory_combined.plot(data_list, test_names, graph_dir + '\\time-memory-size\\')
     times['time/memory lines combined'] = (round(time.time()) - time_when_started)
     graphs_made = graphs_made + 1
     print(f"{graphs_made}/{num_graphs} graphs made")
 
     time_when_started = time.time()
-    metrics = ['verification time', 'verification memory']
+    metrics = ['verification time', 'verification memory', 'state space size']
     for metric in metrics:
-        time_memory_lines.plot(data_list, test_names, graph_dir + '\\time-memory\\', metric)
+        time_memory_lines.plot(data_list, test_names, graph_dir + '\\time-memory-size\\', metric)
     times['time/memory lines'] = (round(time.time()) - time_when_started)
     graphs_made = graphs_made + 1
     print(f"{graphs_made}/{num_graphs} graphs made")
 
     time_when_started = time.time()
-    time_memory_points.plot(data_list, test_names, graph_dir + '\\time-memory\\', experiment_to_compare_against_name)
+    time_memory_points.plot(data_list, test_names, graph_dir + '\\time-memory-size\\', experiment_to_compare_against_name)
     times['time/memory points'] = (round(time.time()) - time_when_started)
     graphs_made = graphs_made + 1
     print(f"{graphs_made}/{num_graphs} graphs made")
@@ -170,7 +170,7 @@ if __name__ == "__main__":
     os.makedirs(graph_dir + '\\rule-usage\\')
     os.makedirs(graph_dir + '\\size-ratios\\')
     os.makedirs(graph_dir + '\\reductions\\')
-    os.makedirs(graph_dir + '\\time-memory\\')
+    os.makedirs(graph_dir + '\\time-memory-size\\')
     os.makedirs(graph_dir + '\\best-experiment\\')
 
     # Directory for all our csv

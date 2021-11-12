@@ -19,16 +19,34 @@ def plot(data_list, test_names, graph_dir, metric):
     data_list = copy.deepcopy(data_list)
     test_names = copy.deepcopy(test_names)
 
+    # Find test instances that all managed to get a result to
+    if metric in ['verification time', 'verification memory']:
+        rows_to_delete = set()
+        for index, data in enumerate(data_list):
+            # Find all rows where we have 'NONE' answer
+            answer_indices = set((data.index[data['answer'] == 'NONE']).tolist())
+
+            # Add to rows that we want to delete
+            if index == 0:
+                rows_to_delete = answer_indices
+            else:
+                rows_to_delete = rows_to_delete.union(answer_indices)
+
+        # Delete all the rows
+        for data in data_list:
+            data.drop(rows_to_delete, inplace=True)
+
+    cutoff = 0.9
     # Dataframe to hold data from all csvs
     combined_df = pd.DataFrame()
     for index, data in enumerate(data_list):
-        # Remove rows where query simplification has been used, or where there isn't an answer
-        data = data.drop(
-            data[(data['solved by query simplification']) | (data.answer == 'NONE')].index)
-
         # Get data from relevant column sorted
         metric_data = ((data[f'{metric}'].sort_values()).reset_index()).drop(columns=
                                                                              'index')
+
+        metric_data = metric_data.drop(index=metric_data.index[:int(len(metric_data) * cutoff)],
+                                       axis=0)
+
         # Rename the column to include the name of the test
         metric_data.rename(columns={f'{metric}': f"{test_names[index]}-{metric}"}, inplace=True)
 
@@ -51,7 +69,7 @@ def plot(data_list, test_names, graph_dir, metric):
     custom_palette = {}
     dashes = []
     for column_index, column in enumerate(combined_df.columns):
-        if metric == "verification time":
+        if metric == "verification time" or metric == "state space size":
             dashes.append((1, 0))
         elif metric == "verification memory":
             dashes.append((2, 2))
@@ -59,10 +77,12 @@ def plot(data_list, test_names, graph_dir, metric):
             raise Exception("(time_memory) Should not be able to reach this")
         custom_palette[column] = color((column_index + 1) / len(combined_df.columns))
 
-    if metric == 'time':
+    if metric == "verification time":
         unit = 'seconds'
-    else:
+    elif metric == 'verification memory':
         unit = 'kB'
+    elif metric == 'state space size':
+        unit = 'number of states'
 
     columns_with_with = [test_name for test_name in combined_df.columns if
                          ("with" in test_name) or ("base-rules" in test_name)]
@@ -81,25 +101,26 @@ def plot(data_list, test_names, graph_dir, metric):
     png_names = ['all', 'with', 'without']
 
     for index, data in enumerate(data_to_plot):
+        print(data[0])
         if len(data[0]) == 0 or len(data[0].columns) == 0:
             continue
         # Plot the plot
         plot = sns.lineplot(data=data[0], palette=custom_palette,
                             dashes=data[1])
         plot.set(
-            title=f'model checking verification {metric} per test instance',
+            title=f'model checking {metric} per test instance',
             ylabel=f'{unit}',
             xlabel='test instances', yscale="log")
         plt.legend(bbox_to_anchor=(1.02, 1), loc='best', borderaxespad=0)
 
-        plt.savefig(graph_dir + f'verification_{metric}_lines_per_model_{png_names[index]}.png', bbox_inches='tight')
+        plt.savefig(graph_dir + f'{metric}_lines_per_model_{png_names[index]}.png', bbox_inches='tight')
         plt.clf()
 
 
 if __name__ == "__main__":
     # Find the directory to save figures
     script_dir = os.path.dirname(__file__)
-    graph_dir = os.path.join(script_dir, '..\\graphs\\' + '\\time-memory\\')
+    graph_dir = os.path.join(script_dir, '..\\graphs\\' + '\\time-memory-size\\')
 
     if not os.path.isdir(graph_dir):
         os.makedirs(graph_dir)
@@ -112,6 +133,6 @@ if __name__ == "__main__":
     test_names = [os.path.split(os.path.splitext(path)[0])[1] for path in paths]
 
     # This plot also takes as argument which column to be used, so here we call with both 'time' and 'memory'
-    metrics = ['verification time', 'verification memory']
+    metrics = ['verification time', 'verification memory', 'state space size']
     for metric in metrics:
         plot(data_list, test_names, graph_dir, metric)
