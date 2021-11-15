@@ -26,7 +26,7 @@ def plot(data_list, test_names, graph_dir):
             '(best_overall) beware, probably weird results (in reduction points) in this graph due to comparing only 2 experiments, and one which is no-red')
 
     # Find test instances that no experiment managed to reduce
-    data_list = utility.filter_out_no_answers(data_list)
+    data_list = utility.filter_out_test_instances_that_were_not_reduced_by_any(data_list)
 
     # Holds results for the 'strictly better' graph
     reduction_points = []

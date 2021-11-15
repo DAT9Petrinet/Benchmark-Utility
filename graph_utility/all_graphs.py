@@ -10,9 +10,7 @@ import answer_simplification_bars
 import best_overall
 import reduced_size
 import reduction_points
-import rule_usage_absolute
-import rule_usage_absolute_models
-import rule_usage_percentage
+import rule_usage
 import time_memory_combined
 import time_memory_lines
 import time_memory_points
@@ -28,96 +26,69 @@ def plot_all(data_list, test_names, graph_dir, experiment_to_compare_against_nam
     # Get number of files in this directory, remove the ones we do not use
     # Can use this for the prints
     graphs = [filename for filename in os.listdir(os.path.dirname(__file__)) if
-              '.py' in filename and filename != 'all_graphs.py']
+              '.py' in filename and filename not in ['all_graphs.py', 'jable.py', 'utility.py']]
     num_graphs = len(graphs)
     graphs_made = 0
-
     times = dict()
     time_when_started = time.time()
+
+    def update_globals(experiment_name, graphs_made):
+        times[experiment_name] = (round(time.time()) - time_when_started)
+        graphs_made += 1
+        print(f"{graphs_made}/{num_graphs} graphs made")
+        return graphs_made
+
     # General graphs not fitting totally into the next categories
     answer_simplification_bars.plot(data_list, test_names, graph_dir + '\\best-experiment\\')
-    times['answer/simplification bars'] = (round(time.time()) - time_when_started)
-    graphs_made = graphs_made + 1
-    print(f"{graphs_made}/{num_graphs} graphs made")
+    graphs_made = update_globals('answer/simplification bars', graphs_made)
 
     time_when_started = time.time()
     best_overall.plot(data_list, test_names, graph_dir + '\\best-experiment\\')
-    times['best experiment overall'] = (round(time.time()) - time_when_started)
-    graphs_made = graphs_made + 1
-    print(f"{graphs_made}/{num_graphs} graphs made")
+    graphs_made = update_globals('best experiment overall', graphs_made)
 
     time_when_started = time.time()
     # Plots that has to do with application of rules
-    rule_usage_absolute.plot(data_list, test_names, graph_dir + '\\rule-usage\\')
-    times['rule usage absolute'] = (round(time.time()) - time_when_started)
-    graphs_made = graphs_made + 1
-    print(f"{graphs_made}/{num_graphs} graphs made")
-
-    time_when_started = time.time()
-    rule_usage_percentage.plot(data_list, test_names, graph_dir + '\\rule-usage\\')
-    times['models using rule percentage'] = (round(time.time()) - time_when_started)
-    graphs_made = graphs_made + 1
-    print(f"{graphs_made}/{num_graphs} graphs made")
-
-    time_when_started = time.time()
-    rule_usage_absolute_models.plot(data_list, test_names, graph_dir + '\\rule-usage\\')
-    times['models using rule absolute'] = (round(time.time()) - time_when_started)
-    graphs_made = graphs_made + 1
-    print(f"{graphs_made}/{num_graphs} graphs made")
+    rule_usage.plot(data_list, test_names, graph_dir + '\\rule-usage\\')
+    graphs_made = update_globals('rule usages', graphs_made)
 
     time_when_started = time.time()
     # Stuff to do with time and memory
     time_memory_combined.plot(data_list, test_names, graph_dir + '\\time-memory-size\\')
-    times['time/memory lines combined'] = (round(time.time()) - time_when_started)
-    graphs_made = graphs_made + 1
-    print(f"{graphs_made}/{num_graphs} graphs made")
+    graphs_made = update_globals('time/memory lines combined', graphs_made)
 
     time_when_started = time.time()
     metrics = ['verification time', 'verification memory', 'state space size']
     for metric in metrics:
         time_memory_lines.plot(data_list, test_names, graph_dir + '\\time-memory-size\\', metric)
-    times['time/memory lines'] = (round(time.time()) - time_when_started)
-    graphs_made = graphs_made + 1
-    print(f"{graphs_made}/{num_graphs} graphs made")
+    graphs_made = update_globals('time/memory lines', graphs_made)
 
     time_when_started = time.time()
-    time_memory_points.plot(data_list, test_names, graph_dir + '\\time-memory-size\\', experiment_to_compare_against_name)
-    times['time/memory points'] = (round(time.time()) - time_when_started)
-    graphs_made = graphs_made + 1
-    print(f"{graphs_made}/{num_graphs} graphs made")
+    time_memory_points.plot(data_list, test_names, graph_dir + '\\time-memory-size\\',
+                            experiment_to_compare_against_name)
+    graphs_made = update_globals('time/memory points', graphs_made)
 
     time_when_started = time.time()
     # Stuff to do with reduction/size
     reduced_size.plot(data_list, test_names, graph_dir + '\\reductions\\')
-    times['reduced size'] = (round(time.time()) - time_when_started)
-    graphs_made = graphs_made + 1
-    print(f"{graphs_made}/{num_graphs} graphs made")
+    graphs_made = update_globals('reduced size', graphs_made)
 
     time_when_started = time.time()
     reduction_points.plot(data_list, test_names, graph_dir + '\\reductions\\', experiment_to_compare_against_name)
-    times['reduction points'] = (round(time.time()) - time_when_started)
-    graphs_made = graphs_made + 1
-    print(f"{graphs_made}/{num_graphs} graphs made")
+    graphs_made = update_globals('reduction points', graphs_made)
 
     time_when_started = time.time()
     total_reductions.plot(data_list, test_names, graph_dir + '\\reductions\\')
-    times['total reductions'] = (round(time.time()) - time_when_started)
-    graphs_made = graphs_made + 1
-    print(f"{graphs_made}/{num_graphs} graphs made")
+    graphs_made = update_globals('total reductions', graphs_made)
 
     time_when_started = time.time()
     # Stuff to do with ratios
     time_size_ratios_lineplots.plot(data_list, test_names, graph_dir + '\\size-ratios\\',
                                     experiment_to_compare_against_name)
-    times['ratios lineplots'] = (round(time.time()) - time_when_started)
-    graphs_made = graphs_made + 1
-    print(f"{graphs_made}/{num_graphs} graphs made")
+    graphs_made = update_globals('ratios lineplots', graphs_made)
 
     time_when_started = time.time()
     time_size_avg_ratios.plot(data_list, test_names, graph_dir + '\\size-ratios\\', experiment_to_compare_against_name)
-    times['avg ratios'] = (round(time.time()) - time_when_started)
-    graphs_made = graphs_made + 1
-    print(f"{graphs_made}/{num_graphs} graphs made")
+    update_globals('avg ratios', graphs_made)
 
     # Print meme graph
     df = pd.DataFrame.from_dict(times, orient='index')

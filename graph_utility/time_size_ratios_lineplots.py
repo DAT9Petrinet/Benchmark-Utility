@@ -154,7 +154,6 @@ def plot(data_list, test_names, graph_dir, experiment_to_compare_against_name):
 
     png_names = ['new_rules', 'not_new_rules', 'all']
 
-
     sns.set_theme(style="darkgrid")
     custom_palette = {}
 

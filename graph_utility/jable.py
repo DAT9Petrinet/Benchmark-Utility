@@ -2,7 +2,6 @@ from pathlib import Path
 
 import pandas as pd
 
-
 data_dir = Path(__file__).parent.parent / "saved"
 
 csvs = [pd.read_csv(csv) for csv in data_dir.glob("*.csv")]

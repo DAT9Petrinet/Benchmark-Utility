@@ -6,6 +6,7 @@ import sys
 import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
+import utility
 
 
 def plot(data_list, test_names, graph_dir):
@@ -17,11 +18,10 @@ def plot(data_list, test_names, graph_dir):
     data_list = copy.deepcopy(data_list)
     test_names = copy.deepcopy(test_names)
 
+    data_list, test_names = utility.remove_no_red(data_list, test_names)
+
     # Make one plot (png) for each csv
     for index, data in enumerate(data_list):
-        # Skip the experiment with no reductions
-        if "no-red" in test_names[index]:
-            continue
 
         # Find th erule names
         rules = [column for column in data.columns.tolist() if
@@ -34,26 +34,26 @@ def plot(data_list, test_names, graph_dir):
         data_grouped_by_model = data.groupby(['model name'])[rules].agg('sum')
 
         # Get the percentage of model that has applied a rule
-        percentages = (((((data_grouped_by_model > 0) * 1).mean()) * 100).to_frame()).T
+        models_using_rule = ((data_grouped_by_model > 0) * 1).agg('sum').to_frame().T
 
         # Remove the 'Rule' part of e.g 'Rule A'
-        percentages.rename(columns=lambda x: re.sub('rule', '', x), inplace=True)
+        models_using_rule.rename(columns=lambda x: re.sub('rule', '', x), inplace=True)
 
         # Plot the plot
         sns.set_theme(style="darkgrid", palette="pastel")
-        plot = sns.barplot(data=percentages)
-        plot.set(title=f'({test_names[index]}) percentage of models using rules', ylabel='uses in \\%', xlabel='rules')
+        plot = sns.barplot(data=models_using_rule)
+        plot.set(title=f'({test_names[index]}) number of models using rules', ylabel='uses', xlabel='rules')
         # Plots numbers above bars
         for p in plot.patches:
-            if p.get_height() != 0.0:
-                plot.annotate(format(p.get_height(), '.1f'),
-                              (p.get_x() + p.get_width() / 2.,
-                               p.get_height()),
-                              ha='center', va='center',
-                              size=12,
-                              xytext=(0, 8),
-                              textcoords='offset points')
-        plt.savefig(graph_dir + f'{test_names[index]}_rule_usage_percentage.png')
+            if p.get_height() == 0:
+                continue
+            plot.annotate(format(p.get_height().astype(int), 'd'),
+                          ((p.get_x() + p.get_width() / 2).astype(int), p.get_height().astype(int)),
+                          ha='center', va='center',
+                          size=12,
+                          xytext=(0, 8),
+                          textcoords='offset points')
+        plt.savefig(graph_dir + f'{test_names[index]}_rule_usage_absolute_models.png')
         plt.clf()
 
 

@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sns
+import utility
 
 
 # The first csv will be used as numerator in the plots
@@ -19,28 +20,7 @@ def plot(data_list, test_names, graph_dir, experiment_to_compare_against_name):
     test_names = copy.deepcopy(test_names)
 
     # Find test instances that no experiment managed to reduce
-    rows_to_delete = set()
-    for index, data in enumerate(data_list):
-        # Find all indices where the query has been solved by simplification
-        simplification_indices = set((data.index[data['solved by query simplification']]).tolist())
-
-        # Find all rows where we have 'NONE' answer
-        answer_indices = set((data.index[data['answer'] == 'NONE']).tolist())
-
-        # Take the union
-        combined_indices = answer_indices.union(simplification_indices)
-
-        # Only interested in finding the rows that NO experiment managed to reduce
-        # So take intersection
-        if index == 0:
-            rows_to_delete = combined_indices
-        else:
-            rows_to_delete = rows_to_delete.intersection(combined_indices)
-
-    # Remove the rows
-    # prev_sizes.drop(rows_to_delete, inplace=True)
-    for data in data_list:
-        data.drop(rows_to_delete, inplace=True)
+    data_list = utility.filter_out_test_instances_that_were_not_reduced_by_any(data_list)
 
     # Get sizes from the data that will be used as numerator
     base_results_index = test_names.index(experiment_to_compare_against_name)

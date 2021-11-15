@@ -22,7 +22,7 @@ def plot(data_list, test_names, graph_dir, metric):
 
     # Find test instances that all managed to get a result to
     if metric in ['verification time', 'verification memory']:
-        data_list = utility.common_answers(data_list)
+        data_list = utility.filter_out_tests_that_any_experiment_failed_to_answer(data_list)
 
     cutoff = 0.9
     # Dataframe to hold data from all csvs
@@ -80,7 +80,6 @@ def plot(data_list, test_names, graph_dir, metric):
     png_names = ['all', 'with', 'without']
 
     for index, data in enumerate(data_to_plot):
-        print(data[0])
         if len(data[0]) == 0 or len(data[0].columns) == 0:
             continue
         # Plot the plot

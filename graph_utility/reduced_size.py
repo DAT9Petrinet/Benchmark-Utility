@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sns
+
 import utility
 
 
@@ -20,13 +21,10 @@ def plot(data_list, test_names, graph_dir):
     data_list = copy.deepcopy(data_list)
     test_names = copy.deepcopy(test_names)
 
-    for test_index, name in enumerate(test_names):
-        if 'no-red' in name:
-            data_list.pop(test_index)
-            test_names.pop(test_index)
+    data_list, test_names = utility.remove_no_red(data_list, test_names)
 
     # Find test instances that no experiment managed to reduce
-    data_list = utility.filter_out_no_answers(data_list)
+    data_list = utility.filter_out_test_instances_that_were_not_reduced_by_any(data_list)
 
     # Time to actually find the reduced sizes, collect in reduced_sizes
     reduced_sizes = pd.DataFrame()
