@@ -1,5 +1,6 @@
 #!/bin/bash
 
+#SBATCH --time=4:00:00
 #SBATCH --mail-type=FAIL
 #SBATCH --partition=cpu
 #SBATCH --exclude=naples0[1-9]
