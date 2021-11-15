@@ -57,7 +57,7 @@ def plot_all(data_list, test_names, graph_dir, experiment_to_compare_against_nam
     graphs_made = update_globals('time/memory lines combined', graphs_made)
 
     time_when_started = time.time()
-    metrics = ['verification time', 'verification memory', 'state space size']
+    metrics = ['verification time', 'verification memory', 'state space size', 'reduce time']
     for metric in metrics:
         time_memory_lines.plot(data_list, test_names, graph_dir + '\\time-memory-size\\', metric)
     graphs_made = update_globals('time/memory lines', graphs_made)

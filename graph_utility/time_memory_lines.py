@@ -22,7 +22,7 @@ def plot(data_list, test_names, graph_dir, metric):
 
     # Find test instances that all managed to get a result to
     if metric in ['verification time', 'verification memory']:
-        data_list = utility.filter_out_tests_that_any_experiment_failed_to_answer(data_list)
+        data_list = utility.filter_out_tests_that_had_none_answer_in_any_experiment(data_list)
 
     cutoff = 0.9
     # Dataframe to hold data from all csvs
@@ -48,15 +48,14 @@ def plot(data_list, test_names, graph_dir, metric):
     custom_palette = {}
     dashes = []
     for column_index, column in enumerate(combined_df.columns):
-        if metric == "verification time" or metric == "state space size":
-            dashes.append((1, 0))
-        elif metric == "verification memory":
+        if metric == "verification memory":
             dashes.append((2, 2))
         else:
-            raise Exception("(time_memory) Should not be able to reach this")
+            dashes.append((1, 0))
+
         custom_palette[column] = utility.color((column_index + 1) / len(combined_df.columns))
 
-    if metric == "verification time":
+    if metric in ["verification time", 'reduce time']:
         unit = 'seconds'
     elif metric == 'verification memory':
         unit = 'kB'

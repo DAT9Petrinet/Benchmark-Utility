@@ -6,7 +6,7 @@ def remove_rows_with_no_answers_or_query_simplification(data_list):
         data.drop(data[(data['solved by query simplification']) | (data.answer == 'NONE')].index, inplace=True)
     return data_list
 
-def filter_out_tests_that_any_experiment_failed_to_answer(data_list):
+def filter_out_tests_that_had_none_answer_in_any_experiment(data_list):
     rows_to_delete = set()
     for index, data in enumerate(data_list):
         # Find all rows where we have 'NONE' answer
