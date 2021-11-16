@@ -81,4 +81,4 @@ for MODEL in $(ls $TEST_FOLDER) ; do
 	fi
 done
 
-sbatch --partition=cpu --exclude=naples0[1-9] -c 1 --mail-type=FAIL --mail-user=$(whoami) --job-name=$NAME --dependency=singleton ./compile_results.sh $NAME $BIN
+sbatch --partition=rome -c 1 --mail-type=FAIL --mail-user=$(whoami) --job-name=$NAME --dependency=singleton ./compile_results.sh $NAME $BIN
