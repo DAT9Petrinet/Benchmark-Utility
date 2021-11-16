@@ -17,6 +17,7 @@ import time_memory_points
 import time_size_avg_ratios
 import time_size_ratios_lineplots
 import total_reductions
+import best_overall_v2
 
 
 def plot_all(data_list, test_names, graph_dir, experiment_to_compare_against_name):
@@ -39,14 +40,14 @@ def plot_all(data_list, test_names, graph_dir, experiment_to_compare_against_nam
         return graphs_made
 
     # General graphs not fitting totally into the next categories
-    answer_simplification_bars.plot(data_list, test_names, graph_dir + '\\best-experiment\\')
-    graphs_made = update_globals('answer/simplification bars', graphs_made)
+    '''answer_simplification_bars.plot(data_list, test_names, graph_dir + '\\best-experiment\\')
+    graphs_made = update_globals('answer/simplification bars', graphs_made)'''
 
     time_when_started = time.time()
-    best_overall.plot(data_list, test_names, graph_dir + '\\best-experiment\\')
+    best_overall_v2.plot(data_list, test_names, graph_dir + '\\best-experiment\\')
     graphs_made = update_globals('best experiment overall', graphs_made)
 
-    time_when_started = time.time()
+    '''time_when_started = time.time()
     # Plots that has to do with application of rules
     rule_usage.plot(data_list, test_names, graph_dir + '\\rule-usage\\')
     graphs_made = update_globals('rule usages', graphs_made)
@@ -88,7 +89,7 @@ def plot_all(data_list, test_names, graph_dir, experiment_to_compare_against_nam
 
     time_when_started = time.time()
     time_size_avg_ratios.plot(data_list, test_names, graph_dir + '\\size-ratios\\', experiment_to_compare_against_name)
-    update_globals('avg ratios', graphs_made)
+    update_globals('avg ratios', graphs_made)'''
 
     # Print meme graph
     df = pd.DataFrame.from_dict(times, orient='index')

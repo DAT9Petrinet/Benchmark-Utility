@@ -85,7 +85,7 @@ def plot(data_list, test_names, graph_dir, metric):
         plot = sns.lineplot(data=data[0], palette=custom_palette,
                             dashes=data[1])
         plot.set(
-            title=f'model checking {metric} per test instance',
+            title=f'{metric} per test instance sorted',
             ylabel=f'{unit}',
             xlabel='test instances', yscale="log")
         plt.legend(bbox_to_anchor=(1.02, 1), loc='best', borderaxespad=0)

@@ -1,10 +1,13 @@
 import numpy as np
+import pandas as pd
+
 
 def remove_rows_with_no_answers_or_query_simplification(data_list):
     for data in data_list:
         # Remove rows where query simplification has been used, or where there isn't an answer
         data.drop(data[(data['solved by query simplification']) | (data.answer == 'NONE')].index, inplace=True)
     return data_list
+
 
 def filter_out_tests_that_had_none_answer_in_any_experiment(data_list):
     rows_to_delete = set()
@@ -67,3 +70,44 @@ def color(t):
     d = np.array([0.0, 0.33, 0.67])
 
     return a + (b * np.cos(2 * np.pi * (c * t + d)))
+
+
+def make_derived_jable(csvs, exp_names):
+    needed_columns = ['model name', 'query index', 'answer', 'verification time', 'verification memory',
+                      'prev place count', 'post place count',
+                      'prev transition count', 'post transition count', 'reduce time', 'state space size']
+    line_columns = ['verification time', 'verification memory', 'reduce time', 'state space size']
+
+    for data in csvs:
+        data.set_index(["model name", "query index"], inplace=True)
+        columns = [column for column in data.columns if column not in needed_columns]
+        data.drop(columns, axis=1, inplace=True)
+
+    for i, csv in enumerate(csvs):
+        csv.rename(columns={col: f"{exp_names[i]}@{col}" for col in csv.columns}, inplace=True)
+    everything = pd.concat(csvs, axis=1)
+    everything.sort_index(level=0, inplace=True)
+
+    # Get smallest value from the line columns
+    for column in line_columns:
+        columns = [experiment_column + '@' + column for experiment_column in exp_names]
+        everything[f'min {column}'] = everything[columns].min(axis=1)
+
+    # Create reduced sizes and prev/post sizes
+    for exp_name in exp_names:
+        for time in ['prev', 'post']:
+            everything[f'{exp_name}@{time} size'] = everything[f'{exp_name}@{time} place count'] + everything[
+                f'{exp_name}@{time} transition count']
+        everything[f'{exp_name}@reduced size'] = everything[f'{exp_name}@prev size'] - everything[
+            f'{exp_name}@post size']
+
+    # Unique answer
+    answer_columns = [experiment_column + '@' + 'answer' for experiment_column in exp_names]
+    everything['unique answers'] = everything[answer_columns].apply(
+        lambda row: row.index[row != 'NONE'][0].split("@", 1)[0] if 'NONE' in (row.value_counts().index) and row.value_counts()[
+            'NONE'] == 6 else np.nan,
+        axis=1)
+
+    everything.to_csv("saved/everything/everything_test.csv")
+
+    return everything

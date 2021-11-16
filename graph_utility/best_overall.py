@@ -33,23 +33,30 @@ def plot(data_list, test_names, graph_dir):
     time_points = []
     memory_points = []
     unique_answers = []
+    reduce_times_points = []
 
     # Holds results for the 'at least as good as runner-up' graph
-    reduction_eq_points = []
-    time_eq_points = []
-    memory_eq_points = []
+    reduction_points_eq = []
+    time_points_eq = []
+    memory_points_eq = []
+    reduce_times_points_eq = []
 
     # Holds the number of answers each experiment get
     answers = []
+
     for test_index, data in enumerate(data_list):
         # Holds the sum of each experiments points, will be added to above lists
+        reduction_sum = 0
         time_sum = 0
         memory_sum = 0
-        reduction_sum = 0
         unique_answers_sum = 0
+        reduce_times_sum = 0
+
+        reduction_eq_sum = 0
         time_eq_sum = 0
         memory_eq_sum = 0
-        reduction_eq_sum = 0
+        reduce_times_eq_sum = 0
+
         answers_sum = 0
 
         # Iterate through each row, and evaluate them one by one
@@ -57,6 +64,7 @@ def plot(data_list, test_names, graph_dir):
             best_time = np.infty
             best_memory = np.infty
             best_reduction = np.infty
+            best_reduce_time = np.infty
             anyone_else_answer = False
 
             # Go through all other experiments
@@ -85,6 +93,7 @@ def plot(data_list, test_names, graph_dir):
                                          other_row['post place count'] + other_row['post transition count'])
                 best_time = min(best_time, other_row['verification time'])
                 best_memory = min(best_memory, other_row['verification memory'])
+                best_reduce_time = min(best_memory, other_row['reduce time'])
                 anyone_else_answer = anyone_else_answer or (other_row['answer'] != 'NONE')
 
             # Update the sums for the experiment, based on the results of all other experiments
@@ -104,6 +113,10 @@ def plot(data_list, test_names, graph_dir):
                         reduction_eq_sum += 1
                         if (row['post place count'] + row['post transition count']) <= 0.9 * best_reduction:
                             reduction_sum += 1
+                    if row['reduce time'] <= best_reduce_time:
+                        reduce_times_eq_sum += 1
+                        if row['reduce time'] <= 0.9 * best_reduce_time:
+                            reduce_times_sum += 1
                 if not anyone_else_answer:
                     unique_answers_sum += 1
 
@@ -112,20 +125,23 @@ def plot(data_list, test_names, graph_dir):
         time_points.append(time_sum)
         memory_points.append(memory_sum)
         unique_answers.append(unique_answers_sum)
-        reduction_eq_points.append(reduction_eq_sum)
-        time_eq_points.append(time_eq_sum)
-        memory_eq_points.append(memory_eq_sum)
+        reduce_times_points.append(reduce_times_sum)
+        reduce_times_points_eq.append(reduce_times_eq_sum)
+        reduction_points_eq.append(reduction_eq_sum)
+        time_points_eq.append(time_eq_sum)
+        memory_points_eq.append(memory_eq_sum)
         answers.append(answers_sum)
 
     # Create a dataframe for each type of graph
     points_df = pd.DataFrame(
-        {'reduction': reduction_points, 'verification memory': memory_points, 'verification time': time_points,
+        {'reduced size': reduction_points, 'verification memory': memory_points, 'verification time': time_points,
          'unique answers': unique_answers,
-         'answered queries': answers})
+         'answered queries': answers, 'reduce time': reduce_times_points})
 
     points_eq_df = pd.DataFrame(
-        {'reduction': reduction_eq_points, 'verification memory': memory_eq_points, 'verification time': time_eq_points,
-         'answered queries': answers})
+        {'reduced size': reduction_points_eq, 'verification memory': memory_points_eq,
+         'verification time': time_points_eq,
+         'answered queries': answers, 'reduce time': reduce_times_points_eq})
 
     # Rename rows in the dataframe to be names of the experiments
     new_indices = dict()
