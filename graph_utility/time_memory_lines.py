@@ -3,10 +3,19 @@ import os
 import sys
 
 import matplotlib.pyplot as plt
+import numpy as np
 import pandas as pd
 import seaborn as sns
 
 import utility
+
+keep_largest_percent = 0.1
+
+
+def get_reduced_size(row):
+    pre_size = row['prev place count'] + row['prev transition count']
+    post_size = row['post place count'] + row['post transition count']
+    return ((post_size / pre_size) * 100) if post_size > 0 else np.nan
 
 
 def plot(data_list, test_names, graph_dir, metric):
@@ -20,20 +29,33 @@ def plot(data_list, test_names, graph_dir, metric):
     data_list = copy.deepcopy(data_list)
     test_names = copy.deepcopy(test_names)
 
-    # Find test instances that all managed to get a result to
-    if metric in ['verification time', 'verification memory']:
-        data_list = utility.filter_out_tests_that_had_none_answer_in_any_experiment(data_list)
-
-    cutoff = 0.9
     # Dataframe to hold data from all csvs
     combined_df = pd.DataFrame()
     for index, data in enumerate(data_list):
         # Get data from relevant column sorted
-        metric_data = ((data[f'{metric}'].sort_values()).reset_index()).drop(columns=
-                                                                             'index')
+        n = int(data.shape[0] * keep_largest_percent)
 
-        metric_data = metric_data.drop(index=metric_data.index[:int(len(metric_data) * cutoff)],
-                                       axis=0)
+        res_df = pd.DataFrame()
+        if metric == 'reduced size':
+            res_df[metric] = data.apply(
+                get_reduced_size,
+                axis=1)
+            res_df[metric] = res_df[np.isfinite(res_df[metric])][metric]
+
+        if metric in ['verification time', 'verification memory']:
+            res_df[metric] = data[(data['answer'] != 'NONE')][metric]
+            res_df[metric] = data[np.isfinite(data[metric])][metric]
+        elif metric != 'reduced size':
+            res_df[metric] = data[np.isfinite(data[metric])][metric]
+
+        if metric != 'reduced size':
+            metric_data = ((res_df[f'{metric}'].sort_values()).reset_index()).drop(columns=
+                                                                                   'index')
+        else:
+            metric_data = ((res_df[f'{metric}'].sort_values(ascending=True)).reset_index()).drop(columns=
+                                                                                                 'index')
+
+        metric_data = metric_data.tail(n)
 
         # Rename the column to include the name of the test
         metric_data.rename(columns={f'{metric}': f"{test_names[index]}-{metric}"}, inplace=True)
@@ -61,6 +83,8 @@ def plot(data_list, test_names, graph_dir, metric):
         unit = 'kB'
     elif metric == 'state space size':
         unit = 'number of states'
+    elif metric == 'reduced size':
+        unit = 'ratio given by post size/pre size'
 
     columns_with_with = [test_name for test_name in combined_df.columns if
                          ("with" in test_name) or ("base-rules" in test_name)]
@@ -97,7 +121,7 @@ def plot(data_list, test_names, graph_dir, metric):
 if __name__ == "__main__":
     # Find the directory to save figures
     script_dir = os.path.dirname(__file__)
-    graph_dir = os.path.join(script_dir, '..\\graphs\\' + '\\time-memory-size\\')
+    graph_dir = os.path.join(script_dir, '..\\graphs\\' + '\\lines\\')
 
     if not os.path.isdir(graph_dir):
         os.makedirs(graph_dir)
@@ -110,6 +134,6 @@ if __name__ == "__main__":
     test_names = [os.path.split(os.path.splitext(path)[0])[1] for path in paths]
 
     # This plot also takes as argument which column to be used, so here we call with both 'time' and 'memory'
-    metrics = ['verification time', 'verification memory', 'state space size']
+    metrics = ['verification time', 'verification memory', 'state space size', 'reduce time', 'reduced size']
     for metric in metrics:
         plot(data_list, test_names, graph_dir, metric)

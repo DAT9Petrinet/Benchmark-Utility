@@ -41,7 +41,7 @@ def plot(data_list, test_names, graph_dir):
 
         # This block removes all np.nan in the reduced_sizes_list
         # And also all rows that were not reduced (i.e size == 100)
-        reduced_sizes_list = [size for size in reduced_sizes_list if (np.isfinite(size) and size < 100)]
+        reduced_sizes_list = [size for size in reduced_sizes_list if (np.isfinite(size))]
         reduced_sizes_list.sort()
         reduced_frame = pd.DataFrame(reduced_sizes_list, columns=[f'{test_names[test_index]}'])
 

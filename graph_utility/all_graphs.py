@@ -2,22 +2,17 @@ import os
 import shutil
 import sys
 import time
-import seaborn as sns
-import pandas as pd
+
 import matplotlib.pyplot as plt
+import pandas as pd
+import seaborn as sns
 
 import answer_simplification_bars
 import best_overall
 import reduced_size
-import reduction_points
 import rule_usage
-import time_memory_combined
 import time_memory_lines
-import time_memory_points
-import time_size_avg_ratios
-import time_size_ratios_lineplots
 import total_reductions
-import best_overall_v2
 
 
 def plot_all(data_list, test_names, graph_dir, experiment_to_compare_against_name):
@@ -40,48 +35,49 @@ def plot_all(data_list, test_names, graph_dir, experiment_to_compare_against_nam
         return graphs_made
 
     # General graphs not fitting totally into the next categories
-    '''answer_simplification_bars.plot(data_list, test_names, graph_dir + '\\best-experiment\\')
-    graphs_made = update_globals('answer/simplification bars', graphs_made)'''
+    time_when_started = time.time()
+    answer_simplification_bars.plot(data_list, test_names, graph_dir + '\\best-experiment\\')
+    graphs_made = update_globals('answer/simplification bars', graphs_made)
 
     time_when_started = time.time()
-    best_overall_v2.plot(data_list, test_names, graph_dir + '\\best-experiment\\')
+    best_overall.plot(data_list, test_names, graph_dir + '\\best-experiment\\')
     graphs_made = update_globals('best experiment overall', graphs_made)
 
-    '''time_when_started = time.time()
+    time_when_started = time.time()
     # Plots that has to do with application of rules
     rule_usage.plot(data_list, test_names, graph_dir + '\\rule-usage\\')
     graphs_made = update_globals('rule usages', graphs_made)
 
-    time_when_started = time.time()
+    '''time_when_started = time.time()
     # Stuff to do with time and memory
-    time_memory_combined.plot(data_list, test_names, graph_dir + '\\time-memory-size\\')
-    graphs_made = update_globals('time/memory lines combined', graphs_made)
+    time_memory_combined.plot(data_list, test_names, graph_dir + '\\lines\\')
+    graphs_made = update_globals('time/memory lines combined', graphs_made)'''
 
     time_when_started = time.time()
-    metrics = ['verification time', 'verification memory', 'state space size', 'reduce time']
+    metrics = ['verification time', 'verification memory', 'state space size', 'reduce time', 'reduced size']
     for metric in metrics:
-        time_memory_lines.plot(data_list, test_names, graph_dir + '\\time-memory-size\\', metric)
+        time_memory_lines.plot(data_list, test_names, graph_dir + '\\lines\\', metric)
     graphs_made = update_globals('time/memory lines', graphs_made)
 
-    time_when_started = time.time()
-    time_memory_points.plot(data_list, test_names, graph_dir + '\\time-memory-size\\',
+    '''time_when_started = time.time()
+    time_memory_points.plot(data_list, test_names, graph_dir + '\\lines\\',
                             experiment_to_compare_against_name)
-    graphs_made = update_globals('time/memory points', graphs_made)
+    graphs_made = update_globals('time/memory points', graphs_made)'''
 
     time_when_started = time.time()
     # Stuff to do with reduction/size
     reduced_size.plot(data_list, test_names, graph_dir + '\\reductions\\')
     graphs_made = update_globals('reduced size', graphs_made)
 
-    time_when_started = time.time()
+    '''time_when_started = time.time()
     reduction_points.plot(data_list, test_names, graph_dir + '\\reductions\\', experiment_to_compare_against_name)
-    graphs_made = update_globals('reduction points', graphs_made)
+    graphs_made = update_globals('reduction points', graphs_made)'''
 
     time_when_started = time.time()
     total_reductions.plot(data_list, test_names, graph_dir + '\\reductions\\')
     graphs_made = update_globals('total reductions', graphs_made)
 
-    time_when_started = time.time()
+    '''time_when_started = time.time()
     # Stuff to do with ratios
     time_size_ratios_lineplots.plot(data_list, test_names, graph_dir + '\\size-ratios\\',
                                     experiment_to_compare_against_name)
@@ -142,7 +138,7 @@ if __name__ == "__main__":
     os.makedirs(graph_dir + '\\rule-usage\\')
     os.makedirs(graph_dir + '\\size-ratios\\')
     os.makedirs(graph_dir + '\\reductions\\')
-    os.makedirs(graph_dir + '\\time-memory-size\\')
+    os.makedirs(graph_dir + '\\lines\\')
     os.makedirs(graph_dir + '\\best-experiment\\')
 
     # Directory for all our csv

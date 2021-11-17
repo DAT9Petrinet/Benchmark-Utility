@@ -3,21 +3,99 @@ import os
 import sys
 
 import matplotlib.pyplot as plt
-import numpy as np
 import pandas as pd
 import seaborn as sns
 
 import utility
 
+keep_largest_percent = 0.1
+how_much_better = 0.00
+
+
+def zero_padding(series, metric, test_names):
+    if metric != 'unique answers':
+        metric_columns = [experiment_column + '@' + metric for experiment_column in test_names]
+    else:
+        metric_columns = test_names
+
+    for test_name in metric_columns:
+        if test_name not in series or (test_name == 'no-red' and metric in ['reduce time', 'reduced size']):
+            series[test_name] = 0
+    return series
+
+
+def second_smallest(list):
+    return sorted(list)[1]
+
+
+def second_largest(list):
+    return sorted(list)[-2]
+
+
+def get_strictly_better_points(derived_jable, metric, test_names):
+    derived_jable = utility.largest_x(derived_jable, keep_largest_percent, metric, test_names)
+    metric_columns = [experiment_column + '@' + metric for experiment_column in test_names]
+
+    def find_best(row):
+        s = second_smallest(row[metric_columns].values)
+        return next(
+            iter([experiment for experiment, value in row[metric_columns].items() if
+                  value < (1 - how_much_better) * s]),
+            None)
+
+    df = pd.DataFrame()
+    df[metric + ' scores'] = derived_jable[metric_columns].apply(
+        find_best,
+        axis=1)
+    return zero_padding(df.value_counts(), metric, test_names).tolist()
+
+
+def get_eq_points(derived_jable, metric, test_names):
+    derived_jable = utility.largest_x(derived_jable, keep_largest_percent, metric, test_names)
+
+    metric_columns = [experiment_column + '@' + metric for experiment_column in test_names]
+
+    def equally_good_as_best(row, test, metric):
+        if metric == 'reduced size':
+            s = second_largest(row.values)
+            return row[test + '@' + metric] >= s
+        else:
+            s = second_smallest(row.values)
+            return row[test + '@' + metric] <= s
+
+    def point(row):
+        if equally_good_as_best(row[metric_columns], test, metric):
+            if metric in ['verification time', 'verification memory', 'reduce time']:
+                return 1
+            elif metric in ['state space size']:
+                if second_smallest(row[metric_columns].values) != 0:
+                    return 1
+                else:
+                    return 0
+            elif metric in ['reduced size']:
+                return 1
+        else:
+            return 0
+
+    df = pd.DataFrame()
+    for test in test_names:
+        df[test + '@' + metric] = derived_jable[metric_columns].apply(
+            point,
+            axis=1)
+
+    return zero_padding(df.sum(), metric, test_names).tolist()
+
+
+def get_answer_df(derived_jable, test_names):
+    s = pd.Series(dtype=float)
+    for test_name in test_names:
+        s[test_name] = len(derived_jable[test_name + '@' + 'answer']) - (
+            derived_jable[test_name + '@' + 'answer'].value_counts()['NONE'])
+
+    return s.tolist()
+
 
 def plot(data_list, test_names, graph_dir):
-    """
-        Gives point for to each experiment, for each (model/query) combination they can reduce to a smaller size
-        than another given experiment. Default is (base-rules)
-    """
-
-    # The deepcopies are because in the 'all_graphs' the data_list are used for all plots,
-    # so each function will make their own copy
     data_list = copy.deepcopy(data_list)
     test_names = copy.deepcopy(test_names)
 
@@ -25,146 +103,32 @@ def plot(data_list, test_names, graph_dir):
         print(
             '(best_overall) beware, probably weird results (in reduction points) in this graph due to comparing only 2 experiments, and one which is no-red')
 
-    # Find test instances that no experiment managed to reduce
-    data_list = utility.filter_out_test_instances_that_were_not_reduced_by_any(data_list)
+    derived_jable = utility.make_derived_jable(data_list, test_names)
 
-    # Holds results for the 'strictly better' graph
-    reduction_points = []
-    time_points = []
-    memory_points = []
-    unique_answers = []
-    reduce_times_points = []
-
-    # Holds results for the 'at least as good as runner-up' graph
-    reduction_points_eq = []
-    time_points_eq = []
-    memory_points_eq = []
-    reduce_times_points_eq = []
-
-    # Holds the number of answers each experiment get
-    answers = []
-
-    for test_index, data in enumerate(data_list):
-        # Holds the sum of each experiments points, will be added to above lists
-        reduction_sum = 0
-        time_sum = 0
-        memory_sum = 0
-        unique_answers_sum = 0
-        reduce_times_sum = 0
-
-        reduction_eq_sum = 0
-        time_eq_sum = 0
-        memory_eq_sum = 0
-        reduce_times_eq_sum = 0
-
-        answers_sum = 0
-
-        # Iterate through each row, and evaluate them one by one
-        for index, row in data.iterrows():
-            best_time = np.infty
-            best_memory = np.infty
-            best_reduction = np.infty
-            best_reduce_time = np.infty
-            anyone_else_answer = False
-
-            # Go through all other experiments
-            for test_index2, data2 in enumerate(data_list):
-
-                # Dont compare against itself
-                if test_index == test_index2:
-                    continue
-
-                # Get row to compare with
-                other_row = data2.loc[index]
-
-                # Sanity check
-                if (other_row['model name'] != row['model name']) or (
-                        other_row['query index'] != row['query index']):
-                    raise Exception('(reduction_points) Comparing wrong rows')
-
-                # If the other experiment has no answered, don't use for comparison
-                if other_row['answer'] == 'NONE':
-                    continue
-
-                # Find the best result among all experiments
-                # Dont compare reduction size against no-red, as this always has 0s, would always win trivially
-                if test_names[test_index2] != 'no-red':
-                    best_reduction = min(best_reduction,
-                                         other_row['post place count'] + other_row['post transition count'])
-                best_time = min(best_time, other_row['verification time'])
-                best_memory = min(best_memory, other_row['verification memory'])
-                best_reduce_time = min(best_memory, other_row['reduce time'])
-                anyone_else_answer = anyone_else_answer or (other_row['answer'] != 'NONE')
-
-            # Update the sums for the experiment, based on the results of all other experiments
-            # But only if we have answered the test instance ourselves (this check could probably be moved before above for-loop)
-            if row['answer'] != 'NONE':
-                answers_sum += 1
-                if row['verification time'] <= best_time:
-                    time_eq_sum += 1
-                    if row['verification time'] <= 0.9 * best_time:
-                        time_sum += 1
-                if row['verification memory'] <= best_memory:
-                    memory_eq_sum += 1
-                    if row['verification memory'] <= 0.9 * best_memory:
-                        memory_sum += 1
-                if test_names[test_index] != 'no-red':
-                    if (row['post place count'] + row['post transition count']) <= best_reduction:
-                        reduction_eq_sum += 1
-                        if (row['post place count'] + row['post transition count']) <= 0.9 * best_reduction:
-                            reduction_sum += 1
-                    if row['reduce time'] <= best_reduce_time:
-                        reduce_times_eq_sum += 1
-                        if row['reduce time'] <= 0.9 * best_reduce_time:
-                            reduce_times_sum += 1
-                if not anyone_else_answer:
-                    unique_answers_sum += 1
-
-        # When we are done with all rows for this experiment, add sums to the lists
-        reduction_points.append(reduction_sum)
-        time_points.append(time_sum)
-        memory_points.append(memory_sum)
-        unique_answers.append(unique_answers_sum)
-        reduce_times_points.append(reduce_times_sum)
-        reduce_times_points_eq.append(reduce_times_eq_sum)
-        reduction_points_eq.append(reduction_eq_sum)
-        time_points_eq.append(time_eq_sum)
-        memory_points_eq.append(memory_eq_sum)
-        answers.append(answers_sum)
-
+    answer_df = get_answer_df(derived_jable, test_names)
     # Create a dataframe for each type of graph
     points_df = pd.DataFrame(
-        {'reduced size': reduction_points, 'verification memory': memory_points, 'verification time': time_points,
-         'unique answers': unique_answers,
-         'answered queries': answers, 'reduce time': reduce_times_points})
+        {'reduced size': get_strictly_better_points(derived_jable, 'reduced size', test_names),
+         'state space size': get_strictly_better_points(derived_jable, 'state space size', test_names),
+         'reduce time': get_strictly_better_points(derived_jable, 'reduce time', test_names),
+         'verification memory': get_strictly_better_points(derived_jable, 'verification memory', test_names),
+         'verification time': get_strictly_better_points(derived_jable, 'verification time', test_names),
+         'answered queries': answer_df,
+         'unique answers': zero_padding(derived_jable['unique answers'].value_counts(), 'unique answers',
+                                        test_names).tolist(),
+         }, index=test_names)
 
     points_eq_df = pd.DataFrame(
-        {'reduced size': reduction_points_eq, 'verification memory': memory_points_eq,
-         'verification time': time_points_eq,
-         'answered queries': answers, 'reduce time': reduce_times_points_eq})
+        {'reduced size': get_eq_points(derived_jable, 'reduced size', test_names),
+         'state space size': get_eq_points(derived_jable, 'state space size', test_names),
+         'reduce time': get_eq_points(derived_jable, 'reduce time', test_names),
+         'verification memory': get_eq_points(derived_jable, 'verification memory', test_names),
+         'verification time': get_eq_points(derived_jable, 'verification time', test_names),
+         'answered queries': answer_df,
+         }, index=test_names)
 
-    # Rename rows in the dataframe to be names of the experiments
-    new_indices = dict()
-    for index, name in enumerate(test_names):
-        new_indices[index] = name
-    points_df.rename(index=new_indices, inplace=True)
-    points_eq_df.rename(index=new_indices, inplace=True)
-
-    columns_with_with = [test_name for test_name in points_df.T.columns if
-                         ("with" in test_name) or ("base-rules" in test_name)]
-    columns_not_with_with = [test_name for test_name in points_df.T.columns if
-                             "with" not in test_name or ("base-rules" in test_name)]
-    columns_to_be_removed_by_with = [column for column in points_df.T.columns if column not in columns_with_with]
-    columns_to_be_removed_by_without = [column for column in points_df.T.columns if column not in columns_not_with_with]
-
-    points_df_without = points_df.drop(columns_to_be_removed_by_without)
-    points_df_with_with = points_df.drop(columns_to_be_removed_by_with)
-
-    points_eq_df_without = points_eq_df.drop(columns_to_be_removed_by_without)
-    points_eq_df_with = points_eq_df.drop(columns_to_be_removed_by_with)
-
-    data_to_plot = [points_df, points_df_with_with, points_df_without]
-    data_to_plot_eq = [points_eq_df, points_eq_df_with, points_eq_df_without]
+    data_to_plot = utility.split_into_all_with_without(points_df)
+    data_to_plot_eq = utility.split_into_all_with_without(points_eq_df)
     png_names = ['all', 'with', 'without']
 
     for index, data in enumerate(data_to_plot):
@@ -174,7 +138,8 @@ def plot(data_list, test_names, graph_dir):
         sns.set_theme(style="darkgrid", palette="pastel")
         plot = data.plot(kind='barh', width=0.75, linewidth=2, figsize=(10, 10))
         plt.legend(bbox_to_anchor=(1.02, 1), loc='best', borderaxespad=0)
-        plt.title('Point given if at least 10% better than runner-up')
+        plt.title(
+            f'Point given if at least 10% better than runner-up, using {keep_largest_percent * 100}% largest tests ({int(derived_jable.shape[0] * keep_largest_percent)} tests)')
         plt.xscale('log')
         plt.xlabel("points")
         plt.ylabel('experiments')
@@ -184,7 +149,7 @@ def plot(data_list, test_names, graph_dir):
             left, bottom, width, height = p.get_bbox().bounds
             plot.annotate(int(width), xy=(left + width, bottom + height / 2), ha='center', va='center', size=10)
 
-        plt.savefig(graph_dir + f'10%_better_points_{png_names[index]}.png', bbox_inches='tight')
+        plt.savefig(graph_dir + f'{how_much_better * 100}%_better_points_{png_names[index]}.png', bbox_inches='tight')
         plt.clf()
 
     for index, data in enumerate(data_to_plot_eq):
@@ -193,7 +158,8 @@ def plot(data_list, test_names, graph_dir):
         # Plot the second plot with with
         plot = data.plot(kind='barh', width=0.75, linewidth=2, figsize=(10, 10))
         plt.legend(bbox_to_anchor=(1.02, 1), loc='best', borderaxespad=0)
-        plt.title('Point given if at least as good as runner-up')
+        plt.title(
+            f'Point given if at least as good as runner-up, using {keep_largest_percent * 100}% largest tests ({int(derived_jable.shape[0] * keep_largest_percent)} tests)')
         plt.xscale('log')
         plt.xlabel("points")
         plt.ylabel('experiments')

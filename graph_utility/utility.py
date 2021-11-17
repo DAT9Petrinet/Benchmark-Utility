@@ -122,8 +122,8 @@ def make_derived_jable(csvs, exp_names):
         for time in ['prev', 'post']:
             everything[f'{exp_name}@{time} size'] = everything[f'{exp_name}@{time} place count'] + everything[
                 f'{exp_name}@{time} transition count']
-        everything[f'{exp_name}@reduced size'] = everything[f'{exp_name}@prev size'] - everything[
-            f'{exp_name}@post size']
+        everything[f'{exp_name}@reduced size'] = - (everything[f'{exp_name}@prev size'] - everything[
+            f'{exp_name}@post size'])
 
     # Unique answer
     answer_columns = [experiment_column + '@' + 'answer' for experiment_column in exp_names]
@@ -133,14 +133,22 @@ def make_derived_jable(csvs, exp_names):
                                                                         'NONE'] == 6 else np.nan,
         axis=1)
 
-    everything.to_csv("saved/everything/everything_test.csv")
-
     return everything
 
 
 def largest_x(df, x, metric, test_names):
+    n = int(df.shape[0] * x)
+
     metric_columns = [experiment_column + '@' + metric for experiment_column in test_names]
-    
-    df.sort_values(metric, inplace=True)
-    n = len(df) * x
-    return df.tail(-n)
+    res_df = pd.DataFrame()
+    if metric in ['verification time', 'verification memory']:
+        for column in metric_columns:
+            res_df[column] = df[(df[(column.split("@", 1)[0]) + '@answer'] != 'NONE')][column]
+            res_df[column] = res_df[np.isfinite(res_df[column])][column]
+    else:
+        for column in metric_columns:
+            res_df[column] = df[np.isfinite(df[column])][column]
+
+    res_df = pd.DataFrame({x: res_df[x].sort_values().values for x in res_df[metric_columns].columns.values})
+
+    return res_df.tail(n)
