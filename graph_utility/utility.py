@@ -71,6 +71,7 @@ def color(t):
 
     return a + (b * np.cos(2 * np.pi * (c * t + d)))
 
+
 def rename_index_to_test_name(df, test_names):
     new_indices = dict()
     for index, name in enumerate(test_names):
@@ -79,11 +80,12 @@ def rename_index_to_test_name(df, test_names):
 
     return df
 
+
 def split_into_all_with_without(df):
     columns_with = [test_name for test_name in df.T.columns if
-                         ("with" in test_name) or ("base-rules" in test_name)]
+                    ("with" in test_name) or ("base-rules" in test_name)]
     columns_not_with = [test_name for test_name in df.T.columns if
-                             "with" not in test_name or ("base-rules" in test_name)]
+                        "with" not in test_name or ("base-rules" in test_name)]
 
     columns_to_be_removed_by_with = [column for column in df.T.columns if column not in columns_with]
     columns_to_be_removed_by_without = [column for column in df.T.columns if column not in columns_not_with]
@@ -92,6 +94,7 @@ def split_into_all_with_without(df):
     df_with = df.drop(columns_to_be_removed_by_with)
 
     return [df, df_with, df_without]
+
 
 def make_derived_jable(csvs, exp_names):
     needed_columns = ['model name', 'query index', 'answer', 'verification time', 'verification memory',
@@ -125,10 +128,19 @@ def make_derived_jable(csvs, exp_names):
     # Unique answer
     answer_columns = [experiment_column + '@' + 'answer' for experiment_column in exp_names]
     everything['unique answers'] = everything[answer_columns].apply(
-        lambda row: row.index[row != 'NONE'][0].split("@", 1)[0] if 'NONE' in (row.value_counts().index) and row.value_counts()[
-            'NONE'] == 6 else np.nan,
+        lambda row: row.index[row != 'NONE'][0].split("@", 1)[0] if 'NONE' in (row.value_counts().index) and
+                                                                    row.value_counts()[
+                                                                        'NONE'] == 6 else np.nan,
         axis=1)
 
     everything.to_csv("saved/everything/everything_test.csv")
 
     return everything
+
+
+def largest_x(df, x, metric, test_names):
+    metric_columns = [experiment_column + '@' + metric for experiment_column in test_names]
+    
+    df.sort_values(metric, inplace=True)
+    n = len(df) * x
+    return df.tail(-n)
