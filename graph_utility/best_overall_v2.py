@@ -16,7 +16,7 @@ def zero_padding(series, metric, test_names):
         metric_columns = test_names
 
     for test_name in metric_columns:
-        if test_name not in series:
+        if test_name not in series or (test_name == 'no-red' and metric in ['reduce time', 'reduced size']):
             series[test_name] = 0
     return series
 
@@ -27,19 +27,40 @@ def second_smallest(list):
 
 def get_strictly_better_points(derived_jable, metric, test_names):
     metric_columns = [experiment_column + '@' + metric for experiment_column in test_names]
+    answer_columns = ([experiment_column + '@' + 'answer' for experiment_column in test_names])
+    relevant_columns = metric_columns + answer_columns
 
     def find_best(row):
-        s = second_smallest(row.values)
+        s = second_smallest(row[metric_columns].values)
         return next(
-            iter([experiment for experiment, value in row.items() if value <= 0.9 * s]),
+            iter([experiment for experiment, value in row[metric_columns].items() if value <= 0.9 * s and row[
+                experiment.split("@", 1)[0] + '@answer'] != 'NONE']),
             None)
 
     df = pd.DataFrame()
-    df[metric + ' scores'] = derived_jable[metric_columns].apply(
+    df[metric + ' scores'] = derived_jable[relevant_columns].apply(
         find_best,
         axis=1)
-
     return zero_padding(df.value_counts(), metric, test_names).tolist()
+
+
+def get_eq_points(derived_jable, metric, test_names):
+    metric_columns = [experiment_column + '@' + metric for experiment_column in test_names]
+    answer_columns = ([experiment_column + '@' + 'answer' for experiment_column in test_names])
+    relevant_columns = metric_columns + answer_columns
+
+    def equally_good_as_best(row, test, metric):
+        s = second_smallest(row.values)
+        return row[test + '@' + metric] <= s
+
+    df = pd.DataFrame()
+    for test in test_names:
+        df[test + '@' + metric] = derived_jable[relevant_columns].apply(
+            lambda row: 1 if equally_good_as_best(row[metric_columns], test, metric) and row[
+                test + '@' + 'answer'] != 'NONE' else 0,
+            axis=1)
+
+    return zero_padding(df.sum(), metric, test_names).tolist()
 
 
 def get_answer_df(derived_jable, test_names):
@@ -61,6 +82,7 @@ def plot(data_list, test_names, graph_dir):
 
     derived_jable = utility.make_derived_jable(data_list, test_names)
 
+    answer_df = get_answer_df(derived_jable, test_names)
     # Create a dataframe for each type of graph
     points_df = pd.DataFrame(
         {'reduced size': get_strictly_better_points(derived_jable, 'reduced size', test_names),
@@ -68,39 +90,26 @@ def plot(data_list, test_names, graph_dir):
          'reduce time': get_strictly_better_points(derived_jable, 'reduce time', test_names),
          'verification memory': get_strictly_better_points(derived_jable, 'verification memory', test_names),
          'verification time': get_strictly_better_points(derived_jable, 'verification time', test_names),
-         'answered queries': get_answer_df(derived_jable, test_names),
+         'answered queries': answer_df,
          'unique answers': zero_padding(derived_jable['unique answers'].value_counts(), 'unique answers',
                                         test_names).tolist(),
          })
 
-    # points_eq_df = pd.DataFrame(
-    #   {'reduced size': reduction_points_eq, 'verification memory': memory_points_eq,
-    #    'verification time': time_points_eq,
-    #  'answered queries': answers, 'reduce time': reduce_times_points_eq})
+    points_eq_df = pd.DataFrame(
+        {'reduced size': get_eq_points(derived_jable, 'reduced size', test_names),
+         'state space size': get_eq_points(derived_jable, 'state space size', test_names),
+         'reduce time': get_eq_points(derived_jable, 'reduce time', test_names),
+         'verification memory': get_eq_points(derived_jable, 'verification memory', test_names),
+         'verification time': get_eq_points(derived_jable, 'verification time', test_names),
+         'answered queries': answer_df,
+         })
 
     # Rename rows in the dataframe to be names of the experiments
-    new_indices = dict()
-    for index, name in enumerate(test_names):
-        new_indices[index] = name
-    points_df.rename(index=new_indices, inplace=True)
-    # points_eq_df.rename(index=new_indices, inplace=True)
+    points_df = utility.rename_index_to_test_name(points_df, test_names)
+    points_eq_df = utility.rename_index_to_test_name(points_eq_df, test_names)
 
-    columns_with_with = [test_name for test_name in points_df.T.columns if
-                         ("with" in test_name) or ("base-rules" in test_name)]
-    columns_not_with_with = [test_name for test_name in points_df.T.columns if
-                             "with" not in test_name or ("base-rules" in test_name)]
-
-    columns_to_be_removed_by_with = [column for column in points_df.T.columns if column not in columns_with_with]
-    columns_to_be_removed_by_without = [column for column in points_df.T.columns if column not in columns_not_with_with]
-
-    points_df_without = points_df.drop(columns_to_be_removed_by_without)
-    points_df_with_with = points_df.drop(columns_to_be_removed_by_with)
-
-    # points_eq_df_without = points_eq_df.drop(columns_to_be_removed_by_without)
-    # points_eq_df_with = points_eq_df.drop(columns_to_be_removed_by_with)
-
-    data_to_plot = [points_df, points_df_with_with, points_df_without]
-    # data_to_plot_eq = [points_eq_df, points_eq_df_with, points_eq_df_without]
+    data_to_plot = utility.split_into_all_with_without(points_df)
+    data_to_plot_eq = utility.split_into_all_with_without(points_eq_df)
     png_names = ['all', 'with', 'without']
 
     for index, data in enumerate(data_to_plot):
@@ -123,7 +132,7 @@ def plot(data_list, test_names, graph_dir):
         plt.savefig(graph_dir + f'10%_better_points_{png_names[index]}.png', bbox_inches='tight')
         plt.clf()
 
-    '''for index, data in enumerate(data_to_plot_eq):
+    for index, data in enumerate(data_to_plot_eq):
         if len(data) == 0:
             continue
         # Plot the second plot with with
@@ -140,7 +149,7 @@ def plot(data_list, test_names, graph_dir):
             plot.annotate(int(width), xy=(left + width, bottom + height / 2), ha='center', va='center', size=10)
 
         plt.savefig(graph_dir + f'better_or_eq_points_{png_names[index]}.png', bbox_inches='tight')
-        plt.clf()'''
+        plt.clf()
 
 
 if __name__ == "__main__":

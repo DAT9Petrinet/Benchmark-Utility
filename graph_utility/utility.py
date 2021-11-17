@@ -71,6 +71,27 @@ def color(t):
 
     return a + (b * np.cos(2 * np.pi * (c * t + d)))
 
+def rename_index_to_test_name(df, test_names):
+    new_indices = dict()
+    for index, name in enumerate(test_names):
+        new_indices[index] = name
+    df = df.rename(index=new_indices)
+
+    return df
+
+def split_into_all_with_without(df):
+    columns_with = [test_name for test_name in df.T.columns if
+                         ("with" in test_name) or ("base-rules" in test_name)]
+    columns_not_with = [test_name for test_name in df.T.columns if
+                             "with" not in test_name or ("base-rules" in test_name)]
+
+    columns_to_be_removed_by_with = [column for column in df.T.columns if column not in columns_with]
+    columns_to_be_removed_by_without = [column for column in df.T.columns if column not in columns_not_with]
+
+    df_without = df.drop(columns_to_be_removed_by_without)
+    df_with = df.drop(columns_to_be_removed_by_with)
+
+    return [df, df_with, df_without]
 
 def make_derived_jable(csvs, exp_names):
     needed_columns = ['model name', 'query index', 'answer', 'verification time', 'verification memory',
