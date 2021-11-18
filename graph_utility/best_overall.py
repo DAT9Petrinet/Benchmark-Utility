@@ -9,7 +9,7 @@ import seaborn as sns
 import utility
 
 keep_largest_percent = 0.1
-how_much_better = 0.00
+how_much_better = 0.1
 
 
 def zero_padding(series, metric, test_names):
@@ -139,7 +139,7 @@ def plot(data_list, test_names, graph_dir):
         plot = data.plot(kind='barh', width=0.75, linewidth=2, figsize=(10, 10))
         plt.legend(bbox_to_anchor=(1.02, 1), loc='best', borderaxespad=0)
         plt.title(
-            f'Point given if at least 10% better than runner-up, using {keep_largest_percent * 100}% largest tests ({int(derived_jable.shape[0] * keep_largest_percent)} tests)')
+            f'Point given if at least {how_much_better * 100}% better than runner-up, using {keep_largest_percent * 100}% largest tests ({int(derived_jable.shape[0] * keep_largest_percent)} tests)')
         plt.xscale('log')
         plt.xlabel("points")
         plt.ylabel('experiments')
