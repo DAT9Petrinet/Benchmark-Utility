@@ -39,14 +39,14 @@ def plot_all(data_list, test_names, graph_dir, experiment_to_compare_against_nam
     answer_simplification_bars.plot(data_list, test_names, graph_dir + '\\best-experiment\\')
     graphs_made = update_globals('answer/simplification bars', graphs_made)
 
-    time_when_started = time.time()
+    '''time_when_started = time.time()
     best_overall.plot(data_list, test_names, graph_dir + '\\best-experiment\\')
     graphs_made = update_globals('best experiment overall', graphs_made)
 
     time_when_started = time.time()
     # Plots that has to do with application of rules
     rule_usage.plot(data_list, test_names, graph_dir + '\\rule-usage\\')
-    graphs_made = update_globals('rule usages', graphs_made)
+    graphs_made = update_globals('rule usages', graphs_made)'''
 
     '''time_when_started = time.time()
     # Stuff to do with time and memory
@@ -54,9 +54,11 @@ def plot_all(data_list, test_names, graph_dir, experiment_to_compare_against_nam
     graphs_made = update_globals('time/memory lines combined', graphs_made)'''
 
     time_when_started = time.time()
-    metrics = ['verification time', 'verification memory', 'state space size', 'reduce time', 'reduced size']
+    metrics = ['verification time', 'verification memory', 'state space size', 'reduce time', 'reduced size',
+               'total time']
     for metric in metrics:
-        time_memory_lines.plot(data_list, test_names, graph_dir + '\\lines\\', metric)
+        for percentage in [0.1, 1]:
+            time_memory_lines.plot(data_list, test_names, graph_dir + '\\lines\\', metric, percentage)
     graphs_made = update_globals('time/memory lines', graphs_made)
 
     '''time_when_started = time.time()
@@ -64,18 +66,18 @@ def plot_all(data_list, test_names, graph_dir, experiment_to_compare_against_nam
                             experiment_to_compare_against_name)
     graphs_made = update_globals('time/memory points', graphs_made)'''
 
-    time_when_started = time.time()
+    '''time_when_started = time.time()
     # Stuff to do with reduction/size
     reduced_size.plot(data_list, test_names, graph_dir + '\\reductions\\')
-    graphs_made = update_globals('reduced size', graphs_made)
+    graphs_made = update_globals('reduced size', graphs_made)'''
 
     '''time_when_started = time.time()
     reduction_points.plot(data_list, test_names, graph_dir + '\\reductions\\', experiment_to_compare_against_name)
     graphs_made = update_globals('reduction points', graphs_made)'''
 
-    time_when_started = time.time()
+    '''time_when_started = time.time()
     total_reductions.plot(data_list, test_names, graph_dir + '\\reductions\\')
-    graphs_made = update_globals('total reductions', graphs_made)
+    graphs_made = update_globals('total reductions', graphs_made)'''
 
     '''time_when_started = time.time()
     # Stuff to do with ratios
@@ -105,9 +107,6 @@ def plot_all(data_list, test_names, graph_dir, experiment_to_compare_against_nam
     # Plot the numbers in the bars
     for p in plot.patches:
         left, bottom, width, height = p.get_bbox().bounds
-        if width < (max_width / 3):
-            left += 1
-            width *= 2
         plot.annotate(int(width), xy=(left + width / 2, bottom + height / 2),
                       ha='center', va='center')
 

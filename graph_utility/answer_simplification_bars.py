@@ -5,6 +5,7 @@ import sys
 import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
+import utility
 
 
 def plot(data_list, test_names, graph_dir):
@@ -23,11 +24,14 @@ def plot(data_list, test_names, graph_dir):
     combined = pd.DataFrame()
 
     for index, data in enumerate(data_list):
+
+        data = utility.infer_simplification_from_prev_size_0_rows(data)
         # Change 'NONE' value to 'not answered', and 'TRUE' and 'FALSE' to 'answered'
         data['answer'] = data['answer'].replace(['TRUE', 'FALSE'], 'answered')
         data['answer'] = data['answer'].replace(['NONE'], 'not answered')
 
         # Same thing for simplification, renames to simplified and not simplified, based on bool value
+
         data['solved by query simplification'] = data['solved by query simplification'].replace(True, 'simplified')
         data['solved by query simplification'] = data['solved by query simplification'].replace(False, 'not simplified')
 

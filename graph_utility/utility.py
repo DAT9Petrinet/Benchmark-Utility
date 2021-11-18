@@ -126,9 +126,7 @@ def make_derived_jable(csvs, exp_names):
             f'{exp_name}@post size'])
 
     # Unique answer
-
     answer_columns = [experiment_column + '@' + 'answer' for experiment_column in exp_names]
-
     everything['unique answers'] = everything[answer_columns].apply(
         lambda row: row.index[row != 'NONE'][0].split("@", 1)[0] if 'NONE' in (row.value_counts().index) and
                                                                     row.value_counts()[
@@ -137,6 +135,34 @@ def make_derived_jable(csvs, exp_names):
 
     return everything
 
+def get_pre_size(row):
+    return row['prev place count'] + row['prev transition count']
+
+
+def get_reduced_size(row):
+    if row['prev place count'] > 0:
+        pre_size = get_pre_size(row)
+        post_size = row['post place count'] + row['post transition count']
+        return ((post_size / pre_size) * 100) if post_size > 0 else np.nan
+    else:
+        return np.nan
+
+
+def get_total_time(row):
+    return row['reduce time'] + row['verification time']
+
+
+
+def remove_prev_size_0_rows(df):
+    df = df[(df['prev place count'] + df['prev transition count']) > 0]
+    return df
+
+def infer_simplification_from_prev_size_0_rows(df):
+    df['answer'] = df.apply(lambda row: 'FALSE' if get_pre_size(row) == 0.0 else row['answer'], axis=1)
+    df['solved by query simplification'] = df.apply(
+        lambda row: True if get_pre_size(row) == 0.0 else row['solved by query simplification'], axis=1)
+
+    return df
 
 def largest_x(df, x, metric, test_names):
     n = int(df.shape[0] * x)
