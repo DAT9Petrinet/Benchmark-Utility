@@ -126,11 +126,13 @@ def make_derived_jable(csvs, exp_names):
             f'{exp_name}@post size'])
 
     # Unique answer
+
     answer_columns = [experiment_column + '@' + 'answer' for experiment_column in exp_names]
+
     everything['unique answers'] = everything[answer_columns].apply(
         lambda row: row.index[row != 'NONE'][0].split("@", 1)[0] if 'NONE' in (row.value_counts().index) and
                                                                     row.value_counts()[
-                                                                        'NONE'] == 6 else np.nan,
+                                                                        'NONE'] == len(exp_names) - 1 else np.nan,
         axis=1)
 
     return everything
