@@ -9,10 +9,10 @@ import seaborn as sns
 
 import answer_simplification_bars
 import best_overall
-import reduced_size
-import rule_usage
 import time_memory_lines
+import rule_usage
 import total_reductions
+import better_than_x
 
 
 def plot_all(data_list, test_names, graph_dir, experiment_to_compare_against_name):
@@ -39,19 +39,18 @@ def plot_all(data_list, test_names, graph_dir, experiment_to_compare_against_nam
     answer_simplification_bars.plot(data_list, test_names, graph_dir + '\\best-experiment\\')
     graphs_made = update_globals('answer/simplification bars', graphs_made)
 
-    '''time_when_started = time.time()
+    time_when_started = time.time()
     best_overall.plot(data_list, test_names, graph_dir + '\\best-experiment\\')
+    graphs_made = update_globals('best experiment overall', graphs_made)
+
+    time_when_started = time.time()
+    better_than_x.plot(data_list, test_names, graph_dir + '\\best-experiment\\', experiment_to_compare_against_name)
     graphs_made = update_globals('best experiment overall', graphs_made)
 
     time_when_started = time.time()
     # Plots that has to do with application of rules
     rule_usage.plot(data_list, test_names, graph_dir + '\\rule-usage\\')
-    graphs_made = update_globals('rule usages', graphs_made)'''
-
-    '''time_when_started = time.time()
-    # Stuff to do with time and memory
-    time_memory_combined.plot(data_list, test_names, graph_dir + '\\lines\\')
-    graphs_made = update_globals('time/memory lines combined', graphs_made)'''
+    graphs_made = update_globals('rule usages', graphs_made)
 
     time_when_started = time.time()
     metrics = ['verification time', 'verification memory', 'state space size', 'reduce time', 'reduced size',
@@ -61,33 +60,10 @@ def plot_all(data_list, test_names, graph_dir, experiment_to_compare_against_nam
             time_memory_lines.plot(data_list, test_names, graph_dir + '\\lines\\', metric, percentage)
     graphs_made = update_globals('time/memory lines', graphs_made)
 
-    '''time_when_started = time.time()
-    time_memory_points.plot(data_list, test_names, graph_dir + '\\lines\\',
-                            experiment_to_compare_against_name)
-    graphs_made = update_globals('time/memory points', graphs_made)'''
-
-    '''time_when_started = time.time()
-    # Stuff to do with reduction/size
-    reduced_size.plot(data_list, test_names, graph_dir + '\\reductions\\')
-    graphs_made = update_globals('reduced size', graphs_made)'''
-
-    '''time_when_started = time.time()
-    reduction_points.plot(data_list, test_names, graph_dir + '\\reductions\\', experiment_to_compare_against_name)
-    graphs_made = update_globals('reduction points', graphs_made)'''
-
-    '''time_when_started = time.time()
-    total_reductions.plot(data_list, test_names, graph_dir + '\\reductions\\')
-    graphs_made = update_globals('total reductions', graphs_made)'''
-
-    '''time_when_started = time.time()
-    # Stuff to do with ratios
-    time_size_ratios_lineplots.plot(data_list, test_names, graph_dir + '\\size-ratios\\',
-                                    experiment_to_compare_against_name)
-    graphs_made = update_globals('ratios lineplots', graphs_made)
-
     time_when_started = time.time()
-    time_size_avg_ratios.plot(data_list, test_names, graph_dir + '\\size-ratios\\', experiment_to_compare_against_name)
-    update_globals('avg ratios', graphs_made)'''
+    total_reductions.plot(data_list, test_names, graph_dir + '\\reductions\\')
+    graphs_made = update_globals('total reductions', graphs_made)
+
 
     # Print meme graph
     df = pd.DataFrame.from_dict(times, orient='index')

@@ -135,6 +135,7 @@ def make_derived_jable(csvs, exp_names):
 
     return everything
 
+
 def get_pre_size(row):
     return row['prev place count'] + row['prev transition count']
 
@@ -152,10 +153,10 @@ def get_total_time(row):
     return row['reduce time'] + row['verification time']
 
 
-
 def remove_prev_size_0_rows(df):
     df = df[(df['prev place count'] + df['prev transition count']) > 0]
     return df
+
 
 def infer_simplification_from_prev_size_0_rows(df):
     df['answer'] = df.apply(lambda row: 'FALSE' if get_pre_size(row) == 0.0 else row['answer'], axis=1)
@@ -163,6 +164,16 @@ def infer_simplification_from_prev_size_0_rows(df):
         lambda row: True if get_pre_size(row) == 0.0 else row['solved by query simplification'], axis=1)
 
     return df
+
+
+def unique_answers_comparison(df, experiment_to_compare_against, test_names):
+    res = pd.DataFrame()
+    for test in test_names:
+        temp = df.apply(lambda row: 1 if ((row[experiment_to_compare_against + '@answer'] == 'NONE') and (
+                row[test + '@answer'] != 'NONE')) else 0, axis=1)
+        res[test] = [temp.sum()]
+    return res.T[0]
+
 
 def largest_x(df, x, metric, test_names):
     n = int(df.shape[0] * x)
