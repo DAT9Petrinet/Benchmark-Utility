@@ -35,7 +35,7 @@ def plot_all(data_list, test_names, graph_dir, experiment_to_compare_against_nam
         return graphs_made
 
     # General graphs not fitting totally into the next categories
-    time_when_started = time.time()
+    '''time_when_started = time.time()
     answer_simplification_bars.plot(data_list, test_names, graph_dir + '\\best-experiment\\')
     graphs_made = update_globals('answer/simplification bars', graphs_made)
 
@@ -58,7 +58,7 @@ def plot_all(data_list, test_names, graph_dir, experiment_to_compare_against_nam
     for metric in metrics:
         for percentage in [0.1, 1]:
             time_memory_lines.plot(data_list, test_names, graph_dir + '\\lines\\', metric, percentage)
-    graphs_made = update_globals('time/memory lines', graphs_made)
+    graphs_made = update_globals('time/memory lines', graphs_made)'''
 
     time_when_started = time.time()
     total_reductions.plot(data_list, test_names, graph_dir + '\\reductions\\')
@@ -110,7 +110,6 @@ if __name__ == "__main__":
     # Make new directories
     os.makedirs(graph_dir)
     os.makedirs(graph_dir + '\\rule-usage\\')
-    os.makedirs(graph_dir + '\\size-ratios\\')
     os.makedirs(graph_dir + '\\reductions\\')
     os.makedirs(graph_dir + '\\lines\\')
     os.makedirs(graph_dir + '\\best-experiment\\')

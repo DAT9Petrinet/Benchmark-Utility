@@ -18,7 +18,7 @@ def plot(data_list, test_names, graph_dir):
     data_list = copy.deepcopy(data_list)
     test_names = copy.deepcopy(test_names)
 
-    # Remove test with no reductions, assume this is named 'no-red'
+    # Remove test with no reductions
     data_list, test_names = utility.remove_no_red(data_list, test_names)
 
     # Find test instances that no experiment managed to reduce
@@ -30,19 +30,10 @@ def plot(data_list, test_names, graph_dir):
     places_reductions = []
     # Go through each experiment
     for test_index, data in enumerate(data_list):
-        total_reduction_sum = 0
-        transition_reduction_sum = 0
-        place_reduction_sum = 0
+        transition_reduction_sum = data['prev transition count'].sum() - data['post transition count'].sum()
+        place_reduction_sum = data['prev place count'].sum() - data['post place count'].sum()
 
-        # Calculate the reductions, and add to sums
-        for index, row in data.iterrows():
-            pre_size = row['prev place count'] + row['prev transition count']
-            reduced_size = row['post place count'] + row['post transition count']
-            total_reduction_sum += (pre_size - reduced_size)
-            transition_reduction_sum += row['prev transition count'] - row['post transition count']
-            place_reduction_sum += row['prev place count'] - row['post place count']
-
-        total_reductions.append(total_reduction_sum)
+        total_reductions.append(place_reduction_sum + transition_reduction_sum)
         transitions_reductions.append(transition_reduction_sum)
         places_reductions.append(place_reduction_sum)
 
@@ -51,25 +42,14 @@ def plot(data_list, test_names, graph_dir):
         {'total': total_reductions, 'places': places_reductions, 'transitions': transitions_reductions})
 
     # Rename indices to be test names, instead of int index
-    new_indices = dict()
-    for index, name in enumerate(test_names):
-        new_indices[index] = name
-    points_df.rename(index=new_indices, inplace=True)
+    points_df = utility.rename_index_to_test_name(points_df, test_names)
 
-    columns_with_with = [test_name for test_name in points_df.T.columns if
-                         ("with" in test_name) or ("base-rules" in test_name)]
-    columns_not_with_with = [test_name for test_name in points_df.T.columns if
-                             "with" not in test_name or ("base-rules" in test_name)]
-    columns_to_be_removed_by_with = [column for column in points_df.T.columns if column not in columns_with_with]
-    columns_to_be_removed_by_without = [column for column in points_df.T.columns if column not in columns_not_with_with]
-
-    points_df_without = points_df.drop(columns_to_be_removed_by_without)
-    points_df_with_with = points_df.drop(columns_to_be_removed_by_with)
-
-    data_to_plot = [points_df, points_df_with_with, points_df_without]
+    data_to_plot = utility.split_into_all_with_without(points_df)
     png_names = ['all', 'with', 'without']
 
     for index, data in enumerate(data_to_plot):
+        if index > 0:
+            continue
         if len(data) == 0 or len(data.columns) == 0:
             continue
         # Plot the plot
