@@ -39,9 +39,9 @@ def get_strictly_better_points(derived_jable, metric, test_names, experiment_to_
 
     def better_than_comparison(row, test, metric):
         if metric == 'reduced size':
-            return row[test + '@' + metric] > row[experiment_to_compare_against + '@' + metric]
+            return row[test + '@' + metric] > how_much_better * row[experiment_to_compare_against + '@' + metric]
         else:
-            return row[test + '@' + metric] < row[experiment_to_compare_against + '@' + metric]
+            return row[test + '@' + metric] < how_much_better * row[experiment_to_compare_against + '@' + metric]
 
     def point(row):
         if better_than_comparison(row[metric_columns], test, metric):
@@ -133,8 +133,10 @@ def plot(data_list, test_names, graph_dir, experiment_to_compare_against):
          'verification time': get_strictly_better_points(derived_jable, 'verification time', test_names,
                                                          experiment_to_compare_against),
          'answered queries': answer_df,
-         'unique answers': zero_padding(utility.unique_answers_comparison(derived_jable, experiment_to_compare_against, test_names), 'unique answers',
-                                        test_names).tolist(),
+         'unique answers': zero_padding(
+             utility.unique_answers_comparison(derived_jable, experiment_to_compare_against, test_names),
+             'unique answers',
+             test_names).tolist(),
          }, index=test_names)
 
     points_eq_df = pd.DataFrame(
@@ -173,7 +175,9 @@ def plot(data_list, test_names, graph_dir, experiment_to_compare_against):
             left, bottom, width, height = p.get_bbox().bounds
             plot.annotate(int(width), xy=(left + width, bottom + height / 2), ha='center', va='center', size=10)
 
-        plt.savefig(graph_dir + f'{how_much_better * 100}%_better_points_compared_to_{experiment_to_compare_against}_{png_names[index]}.png', bbox_inches='tight')
+        plt.savefig(
+            graph_dir + f'{how_much_better * 100}%_better_points_compared_to_{experiment_to_compare_against}_{png_names[index]}.png',
+            bbox_inches='tight')
         plt.clf()
 
     for index, data in enumerate(data_to_plot_eq):
@@ -195,7 +199,9 @@ def plot(data_list, test_names, graph_dir, experiment_to_compare_against):
             left, bottom, width, height = p.get_bbox().bounds
             plot.annotate(int(width), xy=(left + width, bottom + height / 2), ha='center', va='center', size=10)
 
-        plt.savefig(graph_dir + f'better_or_eq_points_compared_to_{experiment_to_compare_against}_{png_names[index]}.png', bbox_inches='tight')
+        plt.savefig(
+            graph_dir + f'better_or_eq_points_compared_to_{experiment_to_compare_against}_{png_names[index]}.png',
+            bbox_inches='tight')
         plt.clf()
 
 
