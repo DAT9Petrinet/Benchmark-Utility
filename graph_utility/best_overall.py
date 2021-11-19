@@ -12,32 +12,12 @@ keep_largest_percent = 0.1
 how_much_better = 0.1
 
 
-def zero_padding(series, metric, test_names):
-    if metric != 'unique answers':
-        metric_columns = [experiment_column + '@' + metric for experiment_column in test_names]
-    else:
-        metric_columns = test_names
-
-    for test_name in metric_columns:
-        if test_name not in series or (test_name == 'no-red' and metric in ['reduce time', 'reduced size']):
-            series[test_name] = 0
-    return series
-
-
-def second_smallest(list):
-    return sorted(list)[1]
-
-
-def second_largest(list):
-    return sorted(list)[-2]
-
-
 def get_strictly_better_points(derived_jable, metric, test_names):
     derived_jable = utility.largest_x(derived_jable, keep_largest_percent, metric, test_names)
     metric_columns = [experiment_column + '@' + metric for experiment_column in test_names]
 
     def find_best(row):
-        s = second_smallest(row[metric_columns].values)
+        s = utility.second_smallest_in_list(row[metric_columns].values)
         return next(
             iter([experiment for experiment, value in row[metric_columns].items() if
                   value < (1 - how_much_better) * s]),
@@ -47,7 +27,7 @@ def get_strictly_better_points(derived_jable, metric, test_names):
     df[metric + ' scores'] = derived_jable[metric_columns].apply(
         find_best,
         axis=1)
-    return zero_padding(df.value_counts(), metric, test_names).tolist()
+    return utility.zero_padding(df.value_counts(), metric, test_names).tolist()
 
 
 def get_eq_points(derived_jable, metric, test_names):
@@ -57,10 +37,10 @@ def get_eq_points(derived_jable, metric, test_names):
 
     def equally_good_as_best(row, test, metric):
         if metric == 'reduced size':
-            s = second_largest(row.values)
+            s = utility.second_largest_in_list(row.values)
             return row[test + '@' + metric] >= s
         else:
-            s = second_smallest(row.values)
+            s = utility.second_smallest_in_list(row.values)
             return row[test + '@' + metric] <= s
 
     def point(row):
@@ -68,7 +48,7 @@ def get_eq_points(derived_jable, metric, test_names):
             if metric in ['verification time', 'verification memory', 'reduce time']:
                 return 1
             elif metric in ['state space size']:
-                if second_smallest(row[metric_columns].values) != 0:
+                if utility.second_smallest_in_list(row[metric_columns].values) != 0:
                     return 1
                 else:
                     return 0
@@ -83,7 +63,7 @@ def get_eq_points(derived_jable, metric, test_names):
             point,
             axis=1)
 
-    return zero_padding(df.sum(), metric, test_names).tolist()
+    return utility.zero_padding(df.sum(), metric, test_names).tolist()
 
 
 def get_answer_df(derived_jable, test_names):
@@ -114,8 +94,8 @@ def plot(data_list, test_names, graph_dir):
          'verification memory': get_strictly_better_points(derived_jable, 'verification memory', test_names),
          'verification time': get_strictly_better_points(derived_jable, 'verification time', test_names),
          'answered queries': answer_df,
-         'unique answers': zero_padding(derived_jable['unique answers'].value_counts(), 'unique answers',
-                                        test_names).tolist(),
+         'unique answers': utility.zero_padding(derived_jable['unique answers'].value_counts(), 'unique answers',
+                                                test_names).tolist(),
          }, index=test_names)
 
     points_eq_df = pd.DataFrame(

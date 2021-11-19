@@ -12,26 +12,6 @@ keep_largest_percent = 0.1
 how_much_better = 0.1
 
 
-def zero_padding(series, metric, test_names):
-    if metric != 'unique answers':
-        metric_columns = [experiment_column + '@' + metric for experiment_column in test_names]
-    else:
-        metric_columns = test_names
-
-    for test_name in metric_columns:
-        if test_name not in series or (test_name == 'no-red' and metric in ['reduce time', 'reduced size']):
-            series[test_name] = 0
-    return series
-
-
-def second_smallest(list):
-    return sorted(list)[1]
-
-
-def second_largest(list):
-    return sorted(list)[-2]
-
-
 def get_strictly_better_points(derived_jable, metric, test_names, experiment_to_compare_against):
     derived_jable = utility.largest_x(derived_jable, keep_largest_percent, metric, test_names)
 
@@ -48,7 +28,7 @@ def get_strictly_better_points(derived_jable, metric, test_names, experiment_to_
             if metric in ['verification time', 'verification memory', 'reduce time']:
                 return 1
             elif metric in ['state space size']:
-                if second_smallest(row[metric_columns].values) != 0:
+                if utility.second_smallest_in_list(row[metric_columns].values) != 0:
                     return 1
                 else:
                     return 0
@@ -63,7 +43,7 @@ def get_strictly_better_points(derived_jable, metric, test_names, experiment_to_
             point,
             axis=1)
 
-    return zero_padding(df.sum(), metric, test_names).tolist()
+    return utility.zero_padding(df.sum(), metric, test_names).tolist()
 
 
 def get_eq_points(derived_jable, metric, test_names, experiment_to_compare_against):
@@ -82,7 +62,7 @@ def get_eq_points(derived_jable, metric, test_names, experiment_to_compare_again
             if metric in ['verification time', 'verification memory', 'reduce time']:
                 return 1
             elif metric in ['state space size']:
-                if second_smallest(row[metric_columns].values) != 0:
+                if utility.second_smallest_in_list(row[metric_columns].values) != 0:
                     return 1
                 else:
                     return 0
@@ -97,7 +77,7 @@ def get_eq_points(derived_jable, metric, test_names, experiment_to_compare_again
             point,
             axis=1)
 
-    return zero_padding(df.sum(), metric, test_names).tolist()
+    return utility.zero_padding(df.sum(), metric, test_names).tolist()
 
 
 def get_answer_df(derived_jable, test_names):
@@ -133,7 +113,7 @@ def plot(data_list, test_names, graph_dir, experiment_to_compare_against):
          'verification time': get_strictly_better_points(derived_jable, 'verification time', test_names,
                                                          experiment_to_compare_against),
          'answered queries': answer_df,
-         'unique answers': zero_padding(
+         'unique answers': utility.zero_padding(
              utility.unique_answers_comparison(derived_jable, experiment_to_compare_against, test_names),
              'unique answers',
              test_names).tolist(),

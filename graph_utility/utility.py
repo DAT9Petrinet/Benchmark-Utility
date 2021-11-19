@@ -71,6 +71,9 @@ def color(t):
 
     return a + (b * np.cos(2 * np.pi * (c * t + d)))
 
+def sanitise(df):
+    df = infer_errors(df)
+    return infer_simplification_from_prev_size_0_rows(df)
 
 def rename_index_to_test_name(df, test_names):
     new_indices = dict()
@@ -140,6 +143,10 @@ def get_pre_size(row):
     return row['prev place count'] + row['prev transition count']
 
 
+def get_post_size(row):
+    return row['post place count'] + row['post transition count']
+
+
 def get_reduced_size(row):
     if row['prev place count'] > 0:
         pre_size = get_pre_size(row)
@@ -158,12 +165,48 @@ def remove_prev_size_0_rows(df):
     return df
 
 
+def all_columns_indicate_error(row):
+    columns_with_0_indicating_error = ['verification time', 'verification memory', 'reduce time',
+                                       'state space size']
+    error = False
+    if get_pre_size(row) == 0.0 and get_post_size(row) == 0.0:
+        for column in columns_with_0_indicating_error:
+            if row[column] != 0.0:
+                break
+            error = True
+
+    return error
+
+
+def infer_errors(df):
+    def row_with_err(row):
+        row['answer'] = 'ERR'
+        row['solved by query simplification'] = 'ERR'
+        return row
+    df = df.apply(lambda row: row_with_err(row) if all_columns_indicate_error(row) else row, axis=1)
+    return df
+
+
+def number_of_errors(df):
+    return pd.DataFrame(df.apply(lambda row: 1 if all_columns_indicate_error(row) else 0, axis=1))[0].sum()
+
+
 def infer_simplification_from_prev_size_0_rows(df):
-    df['answer'] = df.apply(lambda row: 'FALSE' if get_pre_size(row) == 0.0 else row['answer'], axis=1)
+    df['answer'] = df.apply(
+        lambda row: 'TRUE' if (get_post_size(row) == 0.0 and get_pre_size(row) > 0) else row['answer'], axis=1)
     df['solved by query simplification'] = df.apply(
-        lambda row: True if get_pre_size(row) == 0.0 else row['solved by query simplification'], axis=1)
+        lambda row: True if (get_post_size(row) == 0.0 and get_pre_size(row) > 0) else row[
+            'solved by query simplification'], axis=1)
 
     return df
+
+
+def second_smallest_in_list(list):
+    return sorted(list)[1]
+
+
+def second_largest_in_list(list):
+    return sorted(list)[-2]
 
 
 def unique_answers_comparison(df, experiment_to_compare_against, test_names):
@@ -173,6 +216,18 @@ def unique_answers_comparison(df, experiment_to_compare_against, test_names):
                 row[test + '@answer'] != 'NONE')) else 0, axis=1)
         res[test] = [temp.sum()]
     return res.T[0]
+
+
+def zero_padding(series, metric, test_names):
+    if metric != 'unique answers':
+        metric_columns = [experiment_column + '@' + metric for experiment_column in test_names]
+    else:
+        metric_columns = test_names
+
+    for test_name in metric_columns:
+        if test_name not in series or (test_name == 'no-red' and metric in ['reduce time', 'reduced size']):
+            series[test_name] = 0
+    return series
 
 
 def largest_x(df, x, metric, test_names):

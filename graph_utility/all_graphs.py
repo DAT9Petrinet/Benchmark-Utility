@@ -9,10 +9,10 @@ import seaborn as sns
 
 import answer_simplification_bars
 import best_overall
-import time_memory_lines
-import rule_usage
-import total_reductions
 import better_than_x
+import rule_usage
+import time_memory_lines
+import total_reductions
 
 
 def plot_all(data_list, test_names, graph_dir, experiment_to_compare_against_name):
@@ -63,7 +63,6 @@ def plot_all(data_list, test_names, graph_dir, experiment_to_compare_against_nam
     time_when_started = time.time()
     total_reductions.plot(data_list, test_names, graph_dir + '\\reductions\\')
     graphs_made = update_globals('total reductions', graphs_made)
-
 
     # Print meme graph
     df = pd.DataFrame.from_dict(times, orient='index')

@@ -5,6 +5,7 @@ import sys
 import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
+
 import utility
 
 
@@ -24,14 +25,12 @@ def plot(data_list, test_names, graph_dir):
     combined = pd.DataFrame()
 
     for index, data in enumerate(data_list):
-
-        data = utility.infer_simplification_from_prev_size_0_rows(data)
+        data = utility.sanitise(data)
         # Change 'NONE' value to 'not answered', and 'TRUE' and 'FALSE' to 'answered'
         data['answer'] = data['answer'].replace(['TRUE', 'FALSE'], 'answered')
         data['answer'] = data['answer'].replace(['NONE'], 'not answered')
 
         # Same thing for simplification, renames to simplified and not simplified, based on bool value
-
         data['solved by query simplification'] = data['solved by query simplification'].replace(True, 'simplified')
         data['solved by query simplification'] = data['solved by query simplification'].replace(False, 'not simplified')
 
@@ -41,9 +40,12 @@ def plot(data_list, test_names, graph_dir):
         # Get counts of 'simplified' and 'not simplified'
         simplifications = (data['solved by query simplification'].value_counts()).to_frame()
 
+        simplifications.drop('ERR', inplace=True)
+
         # Combine into same dataframe, with column being the test name, and row indices being above metrics
         answers.rename(columns={'answer': test_names[index]}, inplace=True)
         simplifications.rename(columns={'solved by query simplification': test_names[index]}, inplace=True)
+
         temp = answers.append(simplifications)
 
         # Might not have these columns, due to faulty test, so wrap in try-except
@@ -74,8 +76,7 @@ def plot(data_list, test_names, graph_dir):
                 continue
 
         # Reorder the columns so that bars are stacked nicely
-        # This perfectly fits with the columns should be in exact opposite order :)
-        temp = temp[temp.columns[::-1]]
+        temp = temp[["reduced", "simplified", "not answered", "ERR"]]
 
         # Add data from this experiment, to results from other experiments
         combined = combined.append(temp)
@@ -97,7 +98,7 @@ def plot(data_list, test_names, graph_dir):
     for p in plot.patches:
         left, bottom, width, height = p.get_bbox().bounds
         plot.annotate(int(width), xy=(left + width / 2, bottom + height / 2),
-                      ha='center', va='center')
+                      ha='center', va='center', rotation=45)
     plt.savefig(graph_dir + 'answer_simplification_bars.png')
     plt.clf()
 
