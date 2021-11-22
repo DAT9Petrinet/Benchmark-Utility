@@ -17,16 +17,16 @@ def get_strictly_better_points(derived_jable, metric, test_names):
     metric_columns = [experiment_column + '@' + metric for experiment_column in test_names]
 
     def find_best(row):
-        s = utility.second_smallest_in_list(row[metric_columns].values)
+        second_smallest = utility.second_smallest_in_list(row[metric_columns].values)
         return next(
             iter([experiment for experiment, value in row[metric_columns].items() if
-                  value < (1 - how_much_better) * s]),
+                  value < (1 - how_much_better) * second_smallest]),
             None)
 
     df = pd.DataFrame()
-    df[metric + ' scores'] = derived_jable[metric_columns].apply(
-        find_best,
-        axis=1)
+
+
+    df[metric + ' scores'] = derived_jable[metric_columns].apply(find_best, axis=1)
     return utility.zero_padding(df.value_counts(), metric, test_names).tolist()
 
 
@@ -35,34 +35,30 @@ def get_eq_points(derived_jable, metric, test_names):
 
     metric_columns = [experiment_column + '@' + metric for experiment_column in test_names]
 
-    def equally_good_as_best(row, test, metric):
-        if metric == 'reduced size':
-            s = utility.second_largest_in_list(row.values)
-            return row[test + '@' + metric] >= s
-        else:
-            s = utility.second_smallest_in_list(row.values)
-            return row[test + '@' + metric] <= s
+    def equally_good_as_runner_up(row, test, metric):
+        s = utility.second_smallest_in_list(row.values)
+        return row[test + '@' + metric] <= s
 
     def point(row):
-        if equally_good_as_best(row[metric_columns], test, metric):
-            if metric in ['verification time', 'verification memory', 'reduce time']:
-                return 1
-            elif metric in ['state space size']:
+        if equally_good_as_runner_up(row[metric_columns], test, metric):
+            if metric in ['state space size', 'reduce time']:
                 if utility.second_smallest_in_list(row[metric_columns].values) != 0:
                     return 1
                 else:
                     return 0
-            elif metric in ['reduced size']:
-                return 1
+            return 1
         else:
             return 0
 
     df = pd.DataFrame()
     for test in test_names:
+        if metric in ['verification time', 'verification memory', 'total time']:
+            df[test + '@' + metric] = derived_jable[metric_columns].apply(
+                point,
+                axis=1)
         df[test + '@' + metric] = derived_jable[metric_columns].apply(
             point,
             axis=1)
-
     return utility.zero_padding(df.sum(), metric, test_names).tolist()
 
 

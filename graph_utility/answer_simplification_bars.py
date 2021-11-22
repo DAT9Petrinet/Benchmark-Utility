@@ -25,7 +25,6 @@ def plot(data_list, test_names, graph_dir):
     combined = pd.DataFrame()
 
     for index, data in enumerate(data_list):
-        data = utility.sanitise(data)
         # Change 'NONE' value to 'not answered', and 'TRUE' and 'FALSE' to 'answered'
         data['answer'] = data['answer'].replace(['TRUE', 'FALSE'], 'answered')
         data['answer'] = data['answer'].replace(['NONE'], 'not answered')

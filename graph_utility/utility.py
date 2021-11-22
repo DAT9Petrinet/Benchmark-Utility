@@ -71,9 +71,18 @@ def color(t):
 
     return a + (b * np.cos(2 * np.pi * (c * t + d)))
 
-def sanitise(df):
+
+def sanitise_df(df):
     df = infer_errors(df)
     return infer_simplification_from_prev_size_0_rows(df)
+
+
+def sanitise_df_list(datalist):
+    sanitised_datalist = []
+    for df in datalist:
+        sanitised_datalist.append(sanitise_df(df))
+    return sanitised_datalist
+
 
 def rename_index_to_test_name(df, test_names):
     new_indices = dict()
@@ -107,8 +116,8 @@ def make_derived_jable(csvs, exp_names):
 
     for data in csvs:
         data.set_index(["model name", "query index"], inplace=True)
-        columns = [column for column in data.columns if column not in needed_columns]
-        data.drop(columns, axis=1, inplace=True)
+        columns_to_drop = [column for column in data.columns if column not in needed_columns]
+        data.drop(columns_to_drop, axis=1, inplace=True)
 
     for i, csv in enumerate(csvs):
         csv.rename(columns={col: f"{exp_names[i]}@{col}" for col in csv.columns}, inplace=True)
@@ -150,7 +159,7 @@ def get_post_size(row):
 def get_reduced_size(row):
     if row['prev place count'] > 0:
         pre_size = get_pre_size(row)
-        post_size = row['post place count'] + row['post transition count']
+        post_size = get_post_size(row)
         return ((post_size / pre_size) * 100) if post_size > 0 else np.nan
     else:
         return np.nan
@@ -183,6 +192,7 @@ def infer_errors(df):
         row['answer'] = 'ERR'
         row['solved by query simplification'] = 'ERR'
         return row
+
     df = df.apply(lambda row: row_with_err(row) if all_columns_indicate_error(row) else row, axis=1)
     return df
 
@@ -197,7 +207,6 @@ def infer_simplification_from_prev_size_0_rows(df):
     df['solved by query simplification'] = df.apply(
         lambda row: True if (get_post_size(row) == 0.0 and get_pre_size(row) > 0) else row[
             'solved by query simplification'], axis=1)
-
     return df
 
 
@@ -225,7 +234,7 @@ def zero_padding(series, metric, test_names):
         metric_columns = test_names
 
     for test_name in metric_columns:
-        if test_name not in series or (test_name == 'no-red' and metric in ['reduce time', 'reduced size']):
+        if test_name not in series: #or (test_name == 'no-red' and metric in ['reduce time', 'reduced size']):
             series[test_name] = 0
     return series
 
@@ -246,3 +255,7 @@ def largest_x(df, x, metric, test_names):
     res_df = pd.DataFrame({x: res_df[x].sort_values().values for x in res_df[metric_columns].columns.values})
 
     return res_df.tail(n)
+
+
+def remove_errors_df(df):
+    return df[df['answer'] != 'ERR']

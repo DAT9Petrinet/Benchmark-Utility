@@ -3,7 +3,6 @@ import os
 import sys
 
 import matplotlib.pyplot as plt
-import numpy as np
 import pandas as pd
 import seaborn as sns
 
@@ -24,10 +23,11 @@ def plot(data_list, test_names, graph_dir, metric, keep_largest_percent):
     # Dataframe to hold data from all csvs
     combined_df = pd.DataFrame()
     for index, data in enumerate(data_list):
+        data = utility.remove_errors_df(data)
+
         # Get data from relevant column sorted
         n = int(data.shape[0] * keep_largest_percent)
 
-        data = utility.remove_prev_size_0_rows(data)
         res_df = pd.DataFrame()
         if metric in ['verification time', 'verification memory']:
             res_df[metric] = data[data['answer'] != 'NONE'][metric]
@@ -36,14 +36,15 @@ def plot(data_list, test_names, graph_dir, metric, keep_largest_percent):
                 utility.get_reduced_size,
                 axis=1)
         elif metric == 'total time':
-            res_df[metric] = data.apply(
+            res_df[metric] = data[data['answer'] != 'NONE'].apply(
                 utility.get_total_time,
                 axis=1)
+        # Reduce time and state space size
         else:
             res_df[metric] = data[metric]
 
-        res_df[metric] = res_df[np.isfinite(res_df[metric])][metric]
         # Sort
+        # For reduced size, we must sort the other way
         if metric == 'reduced size':
             metric_data = ((res_df[f'{metric}'].sort_values(ascending=True)).reset_index()).drop(columns=
                                                                                                  'index')
@@ -147,4 +148,5 @@ if __name__ == "__main__":
     metrics = ['verification time', 'verification memory', 'state space size', 'reduce time', 'reduced size',
                'total time']
     for metric in metrics:
-        plot(data_list, test_names, graph_dir, metric)
+        for percentage in [0.001, 0.025, 0.05, 0.1, 0.5, 1]:
+            plot(data_list, test_names, graph_dir, metric, percentage)

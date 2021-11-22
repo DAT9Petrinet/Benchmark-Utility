@@ -49,6 +49,7 @@ if __name__ == "__main__":
     else:
         experiment_path = 'saved/'
 
+    print(f"(check_consistency) using experiments in {experiment_path} to check consistency")
     # Find the directory to save figures
     script_dir = os.path.dirname(__file__)
 
