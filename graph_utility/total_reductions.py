@@ -21,9 +21,6 @@ def plot(data_list, test_names, graph_dir):
     # Remove test with no reductions
     data_list, test_names = utility.remove_no_red(data_list, test_names)
 
-    # Find test instances that no experiment managed to reduce
-    data_list = utility.filter_out_test_instances_that_were_not_reduced_by_any(data_list)
-
     # List to hold the reductions for each experiment
     total_reductions = []
     transitions_reductions = []

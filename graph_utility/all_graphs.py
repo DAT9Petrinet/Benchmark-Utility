@@ -35,7 +35,6 @@ def plot_all(data_list, test_names, graph_dir, experiment_to_compare_against_nam
         print(f"{graphs_made}/{num_graphs} graphs made")
         return graphs_made
 
-
     # Sanitise the data
     data_list = utility.sanitise_df_list(data_list)
 
@@ -44,20 +43,23 @@ def plot_all(data_list, test_names, graph_dir, experiment_to_compare_against_nam
     answer_simplification_bars.plot(data_list, test_names, graph_dir + '\\best-experiment\\')
     graphs_made = update_globals('answer/simplification bars', graphs_made)
 
-    #time_when_started = time.time()
-    #best_overall.plot(data_list, test_names, graph_dir + '\\best-experiment\\')
-    #graphs_made = update_globals('best experiment overall', graphs_made)
-
     time_when_started = time.time()
-    for keep_largest_percent in [0.5, 0.1]:
-        for how_much_better in [0.01,0.1]:
-            better_than_x.plot(data_list, test_names, graph_dir + '\\best-experiment\\', experiment_to_compare_against_name, keep_largest_percent, how_much_better)
+    for keep_largest_percent in [0.25, 0.1]:
+        for how_much_better in [0.01, 0.05]:
+            best_overall.plot(data_list, test_names, graph_dir + '\\best-experiment\\', keep_largest_percent,
+                              how_much_better)
     graphs_made = update_globals('best experiment overall', graphs_made)
 
-    '''time_when_started = time.time()
+    time_when_started = time.time()
+    for keep_largest_percent in [0.25, 0.1]:
+        better_than_x.plot(data_list, test_names, graph_dir + '\\best-experiment\\',
+                           experiment_to_compare_against_name, keep_largest_percent)
+    graphs_made = update_globals('best experiment overall', graphs_made)
+
+    time_when_started = time.time()
     # Plots that has to do with application of rules
     rule_usage.plot(data_list, test_names, graph_dir + '\\rule-usage\\')
-    graphs_made = update_globals('rule usages', graphs_made)'''
+    graphs_made = update_globals('rule usages', graphs_made)
 
     time_when_started = time.time()
     metrics = ['verification time', 'verification memory', 'state space size', 'reduce time', 'reduced size',
@@ -67,9 +69,9 @@ def plot_all(data_list, test_names, graph_dir, experiment_to_compare_against_nam
             time_memory_lines.plot(data_list, test_names, graph_dir + '\\lines\\', metric, percentage)
     graphs_made = update_globals('time/memory lines', graphs_made)
 
-    '''time_when_started = time.time()
+    time_when_started = time.time()
     total_reductions.plot(data_list, test_names, graph_dir + '\\reductions\\')
-    graphs_made = update_globals('total reductions', graphs_made)'''
+    graphs_made = update_globals('total reductions', graphs_made)
 
     # Print meme graph
     df = pd.DataFrame.from_dict(times, orient='index')

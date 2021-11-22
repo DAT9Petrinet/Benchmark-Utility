@@ -76,7 +76,6 @@ def get_eq_points(derived_jable, metric, test_names, experiment_to_compare_again
                 point,
                 axis=1)
 
-    print(df)
     return utility.zero_padding(df.sum(), metric, test_names).tolist()
 
 
@@ -89,7 +88,7 @@ def get_answer_df(derived_jable, test_names):
     return s.tolist()
 
 
-def plot(data_list, test_names, graph_dir, experiment_to_compare_against, keep_largest_percent, how_much_better):
+def plot(data_list, test_names, graph_dir, experiment_to_compare_against, keep_largest_percent):
     data_list = copy.deepcopy(data_list)
     test_names = copy.deepcopy(test_names)
 
@@ -147,7 +146,7 @@ def plot(data_list, test_names, graph_dir, experiment_to_compare_against, keep_l
         plot = data.plot(kind='barh', width=0.75, linewidth=2, figsize=(10, 10))
         plt.legend(bbox_to_anchor=(1.02, 1), loc='best', borderaxespad=0)
         plt.title(
-            f'Point given if at least {how_much_better * 100}% better than {experiment_to_compare_against}, using {keep_largest_percent * 100}% largest tests ({int(derived_jable.shape[0] * keep_largest_percent)} tests)')
+            f'Point given if better than {experiment_to_compare_against}, using {keep_largest_percent * 100}% largest tests ({int(derived_jable.shape[0] * keep_largest_percent)} tests)')
         plt.xscale('log')
         plt.xlabel("points")
         plt.ylabel('experiments')
@@ -158,7 +157,7 @@ def plot(data_list, test_names, graph_dir, experiment_to_compare_against, keep_l
             plot.annotate(int(width), xy=(left + width, bottom + height / 2), ha='center', va='center', size=10)
 
         plt.savefig(
-            graph_dir + f'{how_much_better * 100}%_better_points_compared_to_{experiment_to_compare_against}_{png_names[index]}_largest_{keep_largest_percent * 100}%tests.png',
+            graph_dir + f'better_points_compared_to_{experiment_to_compare_against}_{png_names[index]}_largest_{keep_largest_percent * 100}%tests.png',
             bbox_inches='tight')
         plt.clf()
 

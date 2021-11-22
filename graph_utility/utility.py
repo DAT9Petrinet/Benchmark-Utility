@@ -5,7 +5,8 @@ import pandas as pd
 def remove_rows_with_no_answers_or_query_simplification(data_list):
     for data in data_list:
         # Remove rows where query simplification has been used, or where there isn't an answer
-        data.drop(data[(data['solved by query simplification']) | (data.answer == 'NONE')].index, inplace=True)
+        data.drop(data[(data['solved by query simplification'] == True) | (
+                    data['solved by query simplification'] == 'ERR') | (data.answer == 'NONE')].index, inplace=True)
     return data_list
 
 
@@ -234,7 +235,7 @@ def zero_padding(series, metric, test_names):
         metric_columns = test_names
 
     for test_name in metric_columns:
-        if test_name not in series: #or (test_name == 'no-red' and metric in ['reduce time', 'reduced size']):
+        if test_name not in series:  # or (test_name == 'no-red' and metric in ['reduce time', 'reduced size']):
             series[test_name] = 0
     return series
 
