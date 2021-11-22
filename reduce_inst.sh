@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#SBATCH --time=22:00:00
+#SBATCH --time=4:00:00
 #SBATCH --mail-type=FAIL
 #SBATCH --partition=naples
 #SBATCH --mem=15G
