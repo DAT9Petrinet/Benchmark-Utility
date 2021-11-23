@@ -16,6 +16,8 @@ def get_strictly_better_points(derived_jable, metric, test_names, keep_largest_p
 
     def equally_good_as_runner_up(row, test, metric):
         s = utility.second_smallest_in_list(row.values)
+        if metric == 'reduce size':
+            return row[test + '@' + metric] < (1 + how_much_better) * s
         return row[test + '@' + metric] < (1 - how_much_better) * s
 
     def point(row):

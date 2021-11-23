@@ -44,15 +44,17 @@ def plot_all(data_list, test_names, graph_dir, experiment_to_compare_against_nam
     graphs_made = update_globals('answer/simplification bars', graphs_made)
 
     time_when_started = time.time()
-    for keep_largest_percent in [0.25, 0.1]:
-        for how_much_better in [0.01, 0.05]:
-            best_overall.plot(data_list, test_names, graph_dir + '\\best-experiment\\', keep_largest_percent,
+    for keep_largest_percent in [0.1]:
+        for how_much_better in [0.025]:
+            best_overall.plot(data_list, test_names, graph_dir + '\\best-experiment\\' + '\\best-overall\\',
+                              keep_largest_percent,
                               how_much_better)
     graphs_made = update_globals('best experiment overall', graphs_made)
 
     time_when_started = time.time()
     for keep_largest_percent in [0.25, 0.1]:
-        better_than_x.plot(data_list, test_names, graph_dir + '\\best-experiment\\',
+        better_than_x.plot(data_list, test_names,
+                           graph_dir + '\\best-experiment\\' + f'\\compared-to-{experiment_to_compare_against_name}\\',
                            experiment_to_compare_against_name, keep_largest_percent)
     graphs_made = update_globals('best experiment overall', graphs_made)
 
@@ -66,7 +68,8 @@ def plot_all(data_list, test_names, graph_dir, experiment_to_compare_against_nam
                'total time']
     for metric in metrics:
         for percentage in [0.01, 0.025, 0.05, 0.1, 0.5, 1]:
-            time_memory_lines.plot(data_list, test_names, graph_dir + '\\lines\\' + metric, metric, percentage)
+            time_memory_lines.plot(data_list, test_names, graph_dir + '\\lines\\' + metric.replace(" ", "-") + '\\',
+                                   metric, percentage)
     graphs_made = update_globals('time/memory lines', graphs_made)
 
     time_when_started = time.time()
@@ -121,12 +124,14 @@ if __name__ == "__main__":
     os.makedirs(graph_dir + '\\rule-usage\\')
     os.makedirs(graph_dir + '\\reductions\\')
     os.makedirs(graph_dir + '\\best-experiment\\')
-    os.makedirs(graph_dir + '\\lines\\' + '\\verification time\\')
-    os.makedirs(graph_dir + '\\lines\\' + '\\verification memory\\')
-    os.makedirs(graph_dir + '\\lines\\' + '\\reduce time\\')
-    os.makedirs(graph_dir + '\\lines\\' + '\\total time\\')
-    os.makedirs(graph_dir + '\\lines\\' + '\\reduce size\\')
-    os.makedirs(graph_dir + '\\lines\\' + '\\state space size\\')
+    os.makedirs(graph_dir + '\\best-experiment\\' + '\\best-overall\\')
+    os.makedirs(graph_dir + '\\best-experiment\\' + f'\\compared-to-{experiment_to_compare_against_name}\\')
+    os.makedirs(graph_dir + '\\lines\\' + '\\verification-time\\')
+    os.makedirs(graph_dir + '\\lines\\' + '\\verification-memory\\')
+    os.makedirs(graph_dir + '\\lines\\' + '\\reduce-time\\')
+    os.makedirs(graph_dir + '\\lines\\' + '\\total-time\\')
+    os.makedirs(graph_dir + '\\lines\\' + '\\reduced-size\\')
+    os.makedirs(graph_dir + '\\lines\\' + '\\state-space-size\\')
 
     # Directory for all our csv
     csv_dir = os.path.join(script_dir, '..\\saved\\')
