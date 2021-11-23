@@ -66,7 +66,7 @@ def plot_all(data_list, test_names, graph_dir, experiment_to_compare_against_nam
                'total time']
     for metric in metrics:
         for percentage in [0.01, 0.025, 0.05, 0.1, 0.5, 1]:
-            time_memory_lines.plot(data_list, test_names, graph_dir + '\\lines\\', metric, percentage)
+            time_memory_lines.plot(data_list, test_names, graph_dir + '\\lines\\' + metric, metric, percentage)
     graphs_made = update_globals('time/memory lines', graphs_made)
 
     time_when_started = time.time()
@@ -120,8 +120,13 @@ if __name__ == "__main__":
     os.makedirs(graph_dir)
     os.makedirs(graph_dir + '\\rule-usage\\')
     os.makedirs(graph_dir + '\\reductions\\')
-    os.makedirs(graph_dir + '\\lines\\')
     os.makedirs(graph_dir + '\\best-experiment\\')
+    os.makedirs(graph_dir + '\\lines\\' + '\\verification time\\')
+    os.makedirs(graph_dir + '\\lines\\' + '\\verification memory\\')
+    os.makedirs(graph_dir + '\\lines\\' + '\\reduce time\\')
+    os.makedirs(graph_dir + '\\lines\\' + '\\total time\\')
+    os.makedirs(graph_dir + '\\lines\\' + '\\reduce size\\')
+    os.makedirs(graph_dir + '\\lines\\' + '\\state space size\\')
 
     # Directory for all our csv
     csv_dir = os.path.join(script_dir, '..\\saved\\')
