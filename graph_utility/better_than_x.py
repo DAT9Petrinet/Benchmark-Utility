@@ -32,7 +32,7 @@ def get_strictly_better_points(derived_jable, metric, test_names, experiment_to_
 
     df = pd.DataFrame()
     for test in test_names:
-        if metric in ['verification time', 'verification memory']:
+        if metric in ['verification time', 'verification memory', 'total time']:
             df[test + '@' + metric] = derived_jable[derived_jable[test + '@' + metric] != 'NONE'][metric_columns].apply(
                 point,
                 axis=1)
@@ -67,7 +67,7 @@ def get_eq_points(derived_jable, metric, test_names, experiment_to_compare_again
 
     df = pd.DataFrame()
     for test in test_names:
-        if metric in ['verification time', 'verification memory']:
+        if metric in ['verification time', 'verification memory', 'total time']:
             df[test + '@' + metric] = derived_jable[derived_jable[test + '@' + metric] != 'NONE'][metric_columns].apply(
                 point,
                 axis=1)
@@ -98,7 +98,7 @@ def plot(data_list, test_names, graph_dir, experiment_to_compare_against, keep_l
 
     derived_jable = utility.make_derived_jable(data_list, test_names)
 
-    answer_df = get_answer_df(derived_jable, test_names)
+    #answer_df = get_answer_df(derived_jable, test_names)
     # Create a dataframe for each type of graph
     points_df = pd.DataFrame(
         {'reduced size': get_strictly_better_points(derived_jable, 'reduced size', test_names,
@@ -111,7 +111,9 @@ def plot(data_list, test_names, graph_dir, experiment_to_compare_against, keep_l
                                                            experiment_to_compare_against, keep_largest_percent),
          'verification time': get_strictly_better_points(derived_jable, 'verification time', test_names,
                                                          experiment_to_compare_against, keep_largest_percent),
-         'answered queries': answer_df,
+         'total time': get_strictly_better_points(derived_jable, 'total time', test_names,
+                                                         experiment_to_compare_against, keep_largest_percent),
+         #'answered queries': answer_df,
          'unique answers': utility.zero_padding(
              utility.unique_answers_comparison(derived_jable, experiment_to_compare_against, test_names),
              'unique answers',
@@ -129,7 +131,9 @@ def plot(data_list, test_names, graph_dir, experiment_to_compare_against, keep_l
                                               experiment_to_compare_against, keep_largest_percent),
          'verification time': get_eq_points(derived_jable, 'verification time', test_names,
                                             experiment_to_compare_against, keep_largest_percent),
-         'answered queries': answer_df,
+         'total time': get_eq_points(derived_jable, 'total time', test_names,
+                                                  experiment_to_compare_against, keep_largest_percent),
+         #'answered queries': answer_df,
          }, index=test_names)
 
     data_to_plot = utility.split_into_all_with_without(points_df)

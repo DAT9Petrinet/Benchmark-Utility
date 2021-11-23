@@ -41,7 +41,7 @@ def get_strictly_better_points(derived_jable, metric, test_names, keep_largest_p
     return utility.zero_padding(df.sum(), metric, test_names).tolist()
 
 
-def get_eq_points(derived_jable, metric, test_names, keep_largest_percent, how_much_better):
+def get_eq_points(derived_jable, metric, test_names, keep_largest_percent):
     derived_jable = utility.largest_x(derived_jable, keep_largest_percent, metric, test_names)
 
     metric_columns = [experiment_column + '@' + metric for experiment_column in test_names]
@@ -105,21 +105,25 @@ def plot(data_list, test_names, graph_dir, keep_largest_percent, how_much_better
                                                            keep_largest_percent, how_much_better),
          'verification time': get_strictly_better_points(derived_jable, 'verification time', test_names,
                                                          keep_largest_percent, how_much_better),
+         'total time': get_strictly_better_points(derived_jable, 'total time', test_names,
+                                                  keep_largest_percent, how_much_better),
          'answered queries': answer_df,
          'unique answers': utility.zero_padding(derived_jable['unique answers'].value_counts(), 'unique answers',
                                                 test_names).tolist(),
          }, index=test_names)
 
     points_eq_df = pd.DataFrame(
-        {'reduced size': get_eq_points(derived_jable, 'reduced size', test_names, keep_largest_percent,
-                                       how_much_better),
-         'state space size': get_eq_points(derived_jable, 'state space size', test_names, keep_largest_percent,
-                                           how_much_better),
-         'reduce time': get_eq_points(derived_jable, 'reduce time', test_names, keep_largest_percent, how_much_better),
-         'verification memory': get_eq_points(derived_jable, 'verification memory', test_names, keep_largest_percent,
-                                              how_much_better),
-         'verification time': get_eq_points(derived_jable, 'verification time', test_names, keep_largest_percent,
-                                            how_much_better),
+        {'reduced size': get_eq_points(derived_jable, 'reduced size', test_names, keep_largest_percent
+                                       ),
+         'state space size': get_eq_points(derived_jable, 'state space size', test_names, keep_largest_percent
+                                           ),
+         'reduce time': get_eq_points(derived_jable, 'reduce time', test_names, keep_largest_percent),
+         'verification memory': get_eq_points(derived_jable, 'verification memory', test_names, keep_largest_percent
+                                              ),
+         'verification time': get_eq_points(derived_jable, 'verification time', test_names, keep_largest_percent
+                                            ),
+         'total time': get_eq_points(derived_jable, 'total time', test_names,
+                                     keep_largest_percent),
          'answered queries': answer_df,
          }, index=test_names)
 
@@ -147,7 +151,9 @@ def plot(data_list, test_names, graph_dir, keep_largest_percent, how_much_better
             left, bottom, width, height = p.get_bbox().bounds
             plot.annotate(int(width), xy=(left + width, bottom + height / 2), ha='center', va='center', size=10)
 
-        plt.savefig(graph_dir + f'{how_much_better * 100}%_better_points_{png_names[index]}_largest_{keep_largest_percent * 100}%tests.png', bbox_inches='tight')
+        plt.savefig(
+            graph_dir + f'{how_much_better * 100}%_better_points_{png_names[index]}_largest_{keep_largest_percent * 100}%tests.png',
+            bbox_inches='tight')
         plt.clf()
 
     for index, data in enumerate(data_to_plot_eq):
@@ -169,7 +175,9 @@ def plot(data_list, test_names, graph_dir, keep_largest_percent, how_much_better
             left, bottom, width, height = p.get_bbox().bounds
             plot.annotate(int(width), xy=(left + width, bottom + height / 2), ha='center', va='center', size=10)
 
-        plt.savefig(graph_dir + f'better_or_eq_points_{png_names[index]}_largest_{keep_largest_percent * 100}%tests.png', bbox_inches='tight')
+        plt.savefig(
+            graph_dir + f'better_or_eq_points_{png_names[index]}_largest_{keep_largest_percent * 100}%tests.png',
+            bbox_inches='tight')
         plt.clf()
 
 

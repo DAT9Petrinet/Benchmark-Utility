@@ -6,7 +6,7 @@ def remove_rows_with_no_answers_or_query_simplification(data_list):
     for data in data_list:
         # Remove rows where query simplification has been used, or where there isn't an answer
         data.drop(data[(data['solved by query simplification'] == True) | (
-                    data['solved by query simplification'] == 'ERR') | (data.answer == 'NONE')].index, inplace=True)
+                data['solved by query simplification'] == 'ERR') | (data.answer == 'NONE')].index, inplace=True)
     return data_list
 
 
@@ -126,9 +126,14 @@ def make_derived_jable(csvs, exp_names):
     everything.sort_index(level=0, inplace=True)
 
     # Get smallest value from the line columns
+    # todo rewrite to get second smallest
     for column in line_columns:
         columns = [experiment_column + '@' + column for experiment_column in exp_names]
         everything[f'min {column}'] = everything[columns].min(axis=1)
+
+    for exp_name in exp_names:
+        everything[f'{exp_name}@total time'] = everything.apply(
+            lambda row: row[f'{exp_name}@reduce time'] + row[f'{exp_name}@verification time'], axis=1)
 
     # Create reduced sizes and prev/post sizes
     for exp_name in exp_names:
