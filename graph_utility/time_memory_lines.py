@@ -55,7 +55,7 @@ def plot(data_list, test_names, graph_dir, metric, keep_largest_percent):
         metric_data = metric_data.tail(n)
 
         # Rename the column to include the name of the test
-        metric_data.rename(columns={f'{metric}': f"{test_names[index]}-{metric}"}, inplace=True)
+        metric_data.rename(columns={f'{metric}': test_names[index]}, inplace=True)
 
         # Either initialize or add to the combined dataframe for all csvs
         if index == 0:
@@ -125,7 +125,7 @@ def plot(data_list, test_names, graph_dir, metric, keep_largest_percent):
             xlabel='test instances', yscale="log")
         plt.legend(bbox_to_anchor=(1.02, 1), loc='best', borderaxespad=0)
 
-        plt.savefig(graph_dir + f'{metric}_lines_per_model_top_{keep_largest_percent * 100}%.png', bbox_inches='tight')
+        plt.savefig(graph_dir + f'{metric.replace(" ", "_")}_top_{keep_largest_percent * 100}%.png', bbox_inches='tight')
         plt.clf()
 
 
