@@ -43,6 +43,7 @@ def plot(data_list, test_names, graph_dir, metric, keep_largest_percent):
         else:
             res_df[metric] = data[metric]
 
+        res_df.dropna(subset=[metric], inplace=True)
         # Sort
         # For reduced size, we must sort the other way
         if metric == 'reduced size':
@@ -52,10 +53,14 @@ def plot(data_list, test_names, graph_dir, metric, keep_largest_percent):
             metric_data = ((res_df[f'{metric}'].sort_values()).reset_index()).drop(columns=
                                                                                    'index')
 
-        metric_data = metric_data.tail(n)
+        if metric == 'reduced size':
+            n = int(metric_data.shape[0] * keep_largest_percent)
+            metric_data = metric_data.tail(n)
+        else:
+            metric_data = metric_data.tail(n)
 
         # Rename the column to include the name of the test
-        metric_data.rename(columns={f'{metric}': f"{test_names[index]}-{metric}"}, inplace=True)
+        metric_data.rename(columns={f'{metric}': test_names[index]}, inplace=True)
 
         # Either initialize or add to the combined dataframe for all csvs
         if index == 0:
@@ -122,10 +127,15 @@ def plot(data_list, test_names, graph_dir, metric, keep_largest_percent):
         plot.set(
             title=f'{metric} per test instance sorted, using {keep_largest_percent * 100}% largest tests',
             ylabel=f'{unit}',
-            xlabel='test instances', yscale="log")
+            xlabel='test instances')
+        if metric == "reduced size":
+            plot.set(yscale="linear")
+        else:
+            plot.set(yscale="log")
         plt.legend(bbox_to_anchor=(1.02, 1), loc='best', borderaxespad=0)
 
-        plt.savefig(graph_dir + f'{metric}_lines_per_model_top_{keep_largest_percent * 100}%.png', bbox_inches='tight')
+        plt.savefig(graph_dir + f'{metric.replace(" ", "_")}_top_{keep_largest_percent * 100}%.png',
+                    bbox_inches='tight')
         plt.clf()
 
 
