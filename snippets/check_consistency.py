@@ -3,7 +3,7 @@ import sys
 
 import numpy as np
 import pandas as pd
-
+import shutil
 
 def check_consistency(exp_1, exp_1_name, data_list, test_names, consistency_dir):
     matrix_dict = dict()
@@ -58,6 +58,12 @@ if __name__ == "__main__":
 
     consistency_dir = os.path.join(script_dir, "../saved/consistency")
 
+    # Remove all graphs
+    if os.path.isdir(consistency_dir):
+        shutil.rmtree(consistency_dir)
+
+    os.makedirs(consistency_dir)
+
     # Read csv data
     csvs = [file for file in os.listdir(test_dir) if ('.csv' in file)]
 
@@ -65,9 +71,6 @@ if __name__ == "__main__":
     test_names = [os.path.split(os.path.splitext(csv)[0])[1] for csv in csvs]
 
     data_list = [pd.read_csv(test_dir + csv) for csv in csvs]
-
-    if not os.path.isdir(consistency_dir):
-        os.makedirs(consistency_dir)
 
     matrix_df = pd.DataFrame()
     for index, exp_1 in enumerate(data_list):
