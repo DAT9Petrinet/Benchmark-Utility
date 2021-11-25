@@ -15,5 +15,7 @@ for i, csv in enumerate(csvs):
 everything = pd.concat(csvs, axis=1)
 everything.sort_index(level=0, inplace=True)
 
-everything.to_csv(root / "saved" / "everything" / "everything_dk.csv", sep=";", decimal=",")
-everything.to_csv(root / "saved" / "everything" / "everything.csv")
+everything_dir = root / "saved" / "everything"
+everything_dir.mkdir(exist_ok=True)
+everything.to_csv(everything_dir / "everything_dk.csv", sep=";", decimal=",")
+everything.to_csv(everything_dir / "everything.csv")
