@@ -11,3 +11,4 @@ __pycache__
 graphs/
 sizes/*
 !sizes/query.xml
+saved/everything/
