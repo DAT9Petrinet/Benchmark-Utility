@@ -53,11 +53,7 @@ def plot(data_list, test_names, graph_dir, metric, keep_largest_percent):
             metric_data = ((res_df[f'{metric}'].sort_values()).reset_index()).drop(columns=
                                                                                    'index')
 
-        if metric == 'reduced size':
-            n = int(metric_data.shape[0] * keep_largest_percent)
-            metric_data = metric_data.tail(n)
-        else:
-            metric_data = metric_data.tail(n)
+        metric_data = metric_data.tail(n)
 
         # Rename the column to include the name of the test
         metric_data.rename(columns={f'{metric}': test_names[index]}, inplace=True)
@@ -130,6 +126,7 @@ def plot(data_list, test_names, graph_dir, metric, keep_largest_percent):
             xlabel='test instances')
         if metric == "reduced size":
             plot.set(yscale="linear")
+            plt.ylim(0, 125)
         else:
             plot.set(yscale="log")
         plt.legend(bbox_to_anchor=(1.02, 1), loc='best', borderaxespad=0)
