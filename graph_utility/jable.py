@@ -2,7 +2,8 @@ from pathlib import Path
 
 import pandas as pd
 
-data_dir = Path(__file__).parent.parent / "saved"
+root = Path(__file__).parent.parent
+data_dir = root / "saved"
 
 csvs = [pd.read_csv(csv) for csv in data_dir.glob("*.csv")]
 exp_names = [csv.stem for csv in data_dir.glob("*.csv")]
@@ -13,4 +14,7 @@ for i, csv in enumerate(csvs):
 everything = pd.concat(csvs, axis=1)
 everything.sort_index(level=0, inplace=True)
 
-everything.to_csv("../saved/everything/everything.csv", sep=";", decimal=",")
+everything_dir = root / "saved" / "everything"
+everything_dir.mkdir(exist_ok=True)
+everything.to_csv(everything_dir / "everything_dk.csv", sep=";", decimal=",")
+everything.to_csv(everything_dir / "everything.csv")
