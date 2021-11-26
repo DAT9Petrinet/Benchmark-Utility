@@ -10,7 +10,7 @@ import utility
 
 
 def get_strictly_better_points(derived_jable, metric, test_names, experiment_to_compare_against, keep_largest_percent):
-    derived_jable = utility.largest_x(derived_jable, keep_largest_percent, metric, test_names)
+    derived_jable = utility.largest_x_jable(derived_jable, keep_largest_percent, metric, test_names)
 
     metric_columns = [experiment_column + '@' + metric for experiment_column in test_names]
 
@@ -45,7 +45,7 @@ def get_strictly_better_points(derived_jable, metric, test_names, experiment_to_
 
 
 def get_eq_points(derived_jable, metric, test_names, experiment_to_compare_against, keep_largest_percent):
-    derived_jable = utility.largest_x(derived_jable, keep_largest_percent, metric, test_names)
+    derived_jable = utility.largest_x_jable(derived_jable, keep_largest_percent, metric, test_names)
 
     metric_columns = [experiment_column + '@' + metric for experiment_column in test_names]
 
@@ -88,9 +88,10 @@ def get_answer_df(derived_jable, test_names):
     return s.tolist()
 
 
-def plot(data_list, test_names, graph_dir, experiment_to_compare_against, keep_largest_percent):
+def plot(data_list, test_names, graph_dir, experiment_to_compare_against, keep_largest_percent, how_much_better):
     data_list = copy.deepcopy(data_list)
     test_names = copy.deepcopy(test_names)
+    png_names = ['all', 'with', 'without']
 
     if len(test_names) == 2 and 'no-red' in test_names:
         print(
@@ -120,27 +121,7 @@ def plot(data_list, test_names, graph_dir, experiment_to_compare_against, keep_l
              test_names)).tolist(),
          }, index=test_names).drop('base-rules')
 
-    points_eq_df = pd.DataFrame(
-        {'reduced size': get_eq_points(derived_jable, 'reduced size', test_names, experiment_to_compare_against,
-                                       keep_largest_percent),
-         'state space size': get_eq_points(derived_jable, 'state space size', test_names,
-                                           experiment_to_compare_against, keep_largest_percent),
-         'reduce time': get_eq_points(derived_jable, 'reduce time', test_names, experiment_to_compare_against,
-                                      keep_largest_percent),
-         'verification memory': get_eq_points(derived_jable, 'verification memory', test_names,
-                                              experiment_to_compare_against, keep_largest_percent),
-         'verification time': get_eq_points(derived_jable, 'verification time', test_names,
-                                            experiment_to_compare_against, keep_largest_percent),
-         'total time': get_eq_points(derived_jable, 'total time', test_names,
-                                     experiment_to_compare_against, keep_largest_percent),
-         # 'answered queries': answer_df,
-         }, index=test_names).drop('base-rules')
-
-
     data_to_plot = utility.split_into_all_with_without(points_df)
-    data_to_plot_eq = utility.split_into_all_with_without(points_eq_df)
-    png_names = ['all', 'with', 'without']
-
     for index, data in enumerate(data_to_plot):
         if index > 0:
             continue
@@ -151,7 +132,7 @@ def plot(data_list, test_names, graph_dir, experiment_to_compare_against, keep_l
         plot = data.plot(kind='barh', width=0.75, linewidth=2, figsize=(10, 10))
         plt.legend(bbox_to_anchor=(1.02, 1), loc='best', borderaxespad=0)
         plt.title(
-            f'Point given if better than {experiment_to_compare_against}, using {keep_largest_percent * 100}% largest tests ({int(derived_jable.shape[0] * keep_largest_percent)} tests)')
+            f'Point given if {how_much_better}% better than {experiment_to_compare_against}, using {keep_largest_percent * 100}% largest tests ({int(derived_jable.shape[0] * keep_largest_percent)} tests)')
         plt.xscale('log')
         plt.xlabel("points")
         plt.ylabel('experiments')
@@ -162,33 +143,51 @@ def plot(data_list, test_names, graph_dir, experiment_to_compare_against, keep_l
             plot.annotate(int(width), xy=(left + width, bottom + height / 2), ha='center', va='center', size=10)
 
         plt.savefig(
-            graph_dir + f'better_points_compared_to_{experiment_to_compare_against}_{png_names[index]}_largest_{keep_largest_percent * 100}%tests.png',
+            graph_dir + f'better_than_compare_to_{experiment_to_compare_against}_largest_{keep_largest_percent * 100}%_tests_{how_much_better}%_better_{png_names[index]}.png',
             bbox_inches='tight')
         plt.clf()
 
-    for index, data in enumerate(data_to_plot_eq):
-        if index > 0:
-            continue
-        if len(data) == 0:
-            continue
-        # Plot the second plot with with
-        plot = data.plot(kind='barh', width=0.75, linewidth=2, figsize=(10, 10))
-        plt.legend(bbox_to_anchor=(1.02, 1), loc='best', borderaxespad=0)
-        plt.title(
-            f'Point given if at least as good as {experiment_to_compare_against}, using {keep_largest_percent * 100}% largest tests ({int(derived_jable.shape[0] * keep_largest_percent)} tests)')
-        plt.xscale('log')
-        plt.xlabel("points")
-        plt.ylabel('experiments')
+    if not os.path.isfile(graph_dir + f'eq_compare_to_{experiment_to_compare_against}_largest_{keep_largest_percent * 100}%_tests_all.png'):
+        points_eq_df = pd.DataFrame(
+            {'reduced size': get_eq_points(derived_jable, 'reduced size', test_names, experiment_to_compare_against,
+                                           keep_largest_percent),
+             'state space size': get_eq_points(derived_jable, 'state space size', test_names,
+                                               experiment_to_compare_against, keep_largest_percent),
+             'reduce time': get_eq_points(derived_jable, 'reduce time', test_names, experiment_to_compare_against,
+                                          keep_largest_percent),
+             'verification memory': get_eq_points(derived_jable, 'verification memory', test_names,
+                                                  experiment_to_compare_against, keep_largest_percent),
+             'verification time': get_eq_points(derived_jable, 'verification time', test_names,
+                                                experiment_to_compare_against, keep_largest_percent),
+             'total time': get_eq_points(derived_jable, 'total time', test_names,
+                                         experiment_to_compare_against, keep_largest_percent),
+             # 'answered queries': answer_df,
+             }, index=test_names).drop('base-rules')
 
-        # Plot the numbers in the bars
-        for p in plot.patches:
-            left, bottom, width, height = p.get_bbox().bounds
-            plot.annotate(int(width), xy=(left + width, bottom + height / 2), ha='center', va='center', size=10)
+        data_to_plot_eq = utility.split_into_all_with_without(points_eq_df)
+        for index, data in enumerate(data_to_plot_eq):
+            if index > 0:
+                continue
+            if len(data) == 0:
+                continue
+            # Plot the second plot with with
+            plot = data.plot(kind='barh', width=0.75, linewidth=2, figsize=(10, 10))
+            plt.legend(bbox_to_anchor=(1.02, 1), loc='best', borderaxespad=0)
+            plt.title(
+                f'Point given if at least as good as {experiment_to_compare_against}, using {keep_largest_percent * 100}% largest tests ({int(derived_jable.shape[0] * keep_largest_percent)} tests)')
+            plt.xscale('log')
+            plt.xlabel("points")
+            plt.ylabel('experiments')
 
-        plt.savefig(
-            graph_dir + f'better_or_eq_points_compared_to_{experiment_to_compare_against}_{png_names[index]}_largest_{keep_largest_percent * 100}%tests.png',
-            bbox_inches='tight')
-        plt.clf()
+            # Plot the numbers in the bars
+            for p in plot.patches:
+                left, bottom, width, height = p.get_bbox().bounds
+                plot.annotate(int(width), xy=(left + width, bottom + height / 2), ha='center', va='center', size=10)
+
+            plt.savefig(
+                graph_dir + f'eq_compare_to_{experiment_to_compare_against}_largest_{keep_largest_percent * 100}%_tests_{png_names[index]}.png',
+                bbox_inches='tight')
+            plt.clf()
 
 
 if __name__ == "__main__":

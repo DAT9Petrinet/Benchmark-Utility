@@ -240,12 +240,12 @@ def zero_padding(series, metric, test_names):
         metric_columns = test_names
 
     for test_name in metric_columns:
-        if test_name not in series:  # or (test_name == 'no-red' and metric in ['reduce time', 'reduced size']):
+        if test_name not in series or (test_name == 'no-red' and metric in ['reduce time', 'reduced size']):
             series[test_name] = 0
     return series
 
 
-def largest_x(df, x, metric, test_names):
+def largest_x_jable(df, x, metric, test_names):
     n = int(df.shape[0] * x)
 
     metric_columns = [experiment_column + '@' + metric for experiment_column in test_names]
