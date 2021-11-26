@@ -113,7 +113,7 @@ def make_derived_jable(csvs, exp_names):
     needed_columns = ['model name', 'query index', 'answer', 'verification time', 'verification memory',
                       'prev place count', 'post place count',
                       'prev transition count', 'post transition count', 'reduce time', 'state space size']
-    line_columns = ['verification time', 'verification memory', 'reduce time', 'state space size']
+    # line_columns = ['verification time', 'verification memory', 'reduce time', 'state space size']
 
     for data in csvs:
         data.set_index(["model name", "query index"], inplace=True)
@@ -127,9 +127,9 @@ def make_derived_jable(csvs, exp_names):
 
     # Get smallest value from the line columns
     # todo rewrite to get second smallest
-    for column in line_columns:
+    '''for column in line_columns:
         columns = [experiment_column + '@' + column for experiment_column in exp_names]
-        everything[f'min {column}'] = everything[columns].min(axis=1)
+        everything[f'min {column}'] = everything[columns].min(axis=1)'''
 
     for exp_name in exp_names:
         everything[f'{exp_name}@total time'] = everything.apply(
@@ -265,3 +265,9 @@ def largest_x_jable(df, x, metric, test_names):
 
 def remove_errors_df(df):
     return df[df['answer'] != 'ERR']
+
+
+def remove_errors_datalist(data_list):
+    for data in data_list:
+        data.drop(data[data['answer'] == 'ERR'].index, inplace=True)
+    return data_list

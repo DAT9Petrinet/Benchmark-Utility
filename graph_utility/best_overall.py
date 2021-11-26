@@ -89,6 +89,8 @@ def plot(data_list, test_names, graph_dir, keep_largest_percent, how_much_better
     test_names = copy.deepcopy(test_names)
     png_names = ['all', 'with', 'without']
 
+    data_list = utility.remove_errors_datalist(data_list)
+
     if len(test_names) == 2 and 'no-red' in test_names:
         print(
             '(best_overall) beware, probably weird results (in reduction points) in this graph due to comparing only 2 experiments, and one which is no-red')
@@ -137,7 +139,7 @@ def plot(data_list, test_names, graph_dir, keep_largest_percent, how_much_better
             plot.annotate(int(width), xy=(left + width, bottom + height / 2), ha='center', va='center', size=10)
 
         plt.savefig(
-            graph_dir + f'better_than_compare_all_largest_{keep_largest_percent * 100}%_tests_{how_much_better}%_better_{png_names[index]}.png',
+            graph_dir + f'better_than_compare_all_largest_{keep_largest_percent * 100}%_tests_{how_much_better * 100}%_better_{png_names[index]}.png',
             bbox_inches='tight')
         plt.clf()
 
