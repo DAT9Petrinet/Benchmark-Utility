@@ -8,7 +8,6 @@ import pandas as pd
 import seaborn as sns
 
 import answer_simplification_bars
-import best_overall
 import better_than_x
 import rule_usage
 import time_memory_lines
@@ -43,21 +42,13 @@ def plot_all(data_list, test_names, graph_dir, experiment_to_compare_against_nam
     answer_simplification_bars.plot(data_list, test_names, graph_dir + '\\best-experiment\\')
     graphs_made = update_globals('answer/simplification bars', graphs_made)
 
-    time_when_started = time.time()
-    for keep_largest_percent in [0.1]:
-        for how_much_better in [0.025]:
-            best_overall.plot(data_list, test_names, graph_dir + '\\best-experiment\\' + '\\best-overall\\',
-                              keep_largest_percent,
-                              how_much_better)
-    graphs_made = update_globals('best experiment overall', graphs_made)
-
-    time_when_started = time.time()
+    '''time_when_started = time.time()
     for keep_largest_percent in [0.1]:
         for how_much_better in [0.025]:
             better_than_x.plot(data_list, test_names,
-                               graph_dir + '\\best-experiment\\' + f'\\compared-to-{experiment_to_compare_against_name}\\',
+                               graph_dir + '\\best-experiment\\',
                                experiment_to_compare_against_name, keep_largest_percent, how_much_better)
-    graphs_made = update_globals('best experiment overall', graphs_made)
+    graphs_made = update_globals('best experiment overall', graphs_made)'''
 
     time_when_started = time.time()
     # Plots that has to do with application of rules
@@ -126,8 +117,6 @@ if __name__ == "__main__":
     os.makedirs(graph_dir + '\\rule-usage\\')
     os.makedirs(graph_dir + '\\reductions\\')
     os.makedirs(graph_dir + '\\best-experiment\\')
-    os.makedirs(graph_dir + '\\best-experiment\\' + '\\best-overall\\')
-    os.makedirs(graph_dir + '\\best-experiment\\' + f'\\compared-to-{experiment_to_compare_against_name}\\')
     os.makedirs(graph_dir + '\\lines\\' + '\\verification-time\\')
     os.makedirs(graph_dir + '\\lines\\' + '\\verification-memory\\')
     os.makedirs(graph_dir + '\\lines\\' + '\\reduce-time\\')
