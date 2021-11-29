@@ -103,7 +103,7 @@ def plot(data_list, test_names, graph_dir, experiment_to_compare_against, keep_l
         plt.legend(bbox_to_anchor=(1.02, 1), loc='best', borderaxespad=0)
         plt.title(
             f'Point given if {how_much_better * 100}% better than {experiment_to_compare_against}, using {keep_largest_percent * 100}% largest tests ({int(derived_jable.shape[0] * keep_largest_percent)} tests)')
-        plt.xscale('log')
+        plt.xscale('linear')
         plt.xlabel("points")
         plt.ylabel('experiments')
 
@@ -146,7 +146,7 @@ def plot(data_list, test_names, graph_dir, experiment_to_compare_against, keep_l
             plt.legend(bbox_to_anchor=(1.02, 1), loc='best', borderaxespad=0)
             plt.title(
                 f'Point given if at least as good as {experiment_to_compare_against}, using {keep_largest_percent * 100}% largest tests ({int(derived_jable.shape[0] * keep_largest_percent)} tests)')
-            plt.xscale('log')
+            plt.xscale('linear')
             plt.xlabel("points")
             plt.ylabel('experiments')
 
