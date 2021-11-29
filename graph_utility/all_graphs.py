@@ -44,16 +44,16 @@ def plot_all(data_list, test_names, graph_dir, experiment_to_compare_against_nam
     graphs_made = update_globals('answer/simplification bars', graphs_made)
 
     time_when_started = time.time()
-    for keep_largest_percent in [0.25, 0.1]:
-        for how_much_better in [0.01, 0.025]:
+    for keep_largest_percent in [0.1]:
+        for how_much_better in [0.025]:
             best_overall.plot(data_list, test_names, graph_dir + '\\best-experiment\\' + '\\best-overall\\',
                               keep_largest_percent,
                               how_much_better)
     graphs_made = update_globals('best experiment overall', graphs_made)
 
     time_when_started = time.time()
-    for keep_largest_percent in [0.25, 0.1]:
-        for how_much_better in [0.01, 0.025]:
+    for keep_largest_percent in [0.1]:
+        for how_much_better in [0.025]:
             better_than_x.plot(data_list, test_names,
                                graph_dir + '\\best-experiment\\' + f'\\compared-to-{experiment_to_compare_against_name}\\',
                                experiment_to_compare_against_name, keep_largest_percent, how_much_better)
