@@ -39,7 +39,9 @@ def plot(data_list, test_names, graph_dir, metric, keep_largest_percent):
             res_df[metric] = data[data['answer'] != 'NONE'].apply(
                 utility.get_total_time,
                 axis=1)
-        # Reduce time and state space size
+        elif metric == 'state space size':
+            res_df = data.drop(data.index[data['state space size'] == 0])
+        # Reduce time
         else:
             res_df[metric] = data[metric]
 
