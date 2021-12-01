@@ -113,7 +113,6 @@ def make_derived_jable(csvs, exp_names):
     needed_columns = ['model name', 'query index', 'answer', 'verification time', 'verification memory',
                       'prev place count', 'post place count',
                       'prev transition count', 'post transition count', 'reduce time', 'state space size']
-    # line_columns = ['verification time', 'verification memory', 'reduce time', 'state space size']
 
     for data in csvs:
         data.set_index(["model name", "query index"], inplace=True)
@@ -122,36 +121,30 @@ def make_derived_jable(csvs, exp_names):
 
     for i, csv in enumerate(csvs):
         csv.rename(columns={col: f"{exp_names[i]}@{col}" for col in csv.columns}, inplace=True)
-    everything = pd.concat(csvs, axis=1)
-    everything.sort_index(level=0, inplace=True)
-
-    # Get smallest value from the line columns
-    # todo rewrite to get second smallest
-    '''for column in line_columns:
-        columns = [experiment_column + '@' + column for experiment_column in exp_names]
-        everything[f'min {column}'] = everything[columns].min(axis=1)'''
+    jable = pd.concat(csvs, axis=1)
+    jable.sort_index(level=0, inplace=True)
 
     for exp_name in exp_names:
-        everything[f'{exp_name}@total time'] = everything.apply(
+        jable[f'{exp_name}@total time'] = jable.apply(
             lambda row: row[f'{exp_name}@reduce time'] + row[f'{exp_name}@verification time'], axis=1)
 
     # Create reduced sizes and prev/post sizes
     for exp_name in exp_names:
         for time in ['prev', 'post']:
-            everything[f'{exp_name}@{time} size'] = everything[f'{exp_name}@{time} place count'] + everything[
+            jable[f'{exp_name}@{time} size'] = jable[f'{exp_name}@{time} place count'] + jable[
                 f'{exp_name}@{time} transition count']
-        everything[f'{exp_name}@reduced size'] = - (everything[f'{exp_name}@prev size'] - everything[
+        jable[f'{exp_name}@reduced size'] = - (jable[f'{exp_name}@prev size'] - jable[
             f'{exp_name}@post size'])
 
     # Unique answer
-    answer_columns = [experiment_column + '@' + 'answer' for experiment_column in exp_names]
+    '''answer_columns = [experiment_column + '@' + 'answer' for experiment_column in exp_names]
     everything['unique answers'] = everything[answer_columns].apply(
         lambda row: row.index[row != 'NONE'][0].split("@", 1)[0] if 'NONE' in (row.value_counts().index) and
                                                                     row.value_counts()[
                                                                         'NONE'] == len(exp_names) - 1 else np.nan,
-        axis=1)
+        axis=1)'''
 
-    return everything
+    return jable
 
 
 def get_pre_size(row):
@@ -245,20 +238,10 @@ def zero_padding(series, metric, test_names):
     return series
 
 
-def largest_x_jable(df, x, metric, test_names):
-    n = int(df.shape[0] * x)
+def largest_x_by_prev_size_jable(jable, x, test_name):
+    n = int(jable.shape[0] * x)
 
-    metric_columns = [experiment_column + '@' + metric for experiment_column in test_names]
-    res_df = pd.DataFrame()
-    if metric in ['verification time', 'verification memory']:
-        for column in metric_columns:
-            res_df[column] = df[(df[(column.split("@", 1)[0]) + '@answer'] != 'NONE')][column]
-            res_df[column] = res_df[np.isfinite(res_df[column])][column]
-    else:
-        for column in metric_columns:
-            res_df[column] = df[np.isfinite(df[column])][column]
-
-    res_df = pd.DataFrame({x: res_df[x].sort_values().values for x in res_df[metric_columns].columns.values})
+    res_df = jable.sort_values(by=[f'{test_name}@prev size'])
 
     return res_df.tail(n)
 

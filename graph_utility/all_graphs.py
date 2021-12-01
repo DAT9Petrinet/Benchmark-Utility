@@ -1,11 +1,8 @@
 import os
 import shutil
 import sys
-import time
 
-import matplotlib.pyplot as plt
 import pandas as pd
-import seaborn as sns
 
 import answer_simplification_bars
 import better_than_x
@@ -34,14 +31,13 @@ def plot_all(data_list, test_names, graph_dir, experiment_to_compare_against_nam
     graphs_made += 1
     print(f"{graphs_made}/{num_graphs} graphs made")
 
-    '''time_when_started = time.time()
-    for keep_largest_percent in [0.1]:
-        for how_much_better in [0.025]:
+    for keep_largest_percent in [1, 0.25]:
+        for how_much_better in [0.01, 0.025]:
             better_than_x.plot(data_list, test_names,
                                graph_dir + '\\best-experiment\\',
                                experiment_to_compare_against_name, keep_largest_percent, how_much_better)
-    graphs_made = update_globals('best experiment overall', graphs_made)'''
-
+    graphs_made += 1
+    print(f"{graphs_made}/{num_graphs} graphs made")
 
     # Plots that has to do with application of rules
     rule_usage.plot(data_list, test_names, graph_dir + '\\rule-usage\\')
@@ -57,10 +53,10 @@ def plot_all(data_list, test_names, graph_dir, experiment_to_compare_against_nam
     graphs_made += 1
     print(f"{graphs_made}/{num_graphs} graphs made")
 
-
     total_reductions.plot(data_list, test_names, graph_dir + '\\reductions\\')
     graphs_made += 1
     print(f"{graphs_made}/{num_graphs} graphs made")
+
 
 if __name__ == "__main__":
     # Results used for comparisons
@@ -69,9 +65,9 @@ if __name__ == "__main__":
     else:
         experiment_to_compare_against_name = sys.argv[1]
         if experiment_to_compare_against_name == 'no-red':
-            raise Exception('(all_graphs) Cannot use (no-red) as basis for comparison, as this has no reductions')
+            raise Exception('(all_graphs) Cannot use (no-red) as basis for comparison')
 
-    print(f'(all_graphs) using ({experiment_to_compare_against_name}) for basis for all comparisons')
+    print(f'(all_graphs) using ({experiment_to_compare_against_name}) for comparison')
 
     # Find the directory to save figures
     script_dir = os.path.dirname(__file__)
@@ -101,6 +97,9 @@ if __name__ == "__main__":
 
     # Find names of the tests, to be used in graphs and file names
     test_names = [os.path.split(os.path.splitext(csv)[0])[1] for csv in csvs]
+
+    if experiment_to_compare_against_name not in test_names:
+        Exception(f"{experiment_to_compare_against_name} not found in saved dir")
 
     data_list = [pd.read_csv(csv_dir + csv, engine='python') for csv in csvs]
 

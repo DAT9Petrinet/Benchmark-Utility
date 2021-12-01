@@ -10,7 +10,7 @@ import utility
 
 
 def get_strictly_better_points(derived_jable, metric, test_names, keep_largest_percent, how_much_better):
-    derived_jable = utility.largest_x_jable(derived_jable, keep_largest_percent, metric, test_names)
+    derived_jable = utility.largest_x_by_prev_size_jable(derived_jable, keep_largest_percent, metric, test_names)
 
     metric_columns = [experiment_column + '@' + metric for experiment_column in test_names]
 
@@ -44,7 +44,7 @@ def get_strictly_better_points(derived_jable, metric, test_names, keep_largest_p
 
 
 def get_eq_points(derived_jable, metric, test_names, keep_largest_percent):
-    derived_jable = utility.largest_x_jable(derived_jable, keep_largest_percent, metric, test_names)
+    derived_jable = utility.largest_x_by_prev_size_jable(derived_jable, keep_largest_percent, metric, test_names)
 
     metric_columns = [experiment_column + '@' + metric for experiment_column in test_names]
 

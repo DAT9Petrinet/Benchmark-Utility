@@ -8,12 +8,10 @@ import seaborn as sns
 
 import utility
 
+REDUCE_TIMEOUT = 300
 
-def get_points(derived_jable, metric, test_names, experiment_to_compare_against, keep_largest_percent, eq):
-    derived_jable = utility.largest_x_jable(derived_jable, keep_largest_percent, metric, test_names)
 
-    metric_columns = [experiment_column + '@' + metric for experiment_column in test_names]
-
+def get_points_by_metric(derived_jable, metric, test_names, experiment_to_compare_against, eq):
     def better_than_comparison(row, test, metric):
         if test == experiment_to_compare_against:
             return False
@@ -22,27 +20,73 @@ def get_points(derived_jable, metric, test_names, experiment_to_compare_against,
         else:
             return row[test + '@' + metric] < row[experiment_to_compare_against + '@' + metric]
 
+    def equal_to_comparison(row, test, metric):
+        if test == experiment_to_compare_against:
+            return False
+        return row[test + '@' + metric] == row[experiment_to_compare_against + '@' + metric]
+
     def point(row):
-        if better_than_comparison(row[metric_columns], test, metric):
-            if metric in ['state space size', 'reduce time']:
-                if row[experiment_to_compare_against + '@' + metric] != 0:
+        if metric in ['verification time', 'verification memory', 'total time']:
+            # Both got an answer
+            if row[test + '@' + 'answer'] != 'NONE' and row[experiment_to_compare_against + '@' + 'answer'] != 'NONE':
+                if better_than_comparison(row, test, metric):
                     return 1
-                else:
+                elif equal_to_comparison(row, test, metric):
                     return 0
-            return 1
+                else:
+                    return -1
+            elif row[experiment_to_compare_against + '@' + 'answer'] != 'NONE':
+                return -1
+            elif row[test + '@' + 'answer'] != 'NONE':
+                return 1
+            elif row[test + '@' + 'answer'] == 'NONE' and row[experiment_to_compare_against + '@' + 'answer'] == 'NONE':
+                return 0
+            else:
+                Exception("(better_than_x) should not be able to reach this - answer point")
+
+        elif metric in ['state space size']:
+            if row[experiment_to_compare_against + '@' + metric] != 0 and row[test + '@' + metric] != 0:
+                if better_than_comparison(row, test, metric):
+                    return 1
+                elif equal_to_comparison(row, test, metric):
+                    return 0
+                else:
+                    return -1
+            elif row[experiment_to_compare_against + '@' + metric] != 0:
+                return -1
+            elif row[test + '@' + metric] != 0:
+                return 1
+            elif row[test + '@' + metric] == 0 and row[experiment_to_compare_against + '@' + metric] == 0:
+                return 0
+            else:
+                Exception("(better_than_x) should not be able to reach this - state space size point")
+
+        elif metric in ['reduce time']:
+            if row[experiment_to_compare_against + '@' + metric] < REDUCE_TIMEOUT and row[
+                test + '@' + metric] < REDUCE_TIMEOUT:
+                if better_than_comparison(row, test, metric):
+                    return 1
+                elif equal_to_comparison(row, test, metric):
+                    return 0
+                else:
+                    return -1
+            elif row[experiment_to_compare_against + '@' + metric] < REDUCE_TIMEOUT:
+                return -1
+            elif row[test + '@' + metric] < REDUCE_TIMEOUT:
+                return 1
+            elif row[test + '@' + metric] < REDUCE_TIMEOUT and row[
+                experiment_to_compare_against + '@' + metric] < REDUCE_TIMEOUT:
+                return 0
+            else:
+                Exception("(better_than_x) should not be able to reach this - reduce time point")
         else:
-            return -1
+            Exception("(better_than_x) should not be able to reach this - points")
 
     df = pd.DataFrame()
     for test in test_names:
-        if metric in ['verification time', 'verification memory', 'total time']:
-            df[test + '@' + metric] = derived_jable[derived_jable[test + '@' + metric] != 'NONE'][metric_columns].apply(
-                point,
-                axis=1)
-        else:
-            df[test + '@' + metric] = derived_jable[metric_columns].apply(
-                point,
-                axis=1)
+        df[test + '@' + metric] = derived_jable.apply(
+            point,
+            axis=1)
 
     return utility.zero_padding(df.sum(), metric, test_names).tolist()
 
@@ -57,9 +101,11 @@ def get_answer_df(derived_jable, test_names):
 
 
 def plot(data_list, test_names, graph_dir, experiment_to_compare_against, keep_largest_percent, how_much_better):
+    if len(data_list) == 1:
+        return
+
     data_list = copy.deepcopy(data_list)
     test_names = copy.deepcopy(test_names)
-    png_names = ['all', 'with', 'without']
 
     data_list = utility.remove_errors_datalist(data_list)
 
@@ -68,38 +114,34 @@ def plot(data_list, test_names, graph_dir, experiment_to_compare_against, keep_l
             '(best_overall) beware, probably weird results (in reduction points) in this graph due to comparing only 2 experiments, and one which is no-red')
 
     derived_jable = utility.make_derived_jable(data_list, test_names)
+    derived_jable = utility.largest_x_by_prev_size_jable(derived_jable, keep_largest_percent, test_names[0])
 
-    # answer_df = get_answer_df(derived_jable, test_names)
+    answer_df = get_answer_df(derived_jable, test_names)
     # Create a dataframe for each type of graph
     points_df = pd.DataFrame(
-        {'reduced size': get_points(derived_jable, 'reduced size', test_names,
-                                    experiment_to_compare_against, keep_largest_percent, False),
-         'state space size': get_points(derived_jable, 'state space size', test_names,
-                                        experiment_to_compare_against, keep_largest_percent, False),
-         'reduce time': get_points(derived_jable, 'reduce time', test_names,
-                                   experiment_to_compare_against, keep_largest_percent, False),
-         'verification memory': get_points(derived_jable, 'verification memory', test_names,
-                                           experiment_to_compare_against, keep_largest_percent, False),
-         'verification time': get_points(derived_jable, 'verification time', test_names,
-                                         experiment_to_compare_against, keep_largest_percent, False),
-         'total time': get_points(derived_jable, 'total time', test_names,
-                                  experiment_to_compare_against, keep_largest_percent, False),
-         # 'answered queries': answer_df,
+        {'reduced size': get_points_by_metric(derived_jable, 'reduced size', test_names,
+                                              experiment_to_compare_against, False),
+         'state space size': get_points_by_metric(derived_jable, 'state space size', test_names,
+                                                  experiment_to_compare_against, False),
+         'reduce time': get_points_by_metric(derived_jable, 'reduce time', test_names,
+                                             experiment_to_compare_against, False),
+         'verification memory': get_points_by_metric(derived_jable, 'verification memory', test_names,
+                                                     experiment_to_compare_against, False),
+         'verification time': get_points_by_metric(derived_jable, 'verification time', test_names,
+                                                   experiment_to_compare_against, False),
+         'total time': get_points_by_metric(derived_jable, 'total time', test_names,
+                                            experiment_to_compare_against, False),
+         'answered queries': answer_df,
          'unique answers': (utility.zero_padding(
              utility.unique_answers_comparison(derived_jable, experiment_to_compare_against, test_names),
              'unique answers',
              test_names)).tolist(),
          }, index=test_names).drop('base-rules')
 
-    data_to_plot = utility.split_into_all_with_without(points_df)
-    for index, data in enumerate(data_to_plot):
-        if index > 0:
-            continue
-        if len(data) == 0:
-            continue
+    if len(points_df) != 0:
         # Plot the plots
         sns.set_theme(style="darkgrid", palette="pastel")
-        plot = data.plot(kind='barh', width=0.75, linewidth=2, figsize=(10, 10))
+        plot = points_df.plot(kind='barh', width=0.75, linewidth=2, figsize=(10, 10))
         plt.legend(bbox_to_anchor=(1.02, 1), loc='best', borderaxespad=0)
         plt.title(
             f'Point given if {how_much_better * 100}% better than {experiment_to_compare_against}, using {keep_largest_percent * 100}% largest tests ({int(derived_jable.shape[0] * keep_largest_percent)} tests)')
@@ -113,36 +155,33 @@ def plot(data_list, test_names, graph_dir, experiment_to_compare_against, keep_l
             plot.annotate(int(width), xy=(left + width, bottom + height / 2), ha='center', va='center', size=10)
 
         plt.savefig(
-            graph_dir + f'better_than_compare_to_{experiment_to_compare_against}_largest_{keep_largest_percent * 100}%_tests_{how_much_better * 100}%_better_{png_names[index]}.png',
+            graph_dir + f'{how_much_better * 100}%_better_than_{experiment_to_compare_against}_largest_{keep_largest_percent * 100}%_tests_.png',
             bbox_inches='tight')
         plt.clf()
 
     if not os.path.isfile(
             graph_dir + f'eq_compare_to_{experiment_to_compare_against}_largest_{keep_largest_percent * 100}%_tests_all.png'):
         points_eq_df = pd.DataFrame(
-            {'reduced size': get_points(derived_jable, 'reduced size', test_names, experiment_to_compare_against,
-                                        keep_largest_percent, True),
-             'state space size': get_points(derived_jable, 'state space size', test_names,
-                                            experiment_to_compare_against, keep_largest_percent, True),
-             'reduce time': get_points(derived_jable, 'reduce time', test_names, experiment_to_compare_against,
-                                       keep_largest_percent, True),
-             'verification memory': get_points(derived_jable, 'verification memory', test_names,
-                                               experiment_to_compare_against, keep_largest_percent, True),
-             'verification time': get_points(derived_jable, 'verification time', test_names,
-                                             experiment_to_compare_against, keep_largest_percent, True),
-             'total time': get_points(derived_jable, 'total time', test_names,
-                                      experiment_to_compare_against, keep_largest_percent, True),
-             # 'answered queries': answer_df,
+            {'reduced size': get_points_by_metric(derived_jable, 'reduced size', test_names,
+                                                  experiment_to_compare_against,
+                                                  True),
+             'state space size': get_points_by_metric(derived_jable, 'state space size', test_names,
+                                                      experiment_to_compare_against, True),
+             'reduce time': get_points_by_metric(derived_jable, 'reduce time', test_names,
+                                                 experiment_to_compare_against,
+                                                 True),
+             'verification memory': get_points_by_metric(derived_jable, 'verification memory', test_names,
+                                                         experiment_to_compare_against, True),
+             'verification time': get_points_by_metric(derived_jable, 'verification time', test_names,
+                                                       experiment_to_compare_against, True),
+             'total time': get_points_by_metric(derived_jable, 'total time', test_names,
+                                                experiment_to_compare_against, True),
+             'answered queries': answer_df,
              }, index=test_names).drop('base-rules')
 
-        data_to_plot_eq = utility.split_into_all_with_without(points_eq_df)
-        for index, data in enumerate(data_to_plot_eq):
-            if index > 0:
-                continue
-            if len(data) == 0:
-                continue
+        if len(points_eq_df) != 0:
             # Plot the second plot with with
-            plot = data.plot(kind='barh', width=0.75, linewidth=2, figsize=(10, 10))
+            plot = points_eq_df.plot(kind='barh', width=0.75, linewidth=2, figsize=(10, 10))
             plt.legend(bbox_to_anchor=(1.02, 1), loc='best', borderaxespad=0)
             plt.title(
                 f'Point given if at least as good as {experiment_to_compare_against}, using {keep_largest_percent * 100}% largest tests ({int(derived_jable.shape[0] * keep_largest_percent)} tests)')
@@ -156,7 +195,7 @@ def plot(data_list, test_names, graph_dir, experiment_to_compare_against, keep_l
                 plot.annotate(int(width), xy=(left + width, bottom + height / 2), ha='center', va='center', size=10)
 
             plt.savefig(
-                graph_dir + f'eq_compare_to_{experiment_to_compare_against}_largest_{keep_largest_percent * 100}%_tests_{png_names[index]}.png',
+                graph_dir + f'eq_compare_to_{experiment_to_compare_against}_largest_{keep_largest_percent * 100}%_tests.png',
                 bbox_inches='tight')
             plt.clf()
 
