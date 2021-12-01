@@ -11,4 +11,5 @@ __pycache__
 graphs/
 sizes/*
 !sizes/query.xml
+RC_types/*
 saved/everything/
