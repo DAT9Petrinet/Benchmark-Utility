@@ -14,7 +14,7 @@ if [ -z "$TEST_FOLDER" ] ; then
 	TEST_FOLDER="MCC2021"
 fi
 
-OUT="RC_types.csv"
+OUT="RC_types/RC_types.csv"
 rm -f $OUT
 echo "model name,query index,type" >> $OUT
 
