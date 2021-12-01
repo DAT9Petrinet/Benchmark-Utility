@@ -11,14 +11,15 @@ import utility
 REDUCE_TIMEOUT = 300
 
 
-def get_points_by_metric(derived_jable, metric, test_names, experiment_to_compare_against, eq):
+def get_points_by_metric(derived_jable, metric, test_names, experiment_to_compare_against, eq, how_much_better):
     def better_than_comparison(row, test, metric):
         if test == experiment_to_compare_against:
             return False
         if eq:
             return row[test + '@' + metric] <= row[experiment_to_compare_against + '@' + metric]
         else:
-            return row[test + '@' + metric] < row[experiment_to_compare_against + '@' + metric]
+            return row[test + '@' + metric] < (
+                        (1 - how_much_better) * row[experiment_to_compare_against + '@' + metric])
 
     def equal_to_comparison(row, test, metric):
         if test == experiment_to_compare_against:
@@ -120,17 +121,17 @@ def plot(data_list, test_names, graph_dir, experiment_to_compare_against, keep_l
     # Create a dataframe for each type of graph
     points_df = pd.DataFrame(
         {'reduced size': get_points_by_metric(derived_jable, 'reduced size', test_names,
-                                              experiment_to_compare_against, False),
+                                              experiment_to_compare_against, False, how_much_better),
          'state space size': get_points_by_metric(derived_jable, 'state space size', test_names,
-                                                  experiment_to_compare_against, False),
+                                                  experiment_to_compare_against, False, how_much_better),
          'reduce time': get_points_by_metric(derived_jable, 'reduce time', test_names,
-                                             experiment_to_compare_against, False),
+                                             experiment_to_compare_against, False, how_much_better),
          'verification memory': get_points_by_metric(derived_jable, 'verification memory', test_names,
-                                                     experiment_to_compare_against, False),
+                                                     experiment_to_compare_against, False, how_much_better),
          'verification time': get_points_by_metric(derived_jable, 'verification time', test_names,
-                                                   experiment_to_compare_against, False),
+                                                   experiment_to_compare_against, False, how_much_better),
          'total time': get_points_by_metric(derived_jable, 'total time', test_names,
-                                            experiment_to_compare_against, False),
+                                            experiment_to_compare_against, False, how_much_better),
          'answered queries': answer_df,
          'unique answers': (utility.zero_padding(
              utility.unique_answers_comparison(derived_jable, experiment_to_compare_against, test_names),
@@ -164,18 +165,18 @@ def plot(data_list, test_names, graph_dir, experiment_to_compare_against, keep_l
         points_eq_df = pd.DataFrame(
             {'reduced size': get_points_by_metric(derived_jable, 'reduced size', test_names,
                                                   experiment_to_compare_against,
-                                                  True),
+                                                  True, how_much_better),
              'state space size': get_points_by_metric(derived_jable, 'state space size', test_names,
-                                                      experiment_to_compare_against, True),
+                                                      experiment_to_compare_against, True, how_much_better),
              'reduce time': get_points_by_metric(derived_jable, 'reduce time', test_names,
                                                  experiment_to_compare_against,
-                                                 True),
+                                                 True, how_much_better),
              'verification memory': get_points_by_metric(derived_jable, 'verification memory', test_names,
-                                                         experiment_to_compare_against, True),
+                                                         experiment_to_compare_against, True, how_much_better),
              'verification time': get_points_by_metric(derived_jable, 'verification time', test_names,
-                                                       experiment_to_compare_against, True),
+                                                       experiment_to_compare_against, True, how_much_better),
              'total time': get_points_by_metric(derived_jable, 'total time', test_names,
-                                                experiment_to_compare_against, True),
+                                                experiment_to_compare_against, True, how_much_better),
              'answered queries': answer_df,
              }, index=test_names).drop('base-rules')
 
