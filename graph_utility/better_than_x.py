@@ -18,7 +18,11 @@ def get_points_by_metric(derived_jable, metric, test_names, experiment_to_compar
         if eq:
             return row[test + '@' + metric] <= row[experiment_to_compare_against + '@' + metric]
         else:
-            return row[test + '@' + metric] < (
+            if metric == 'reduced size':
+                return row[test + '@' + metric] < (
+                        (1 + how_much_better) * row[experiment_to_compare_against + '@' + metric])
+            else:
+                return row[test + '@' + metric] < (
                         (1 - how_much_better) * row[experiment_to_compare_against + '@' + metric])
 
     def equal_to_comparison(row, test, metric):
@@ -44,7 +48,6 @@ def get_points_by_metric(derived_jable, metric, test_names, experiment_to_compar
                 return 0
             else:
                 Exception("(better_than_x) should not be able to reach this - answer point")
-
         elif metric in ['state space size']:
             if row[experiment_to_compare_against + '@' + metric] != 0 and row[test + '@' + metric] != 0:
                 if better_than_comparison(row, test, metric):
@@ -61,7 +64,6 @@ def get_points_by_metric(derived_jable, metric, test_names, experiment_to_compar
                 return 0
             else:
                 Exception("(better_than_x) should not be able to reach this - state space size point")
-
         elif metric in ['reduce time']:
             if row[experiment_to_compare_against + '@' + metric] < REDUCE_TIMEOUT and row[
                 test + '@' + metric] < REDUCE_TIMEOUT:
@@ -80,6 +82,17 @@ def get_points_by_metric(derived_jable, metric, test_names, experiment_to_compar
                 return 0
             else:
                 Exception("(better_than_x) should not be able to reach this - reduce time point")
+        elif metric == 'reduced size':
+            if utility.row_indicate_simplification_jable(row, experiment_to_compare_against) or \
+                    utility.row_indicate_simplification_jable(row, test):
+                return 0
+            else:
+                if better_than_comparison(row, test, metric):
+                    return 1
+                elif equal_to_comparison(row, test, metric):
+                    return 0
+                else:
+                    return -1
         else:
             Exception("(better_than_x) should not be able to reach this - points")
 
@@ -115,26 +128,26 @@ def plot(data_list, test_names, graph_dir, experiment_to_compare_against, keep_l
             '(best_overall) beware, probably weird results (in reduction points) in this graph due to comparing only 2 experiments, and one which is no-red')
 
     derived_jable = utility.make_derived_jable(data_list, test_names)
-    derived_jable = utility.largest_x_by_prev_size_jable(derived_jable, keep_largest_percent, test_names[0])
+    derived_jable_sized = utility.largest_x_by_prev_size_jable(derived_jable, keep_largest_percent, test_names[0])
 
-    answer_df = get_answer_df(derived_jable, test_names)
+    answer_df = get_answer_df(derived_jable_sized, test_names)
     # Create a dataframe for each type of graph
     points_df = pd.DataFrame(
-        {'reduced size': get_points_by_metric(derived_jable, 'reduced size', test_names,
+        {'reduced size': get_points_by_metric(derived_jable_sized, 'reduced size', test_names,
                                               experiment_to_compare_against, False, how_much_better),
-         'state space size': get_points_by_metric(derived_jable, 'state space size', test_names,
+         'state space size': get_points_by_metric(derived_jable_sized, 'state space size', test_names,
                                                   experiment_to_compare_against, False, how_much_better),
-         'reduce time': get_points_by_metric(derived_jable, 'reduce time', test_names,
+         'reduce time': get_points_by_metric(derived_jable_sized, 'reduce time', test_names,
                                              experiment_to_compare_against, False, how_much_better),
-         'verification memory': get_points_by_metric(derived_jable, 'verification memory', test_names,
+         'verification memory': get_points_by_metric(derived_jable_sized, 'verification memory', test_names,
                                                      experiment_to_compare_against, False, how_much_better),
-         'verification time': get_points_by_metric(derived_jable, 'verification time', test_names,
+         'verification time': get_points_by_metric(derived_jable_sized, 'verification time', test_names,
                                                    experiment_to_compare_against, False, how_much_better),
-         'total time': get_points_by_metric(derived_jable, 'total time', test_names,
+         'total time': get_points_by_metric(derived_jable_sized, 'total time', test_names,
                                             experiment_to_compare_against, False, how_much_better),
          'answered queries': answer_df,
          'unique answers': (utility.zero_padding(
-             utility.unique_answers_comparison(derived_jable, experiment_to_compare_against, test_names),
+             utility.unique_answers_comparison(derived_jable_sized, experiment_to_compare_against, test_names),
              'unique answers',
              test_names)).tolist(),
          }, index=test_names).drop('base-rules')
@@ -145,8 +158,8 @@ def plot(data_list, test_names, graph_dir, experiment_to_compare_against, keep_l
         plot = points_df.plot(kind='barh', width=0.75, linewidth=2, figsize=(10, 10))
         plt.legend(bbox_to_anchor=(1.02, 1), loc='best', borderaxespad=0)
         plt.title(
-            f'Point given if {how_much_better * 100}% better than {experiment_to_compare_against}, using {keep_largest_percent * 100}% largest tests ({int(derived_jable.shape[0] * keep_largest_percent)} tests)')
-        plt.xscale('linear')
+            f'Point given if {how_much_better * 100}% better than {experiment_to_compare_against}, using {keep_largest_percent * 100}% largest tests ({int(derived_jable.shape[0] * keep_largest_percent)} tests) by prev_size')
+        plt.xscale('symlog')
         plt.xlabel("points")
         plt.ylabel('experiments')
 
@@ -163,19 +176,19 @@ def plot(data_list, test_names, graph_dir, experiment_to_compare_against, keep_l
     if not os.path.isfile(
             graph_dir + f'eq_compare_to_{experiment_to_compare_against}_largest_{keep_largest_percent * 100}%_tests_all.png'):
         points_eq_df = pd.DataFrame(
-            {'reduced size': get_points_by_metric(derived_jable, 'reduced size', test_names,
+            {'reduced size': get_points_by_metric(derived_jable_sized, 'reduced size', test_names,
                                                   experiment_to_compare_against,
                                                   True, how_much_better),
-             'state space size': get_points_by_metric(derived_jable, 'state space size', test_names,
+             'state space size': get_points_by_metric(derived_jable_sized, 'state space size', test_names,
                                                       experiment_to_compare_against, True, how_much_better),
-             'reduce time': get_points_by_metric(derived_jable, 'reduce time', test_names,
+             'reduce time': get_points_by_metric(derived_jable_sized, 'reduce time', test_names,
                                                  experiment_to_compare_against,
                                                  True, how_much_better),
-             'verification memory': get_points_by_metric(derived_jable, 'verification memory', test_names,
+             'verification memory': get_points_by_metric(derived_jable_sized, 'verification memory', test_names,
                                                          experiment_to_compare_against, True, how_much_better),
-             'verification time': get_points_by_metric(derived_jable, 'verification time', test_names,
+             'verification time': get_points_by_metric(derived_jable_sized, 'verification time', test_names,
                                                        experiment_to_compare_against, True, how_much_better),
-             'total time': get_points_by_metric(derived_jable, 'total time', test_names,
+             'total time': get_points_by_metric(derived_jable_sized, 'total time', test_names,
                                                 experiment_to_compare_against, True, how_much_better),
              'answered queries': answer_df,
              }, index=test_names).drop('base-rules')
@@ -185,8 +198,8 @@ def plot(data_list, test_names, graph_dir, experiment_to_compare_against, keep_l
             plot = points_eq_df.plot(kind='barh', width=0.75, linewidth=2, figsize=(10, 10))
             plt.legend(bbox_to_anchor=(1.02, 1), loc='best', borderaxespad=0)
             plt.title(
-                f'Point given if at least as good as {experiment_to_compare_against}, using {keep_largest_percent * 100}% largest tests ({int(derived_jable.shape[0] * keep_largest_percent)} tests)')
-            plt.xscale('linear')
+                f'Point given if at least as good as {experiment_to_compare_against}, using {keep_largest_percent * 100}% largest tests ({int(derived_jable.shape[0] * keep_largest_percent)} tests) by prev_size')
+            plt.xscale('symlog')
             plt.xlabel("points")
             plt.ylabel('experiments')
 

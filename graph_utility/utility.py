@@ -112,7 +112,8 @@ def split_into_all_with_without(df):
 def make_derived_jable(csvs, exp_names):
     needed_columns = ['model name', 'query index', 'answer', 'verification time', 'verification memory',
                       'prev place count', 'post place count',
-                      'prev transition count', 'post transition count', 'reduce time', 'state space size']
+                      'prev transition count', 'post transition count', 'reduce time', 'state space size',
+                      'solved by query simplification']
 
     for data in csvs:
         data.set_index(["model name", "query index"], inplace=True)
@@ -133,8 +134,8 @@ def make_derived_jable(csvs, exp_names):
         for time in ['prev', 'post']:
             jable[f'{exp_name}@{time} size'] = jable[f'{exp_name}@{time} place count'] + jable[
                 f'{exp_name}@{time} transition count']
-        jable[f'{exp_name}@reduced size'] = - (jable[f'{exp_name}@prev size'] - jable[
-            f'{exp_name}@post size'])
+        jable[f'{exp_name}@reduced size'] = (jable[f'{exp_name}@post size'] - jable[
+            f'{exp_name}@prev size'])
 
     # Unique answer
     '''answer_columns = [experiment_column + '@' + 'answer' for experiment_column in exp_names]
@@ -198,6 +199,15 @@ def infer_errors(df):
 
 def number_of_errors(df):
     return pd.DataFrame(df.apply(lambda row: 1 if all_columns_indicate_error(row) else 0, axis=1))[0].sum()
+
+
+def row_indicate_simplification_jable(row, test_name):
+    return (row[f'{test_name}@post size'] == 0.0 and row[f'{test_name}@prev size'] > 0) or row[
+        f'{test_name}@solved by query simplification']
+
+
+def row_indicate_simplification(row):
+    return (get_post_size(row) == 0.0 and get_pre_size(row) > 0) or row['solved by query simplification']
 
 
 def infer_simplification_from_prev_size_0_rows(df):

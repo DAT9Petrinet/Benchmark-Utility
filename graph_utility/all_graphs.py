@@ -32,7 +32,7 @@ def plot_all(data_list, test_names, graph_dir, experiment_to_compare_against_nam
     print(f"{graphs_made}/{num_graphs} graphs made")
 
     for keep_largest_percent in [1, 0.25]:
-        for how_much_better in [0.01, 0.025]:
+        for how_much_better in [0.01, 0.025, 0]:
             better_than_x.plot(data_list, test_names,
                                graph_dir + '\\best-experiment\\',
                                experiment_to_compare_against_name, keep_largest_percent, how_much_better)
@@ -47,7 +47,7 @@ def plot_all(data_list, test_names, graph_dir, experiment_to_compare_against_nam
     metrics = ['verification time', 'verification memory', 'state space size', 'reduce time', 'reduced size',
                'total time']
     for metric in metrics:
-        for percentage in [0.01, 0.025, 0.05, 0.1, 0.5, 1]:
+        for percentage in [0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1]:
             time_memory_lines.plot(data_list, test_names, graph_dir + '\\lines\\' + metric.replace(" ", "-") + '\\',
                                    metric, percentage)
     graphs_made += 1
