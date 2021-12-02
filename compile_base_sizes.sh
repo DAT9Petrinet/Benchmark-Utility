@@ -9,7 +9,7 @@ echo "model name,original state space size" >> $OUT
 
 for SIZE_FILE in $(ls "sizes" | grep "\.size$") ; do
 
-	MODEL="${FILE%%.*}"
+	MODEL="${SIZE_FILE%%.*}"
 
 	SIZE=$(cat "sizes/$MODEL.size")
 	echo "$MODEL,$SIZE" >> $OUT
