@@ -17,7 +17,7 @@ fi
 OUT="query_types/RC_types.csv"
 rm -f $OUT
 mkdir "query_types"
-echo "model name,query index,type" >> $OUT
+echo "model name,query index,type" > $OUT
 
 for MODEL in $(ls $TEST_FOLDER) ; do
 
@@ -31,7 +31,7 @@ for MODEL in $(ls $TEST_FOLDER) ; do
 		# Extract and output type
 		TYPE=$([[ -n $(echo $PROP | awk '/^ *E F/') ]] && echo "EF" || echo "AG")
 		echo "$MODEL.$Q : $TYPE"
-		echo "$MODEL,$Q,$TYPE" > $OUT
+		echo "$MODEL,$Q,$TYPE" >> $OUT
 
 		((Q=Q+1))
 	done <<< "$PROPS"
