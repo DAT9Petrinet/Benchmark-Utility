@@ -30,8 +30,13 @@ for MODEL in $(ls $TEST_FOLDER) ; do
 		
 		# Extract and output type
 		TYPE=$([[ -n $(echo $PROP | awk '/^ *E F/') ]] && echo "EF" || echo "AG")
+		echo "$MODEL.$Q : $TYPE"
 		echo "$MODEL,$Q,$TYPE" > $OUT
 
 		((Q=Q+1))
 	done <<< "$PROPS"
 done
+
+echo "Done"
+
+exit 0
