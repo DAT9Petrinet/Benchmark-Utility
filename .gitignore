@@ -12,4 +12,5 @@ graphs/
 sizes/*
 !sizes/query.xml
 consistency/
+RC_types/*
 saved/everything/
