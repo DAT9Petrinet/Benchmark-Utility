@@ -5,11 +5,11 @@
 OUT="sizes/sizes.csv"
 rm -f $OUT
 
-echo "model,size" >> $OUT
+echo "model name,original state space size" >> $OUT
 
-for MODEL in $(ls "sizes" | grep "\.size$") ; do
+for SIZE_FILE in $(ls "sizes" | grep "\.size$") ; do
 
-	echo -n "."
+	MODEL="${SIZE_FILE%%.*}"
 
 	SIZE=$(cat "sizes/$MODEL.size")
 	echo "$MODEL,$SIZE" >> $OUT
