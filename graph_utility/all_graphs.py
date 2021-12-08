@@ -31,7 +31,7 @@ def plot_all(data_list, test_names, graph_dir, experiment_to_compare_against_nam
     graphs_made += 1
     print(f"{graphs_made}/{num_graphs} graphs made")
 
-    for keep_largest_percent in [1, 0.25]:
+    for keep_largest_percent in [1, 0.1]:
         for how_much_better in [0.01, 0.025, 0]:
             better_than_x.plot(data_list, test_names,
                                graph_dir + '\\best-experiment\\',
