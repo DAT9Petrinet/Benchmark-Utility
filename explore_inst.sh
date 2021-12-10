@@ -29,7 +29,7 @@ for MODEL_FILE in $(ls "output/$(basename $BIN)/$NAME" | egrep "$MODEL\.[0-9]+\.
 	RES=$(echo $RES | grep -v "^<" | tr '\n' '\r')
 	echo $RES > "output/$(basename $BIN)/$NAME/$MODEL.$Q.sout"
 
-	SIZE=$([[ -n "$(echo $RES | awk "/discovered states/")" ]] && echo $RES | sed -E "s/.*discovered states: *([0-9]+).*/\1/" || echo 0)
+	SIZE=$([[ -n "$(echo $RES | awk "/explored states/")" ]] && echo $RES | sed -E "s/.*explored states: *([0-9]+).*/\1/" || echo 0)
 
 	OUT="output/$(basename $BIN)/$NAME/$MODEL.$Q.size"
 	rm -f $OUT
