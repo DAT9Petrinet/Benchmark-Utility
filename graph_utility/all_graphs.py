@@ -99,6 +99,9 @@ if __name__ == "__main__":
         filetypes=(("Text Files", "*.csv"),)
     )
 
+    if len(tf) == 0:
+        raise Exception('You did not choose any files')
+
     # Directory for all our csv
     #csv_dir = os.path.join(script_dir, '..\\saved\\')
 
@@ -116,7 +119,6 @@ if __name__ == "__main__":
         raise Exception('(all_graphs) Cannot use (no-red) as basis for comparison')
     elif experiment_to_compare_against_name not in test_names:
         raise Exception(f'{experiment_to_compare_against_name} not found in the experiments that you chose')
-    print(experiment_to_compare_against_name)
 
     data_list = [pd.read_csv(csv, engine='python') for csv in tf]
 
