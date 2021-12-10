@@ -12,4 +12,4 @@ graphs/
 sizes/*
 !sizes/query.xml
 RC_types/*
-saved/everything/
+results/everything/
