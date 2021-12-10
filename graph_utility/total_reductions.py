@@ -121,7 +121,7 @@ if __name__ == "__main__":
         os.makedirs(graph_dir)
 
     # Directory for all our csv
-    csv_dir = os.path.join(script_dir, '..\\saved\\')
+    csv_dir = os.path.join(script_dir, '../results\\')
 
     # Read csv data
     csvs = [file for file in os.listdir(csv_dir) if

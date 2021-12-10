@@ -74,7 +74,7 @@ if __name__ == "__main__":
     script_dir = os.path.dirname(__file__)
 
     # Directory for all our csv
-    csv_dir = os.path.join(script_dir, '..\\saved\\')
+    csv_dir = os.path.join(script_dir, '../results\\')
 
     # Read csv data
     csvs = [file for file in os.listdir(csv_dir) if ('.csv' in file) and (correct_results_name not in file)]
@@ -87,7 +87,7 @@ if __name__ == "__main__":
             correct_results = pd.read_csv(csv_dir + correct_results_name + '.csv')
         except:
             raise Exception(
-                f'({correct_results_name}) is not present in saved/ and cannot be used as basis for comparison. '
+                f'({correct_results_name}) is not present in results/ and cannot be used as basis for comparison. '
                 f'Check if you made a typo in the parameter to the program')
 
     data_list = [pd.read_csv(csv_dir + csv) for csv in csvs]
