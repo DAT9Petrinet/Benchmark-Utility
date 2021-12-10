@@ -1,7 +1,8 @@
 import os
 import shutil
+from pathlib import Path
+from tkinter import filedialog
 import sys
-
 import pandas as pd
 
 import answer_simplification_bars
@@ -24,8 +25,10 @@ def plot_all(data_list, test_names, graph_dir, experiment_to_compare_against_nam
     graphs_made = 0
 
     # Sanitise the data
+    print("Sanitising the data")
     data_list = utility.sanitise_df_list(data_list)
 
+    print("Making graphs")
     # General graphs not fitting totally into the next categories
     answer_simplification_bars.plot(data_list, test_names, graph_dir + '\\best-experiment\\')
     graphs_made += 1
@@ -59,15 +62,16 @@ def plot_all(data_list, test_names, graph_dir, experiment_to_compare_against_nam
 
 
 if __name__ == "__main__":
+
     # Results used for comparisons
-    if len(sys.argv) == 1:
+    '''if len(sys.argv) == 1:
         experiment_to_compare_against_name = 'base-rules'
     else:
         experiment_to_compare_against_name = sys.argv[1]
         if experiment_to_compare_against_name == 'no-red':
-            raise Exception('(all_graphs) Cannot use (no-red) as basis for comparison')
+            raise Exception('(all_graphs) Cannot use (no-red) as basis for comparison')'''
 
-    print(f'(all_graphs) using ({experiment_to_compare_against_name}) for comparison')
+    #print(f'(all_graphs) using ({experiment_to_compare_against_name}) for comparison')
 
     # Find the directory to save figures
     script_dir = os.path.dirname(__file__)
@@ -89,18 +93,31 @@ if __name__ == "__main__":
     os.makedirs(graph_dir + '\\lines\\' + '\\reduced-size\\')
     os.makedirs(graph_dir + '\\lines\\' + '\\state-space-size\\')
 
+    tf = filedialog.askopenfilenames(
+        initialdir=Path(script_dir).parent.joinpath('saved'),
+        title="Select experiments",
+        filetypes=(("Text Files", "*.csv"),)
+    )
+
     # Directory for all our csv
-    csv_dir = os.path.join(script_dir, '..\\saved\\')
+    #csv_dir = os.path.join(script_dir, '..\\saved\\')
 
     # Read csv data
-    csvs = [file for file in os.listdir(csv_dir) if '.csv' in file]
+    #csvs = [file for file in os.listdir(csv_dir) if '.csv' in file]
 
     # Find names of the tests, to be used in graphs and file names
-    test_names = [os.path.split(os.path.splitext(csv)[0])[1] for csv in csvs]
+    test_names = [os.path.split(os.path.splitext(csv)[0])[1] for csv in tf]
 
-    if experiment_to_compare_against_name not in test_names:
-        Exception(f"{experiment_to_compare_against_name} not found in saved dir")
+    print(f"You selected following files: {test_names} \n Which do you want to use as basis for comparison? \n Press Enter for default (base-rules)")
+    experiment_to_compare_against_name = input()
+    if len(experiment_to_compare_against_name) == 0:
+        experiment_to_compare_against_name = 'base-rules'
+    elif experiment_to_compare_against_name == 'no-red':
+        raise Exception('(all_graphs) Cannot use (no-red) as basis for comparison')
+    elif experiment_to_compare_against_name not in test_names:
+        raise Exception(f'{experiment_to_compare_against_name} not found in the experiments that you chose')
+    print(experiment_to_compare_against_name)
 
-    data_list = [pd.read_csv(csv_dir + csv, engine='python') for csv in csvs]
+    data_list = [pd.read_csv(csv, engine='python') for csv in tf]
 
     plot_all(data_list, test_names, graph_dir, experiment_to_compare_against_name)
