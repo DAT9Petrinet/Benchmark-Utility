@@ -62,7 +62,7 @@ for RED_RES_FILE in $(ls $DIR | grep "\.rout$") ; do
 	# ----- Verification extraction -------
 
 	# Time and memory is appended to the file
-	SIZE=$([[ -n "$(echo $VOUT | awk "/on verification/")" ]] && echo $VOUT | sed -E "s/.*Spent (([0-9](\.[0-9])?e-0[2-9])|([0-9]+(\.[0-9]+)?)) on verification.*/\1/" || echo 0.0)
+	VERI_TIME=$([[ -n "$(echo $VOUT | awk "/on verification/")" ]] && echo $VOUT | sed -E "s/.*Spent (([0-9](\.[0-9])?e-0[2-9])|([0-9]+(\.[0-9]+)?)) on verification.*/\1/" || echo 0.0)
 	VERI_MEM=$(echo $VOUT | sed -E "s/.*@@@.*,(.*)@@@.*/\1/")
 
 	# Did we get an answer or did the query time out?
