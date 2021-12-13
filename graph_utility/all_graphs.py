@@ -13,7 +13,7 @@ import total_reductions
 import utility
 
 
-def select_experiments():
+def gui():
     master = tk.Tk()
     master.title('Select files to use for graphs')
     script_dir = os.path.dirname(__file__)
@@ -171,7 +171,7 @@ if __name__ == "__main__":
     os.makedirs(graph_dir + '\\lines\\' + '\\reduced-size\\')
     os.makedirs(graph_dir + '\\lines\\' + '\\state-space-size\\')
 
-    tests, graphs, comparison = select_experiments()
+    tests, graphs, comparison = gui()
 
     experiment_to_compare_against_name = os.path.split(os.path.splitext(comparison)[0])[1]
     # Directory for all our csv

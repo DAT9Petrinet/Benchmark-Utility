@@ -1,9 +1,61 @@
 import os
-import sys
+import shutil
+import tkinter as tk
+from glob import glob
 
 import numpy as np
 import pandas as pd
-import shutil
+
+
+def gui():
+    master = tk.Tk()
+    master.title('Select files to use for consistency')
+    script_dir = os.path.dirname(__file__)
+    results_dir = os.path.join(script_dir, '..\\results\\')
+    all_csv_files = [file.split('results')[1]
+                     for path, subdir, files in os.walk(results_dir)
+                     for file in glob(os.path.join(path, "*.csv"))]
+    results = {}
+    row = 0
+    column = 0
+    previous_top = ''
+    previous_level = 0
+    max_row = 0
+    for f in all_csv_files:
+        level = (f.count('\\'))
+        if level > 1:
+            if column == 0:
+                row = 0
+                column = 1
+            current_top = f.split('\\')[1]
+            if previous_top != '' and previous_top != current_top:
+                column += 1
+                row = 0
+            if level > previous_level and previous_top == current_top:
+                column += 1
+            previous_top = current_top
+
+        var = tk.IntVar()
+        if level == 1 and 'base-rules' in f:
+            var.set(1)
+        tk.Checkbutton(master, text=f, variable=var).grid(row=row, column=column)
+        results[f] = var
+
+        previous_level = level
+        row += 1
+        if row > max_row:
+            max_row = row
+
+    tk.Button(master, text="Select", command=master.destroy).grid(row=max_row, column=column)
+    master.mainloop()
+
+    chosen_results = [csv_name for csv_name in results.keys() if '.csv' in csv_name and results[csv_name].get() == 1]
+
+    if len(chosen_results) == 0:
+        raise Exception('You did not choose any experiment')
+
+    return chosen_results
+
 
 def check_consistency(exp_1, exp_1_name, data_list, test_names, consistency_dir):
     matrix_dict = dict()
@@ -44,19 +96,11 @@ def check_consistency(exp_1, exp_1_name, data_list, test_names, consistency_dir)
 
 if __name__ == "__main__":
 
-    if len(sys.argv) > 1:
-        experiment_path = sys.argv[1]
-    else:
-        experiment_path = 'saved/'
-
-    print(f"(check_consistency) using experiments in {experiment_path} to check consistency")
     # Find the directory to save figures
     script_dir = os.path.dirname(__file__)
+    results_dir = os.path.join(script_dir, '..\\results')
 
-    # Directory for all our csv
-    test_dir = os.path.join(script_dir, f'..\\{experiment_path}')
-
-    consistency_dir = os.path.join(script_dir, "../saved/consistency")
+    consistency_dir = (results_dir + '\\consistency')
 
     # Remove all graphs
     if os.path.isdir(consistency_dir):
@@ -65,12 +109,13 @@ if __name__ == "__main__":
     os.makedirs(consistency_dir)
 
     # Read csv data
-    csvs = [file for file in os.listdir(test_dir) if ('.csv' in file)]
+    csvs = gui()
 
     # Find names of the tests, to be used in graphs and file names
     test_names = [os.path.split(os.path.splitext(csv)[0])[1] for csv in csvs]
+    print(f"(check_consistency) using experiments to check consistency: {test_names}")
 
-    data_list = [pd.read_csv(test_dir + csv) for csv in csvs]
+    data_list = [pd.read_csv(results_dir + csv) for csv in csvs]
 
     matrix_df = pd.DataFrame()
     for index, exp_1 in enumerate(data_list):
