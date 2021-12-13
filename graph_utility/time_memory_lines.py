@@ -136,26 +136,3 @@ def plot(data_list, test_names, graph_dir, metric, keep_largest_percent):
         plt.savefig(graph_dir + f'{metric.replace(" ", "_")}_top_{keep_largest_percent * 100}%.png',
                     bbox_inches='tight')
         plt.clf()
-
-
-if __name__ == "__main__":
-    # Find the directory to save figures
-    script_dir = os.path.dirname(__file__)
-    graph_dir = os.path.join(script_dir, '..\\graphs\\' + '\\lines\\')
-
-    if not os.path.isdir(graph_dir):
-        os.makedirs(graph_dir)
-
-    # Read data given as arguments
-    paths = sys.argv[1:]
-    data_list = [pd.read_csv(path) for path in paths]
-
-    # Find name of the tests
-    test_names = [os.path.split(os.path.splitext(path)[0])[1] for path in paths]
-
-    # This plot also takes as argument which column to be used, so here we call with both 'time' and 'memory'
-    metrics = ['verification time', 'verification memory', 'state space size', 'reduce time', 'reduced size',
-               'total time']
-    for metric in metrics:
-        for percentage in [0.001, 0.025, 0.05, 0.1, 0.5, 1]:
-            plot(data_list, test_names, graph_dir, metric, percentage)

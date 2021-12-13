@@ -100,21 +100,3 @@ def plot(data_list, test_names, graph_dir):
                       ha='center', va='center', rotation=45)
     plt.savefig(graph_dir + 'answer_simplification_bars.png')
     plt.clf()
-
-
-if __name__ == "__main__":
-    # Find the directory to save figures
-    script_dir = os.path.dirname(__file__)
-    graph_dir = os.path.join(script_dir, '..\\graphs\\' + '\\best-experiment\\')
-
-    if not os.path.isdir(graph_dir):
-        os.makedirs(graph_dir)
-
-    # Read data given as arguments
-    paths = sys.argv[1:]
-    data_list = [pd.read_csv(path) for path in paths]
-
-    # Find name of the tests
-    test_names = [os.path.split(os.path.splitext(path)[0])[1] for path in paths]
-
-    plot(data_list, test_names, graph_dir)

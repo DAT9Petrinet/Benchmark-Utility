@@ -212,21 +212,3 @@ def plot(data_list, test_names, graph_dir, experiment_to_compare_against, keep_l
                 graph_dir + f'eq_compare_to_{experiment_to_compare_against}_largest_{keep_largest_percent * 100}%_tests.png',
                 bbox_inches='tight')
             plt.clf()
-
-
-if __name__ == "__main__":
-    # Find the directory to save figures
-    script_dir = os.path.dirname(__file__)
-    graph_dir = os.path.join(script_dir, '..\\graphs\\' + '\\best-experiment\\')
-
-    if not os.path.isdir(graph_dir):
-        os.makedirs(graph_dir)
-
-    # Read data given as arguments
-    paths = sys.argv[1:]
-    data_list = [pd.read_csv(path) for path in paths]
-
-    # Find name of the tests
-    test_names = [os.path.split(os.path.splitext(path)[0])[1] for path in paths]
-
-    plot(data_list, test_names, graph_dir)

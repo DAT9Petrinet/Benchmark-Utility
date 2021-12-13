@@ -66,26 +66,3 @@ def plot(data_list, test_names, graph_dir):
 
         plt.savefig(graph_dir + f'total_reductions_{png_names[index]}.png', bbox_inches='tight')
         plt.clf()
-
-
-if __name__ == "__main__":
-    # Find the directory to save figures
-    script_dir = os.path.dirname(__file__)
-    graph_dir = os.path.join(script_dir, '..\\graphs\\' + '\\reductions\\')
-
-    if not os.path.isdir(graph_dir):
-        os.makedirs(graph_dir)
-
-    # Directory for all our csv
-    csv_dir = os.path.join(script_dir, '../results\\')
-
-    # Read csv data
-    csvs = [file for file in os.listdir(csv_dir) if
-            '.csv' in file]
-
-    # Find names of the tests, to be used in graphs and file names
-    test_names = [os.path.split(os.path.splitext(csv)[0])[1] for csv in csvs]
-
-    data_list = [pd.read_csv(csv_dir + csv) for csv in csvs]
-
-    plot(data_list, test_names, graph_dir)
