@@ -22,6 +22,8 @@ def gui():
     previous_level = 0
     max_row = 0
     for f in all_csv_files:
+        if 'matrix' in f:
+            continue
         level = (f.count('\\'))
         if level > 1:
             if column == 0:
