@@ -132,3 +132,4 @@ if __name__ == "__main__":
         new_rows_indices[index] = name
     matrix_df = matrix_df.rename(index=new_rows_indices)
     matrix_df.to_csv(f'{consistency_dir}/matrix.csv')
+    print("Done")
