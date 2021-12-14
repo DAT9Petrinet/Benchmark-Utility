@@ -15,6 +15,7 @@ import utility
 
 def gui():
     master = tk.Tk()
+    master.configure(bg='#C0C0C0')
     master.title('Select files to use for graphs')
     script_dir = os.path.dirname(__file__)
     results_dir = os.path.join(script_dir, '..\\results\\')
@@ -46,7 +47,7 @@ def gui():
         var = tk.IntVar()
         if level == 1 and 'base-rules' in f:
             var.set(1)
-        tk.Checkbutton(master, text=f, variable=var).grid(row=row, column=column)
+        tk.Checkbutton(master, text=f, variable=var, bg='#C0C0C0', fg='#1923E8').grid(row=row, column=column)
         results[f] = var
 
         previous_level = level
@@ -60,11 +61,11 @@ def gui():
     for graph in graphs:
         var = tk.IntVar()
         var.set(1)
-        tk.Checkbutton(master, text=graph, variable=var).grid(row=row, column=column)
+        tk.Checkbutton(master, text=graph, variable=var, bg='#C0C0C0', fg='#1923E8').grid(row=row, column=column)
         results[graph] = var
         row += 1
 
-    tk.Button(master, text="Next", command=master.destroy).grid(row=max_row, column=column)
+    tk.Button(master, text="Next", command=master.destroy, bg='#C0C0C0', fg='#1923E8').grid(row=max_row, column=column)
     master.mainloop()
 
     chosen_results = [csv_name for csv_name in results.keys() if '.csv' in csv_name and results[csv_name].get() == 1]
@@ -77,14 +78,15 @@ def gui():
         if len(chosen_results) == 1:
             raise Exception('Must select more than 1 experiment if you want to make point plot')
         master = tk.Tk()
+        master.configure(bg='#C0C0C0')
         master.title('Select result to use as comparison')
         row = 0
         for result in chosen_results:
             var = tk.IntVar()
-            tk.Checkbutton(master, text=result, variable=var).grid(row=row)
+            tk.Checkbutton(master, text=result, variable=var, bg='#C0C0C0', fg='#1923E8').grid(row=row)
             row += 1
             comparison[result] = var
-        tk.Button(master, text="Choose", command=master.destroy).grid(row=max_row, column=column)
+        tk.Button(master, text="Choose", command=master.destroy, bg='#C0C0C0', fg='#1923E8').grid(row=max_row, column=column)
 
         master.geometry("400x100")
         master.mainloop()

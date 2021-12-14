@@ -9,6 +9,7 @@ import pandas as pd
 
 def gui():
     master = tk.Tk()
+    master.configure(bg='#C0C0C0')
     master.title('Select files to use for consistency')
     script_dir = os.path.dirname(__file__)
     results_dir = os.path.join(script_dir, '..\\results\\')
@@ -40,7 +41,7 @@ def gui():
         var = tk.IntVar()
         if level == 1 and 'base-rules' in f:
             var.set(1)
-        tk.Checkbutton(master, text=f, variable=var).grid(row=row, column=column)
+        tk.Checkbutton(master, text=f, variable=var, bg='#C0C0C0', fg='#1923E8').grid(row=row, column=column)
         results[f] = var
 
         previous_level = level
@@ -48,7 +49,7 @@ def gui():
         if row > max_row:
             max_row = row
 
-    tk.Button(master, text="Select", command=master.destroy).grid(row=max_row, column=column)
+    tk.Button(master, text="Select", command=master.destroy, bg='#C0C0C0', fg='#1923E8').grid(row=max_row, column=column)
     master.mainloop()
 
     chosen_results = [csv_name for csv_name in results.keys() if '.csv' in csv_name and results[csv_name].get() == 1]
