@@ -2,7 +2,7 @@ import os
 import shutil
 import tkinter as tk
 from glob import glob
-
+import sys
 import numpy as np
 import pandas as pd
 
@@ -52,6 +52,8 @@ def gui():
             max_row = row
 
     tk.Button(master, text="Select", command=master.destroy, bg=BACKGROUND, fg=FOREGROUND).grid(row=max_row, column=column)
+    tk.Button(master, text="Exit", command=sys.exit, bg=BACKGROUND, fg=FOREGROUND).grid(row=max_row+1,
+                                                                                              column=column)
     master.mainloop()
 
     chosen_results = [csv_name for csv_name in results.keys() if '.csv' in csv_name and results[csv_name].get() == 1]

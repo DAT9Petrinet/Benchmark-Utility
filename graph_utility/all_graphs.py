@@ -2,7 +2,7 @@ import os
 import shutil
 import tkinter as tk
 from glob import glob
-
+import sys
 import pandas as pd
 
 import answer_simplification_bars
@@ -71,6 +71,8 @@ def gui():
         row += 1
 
     tk.Button(master, text="Next", command=master.destroy, bg=BACKGROUND, fg=FOREGROUND).grid(row=max_row, column=column)
+    tk.Button(master, text="Exit", command=sys.exit, bg=BACKGROUND, fg=FOREGROUND).grid(row=max_row+1,
+                                                                                              column=column)
     master.mainloop()
 
     chosen_results = [csv_name for csv_name in results.keys() if '.csv' in csv_name and results[csv_name].get() == 1]
