@@ -62,7 +62,7 @@ def gui():
     column += 1
     for graph in graphs:
         var = tk.IntVar()
-        if graph == 'point plot':
+        if graph in ['point plot', 'total reductions']:
             var.set(0)
         else:
             var.set(1)
