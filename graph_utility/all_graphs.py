@@ -62,7 +62,10 @@ def gui():
     column += 1
     for graph in graphs:
         var = tk.IntVar()
-        var.set(1)
+        if graph == 'point plot':
+            var.set(0)
+        else:
+            var.set(1)
         tk.Checkbutton(master, text=graph, variable=var, bg=BACKGROUND, fg=FOREGROUND).grid(row=row, column=column)
         results[graph] = var
         row += 1
