@@ -69,10 +69,6 @@ def plot(data_list, test_names, graph_dir, metric, keep_largest_percent):
 
     # dashes = []
     for column_index, column in enumerate(combined_df.columns):
-        # if metric == "verification memory":
-        #    dashes.append((2, 2))
-        # else:
-        #    dashes.append((1, 0))
         custom_palette[column] = utility.color((column_index + 1) / len(combined_df.columns))
 
     if metric in ["verification time", 'reduce time', 'total time']:
@@ -84,38 +80,6 @@ def plot(data_list, test_names, graph_dir, metric, keep_largest_percent):
     elif metric == 'reduced size':
         unit = 'ratio given by post size/pre size'
 
-    '''columns_with_with = [test_name for test_name in combined_df.columns if
-                         ("with" in test_name) or ("base-rules" in test_name)]
-    columns_not_with_with = [test_name for test_name in combined_df.columns if
-                             "with" not in test_name or ("base-rules" in test_name)]
-    columns_to_be_removed_by_with = [column for column in combined_df.columns if column not in columns_with_with]
-    columns_to_be_removed_by_without = [column for column in combined_df.columns if column not in columns_not_with_with]
-
-    dashes_without = [dash for index, dash in enumerate(dashes) if combined_df.columns[index] in columns_not_with_with]
-    combined_df_without = combined_df.drop(columns_to_be_removed_by_without, axis=1)
-
-    dashes_with = [dash for index, dash in enumerate(dashes) if combined_df.columns[index] in columns_with_with]
-    combined_df_with_with = combined_df.drop(columns_to_be_removed_by_with, axis=1)
-
-    data_to_plot = [(combined_df, dashes), (combined_df_with_with, dashes_with), (combined_df_without, dashes_without)]
-    png_names = ['all', 'with', 'without']
-
-    for index, data in enumerate(data_to_plot):
-        if index >= 1:
-            continue
-        if len(data[0]) == 0 or len(data[0].columns) == 0:
-            continue
-        # Plot the plot
-        plot = sns.lineplot(data=data[0], palette=custom_palette,
-                            dashes=data[1])
-        plot.set(
-            title=f'{metric} per test instance sorted, using {keep_largest_percent * 100}% largest tests',
-            ylabel=f'{unit}',
-            xlabel='test instances', yscale="log")
-        plt.legend(bbox_to_anchor=(1.02, 1), loc='best', borderaxespad=0)
-
-        plt.savefig(graph_dir + f'{metric}_lines_per_model_{png_names[index]}.png', bbox_inches='tight')
-        plt.clf()'''
     sns.set(rc={'figure.figsize': (11.7, 8.27)})
     if not (len(combined_df) == 0 or len(combined_df.columns) == 0):
         # Plot the plot
