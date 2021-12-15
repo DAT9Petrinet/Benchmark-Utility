@@ -94,6 +94,8 @@ def gui():
             row += 1
             comparison[result] = var
         tk.Button(master, text="Choose", command=master.destroy, bg=BACKGROUND, fg=FOREGROUND).grid(row=max_row, column=column)
+        tk.Button(master, text="Exit", command=sys.exit, bg=BACKGROUND, fg=FOREGROUND).grid(row=max_row + 1,
+                                                                                            column=column)
 
         master.geometry("400x100")
         master.mainloop()
