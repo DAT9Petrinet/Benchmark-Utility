@@ -93,7 +93,10 @@ def plot(data_list, test_names, graph_dir, metric, keep_largest_percent):
             plt.ylim(0, 125)
         else:
             plot.set(yscale="log")
-        plt.legend(bbox_to_anchor=(1.02, 1), loc='best', borderaxespad=0)
+        #plt.legend(bbox_to_anchor=(1.02, 1), loc='best', borderaxespad=0)
+        plt.legend(loc='upper left', borderaxespad=0)
+
+
 
         plt.savefig(graph_dir + f'{metric.replace(" ", "_")}_top_{keep_largest_percent * 100}%.png',
                     bbox_inches='tight')

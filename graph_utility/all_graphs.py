@@ -8,7 +8,7 @@ import pandas as pd
 import answer_simplification_bars
 import better_than_x
 import rule_usage
-import time_memory_lines
+import lines
 import total_reductions
 import utility
 
@@ -151,8 +151,8 @@ def plot_all(data_list, test_names, graph_dir, experiment_to_compare_against_nam
                    'total time']
         for metric in metrics:
             for percentage in [0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1]:
-                time_memory_lines.plot(data_list, test_names, graph_dir + '\\lines\\' + metric.replace(" ", "-") + '\\',
-                                       metric, percentage)
+                lines.plot(data_list, test_names, graph_dir + '\\lines\\' + metric.replace(" ", "-") + '\\',
+                           metric, percentage)
         graphs_made += 1
         print(f"{graphs_made}/{num_graphs} graphs made")
 
