@@ -168,6 +168,8 @@ if __name__ == "__main__":
     script_dir = os.path.dirname(__file__)
     graph_dir = os.path.join(script_dir, '..\\graphs\\')
 
+    tests, graphs, comparison = gui()
+
     # Remove all graphs
     if os.path.isdir(graph_dir):
         shutil.rmtree(graph_dir)
@@ -183,8 +185,6 @@ if __name__ == "__main__":
     os.makedirs(graph_dir + '\\lines\\' + '\\total-time\\')
     os.makedirs(graph_dir + '\\lines\\' + '\\reduced-size\\')
     os.makedirs(graph_dir + '\\lines\\' + '\\state-space-size\\')
-
-    tests, graphs, comparison = gui()
 
     experiment_to_compare_against_name = os.path.split(os.path.splitext(comparison)[0])[1]
     # Directory for all our csv
