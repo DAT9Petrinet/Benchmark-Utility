@@ -199,6 +199,11 @@ if __name__ == "__main__":
     # Find names of the tests, to be used in graphs and file names
     test_names = [os.path.split(os.path.splitext(csv)[0])[1] for csv in tests]
 
+    print(f"Selected graphs {test_names}")
+
+    if not experiment_to_compare_against_name == '':
+        print(f"Compared against {experiment_to_compare_against_name}")
+
     if experiment_to_compare_against_name == 'no-red':
         raise Exception('(all_graphs) Cannot use (no-red) as basis for comparison')
 
