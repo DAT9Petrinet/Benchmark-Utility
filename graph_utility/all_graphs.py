@@ -97,7 +97,7 @@ def gui():
         tk.Button(master, text="Exit", command=sys.exit, bg=BACKGROUND, fg=FOREGROUND).grid(row=max_row + 1,
                                                                                             column=column)
 
-        master.geometry("400x100")
+        master.geometry("400x200")
         master.mainloop()
 
     comp = ''
