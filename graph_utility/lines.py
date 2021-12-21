@@ -98,6 +98,6 @@ def plot(data_list, test_names, graph_dir, metric, keep_largest_percent):
 
 
 
-        plt.savefig(graph_dir + f'{metric.replace(" ", "_")}_top_{keep_largest_percent * 100}%.png',
+        plt.savefig(graph_dir + f'{metric.replace(" ", "_")}_top_{keep_largest_percent * 100}.png',
                     bbox_inches='tight')
         plt.clf()
