@@ -31,7 +31,7 @@ def gui():
     previous_level = 0
     max_row = 0
     for f in all_csv_files:
-        if 'matrix' in f:
+        if 'matrix' in f or 'consistency' in f or 'everything' in f:
             continue
         level = (f.count('\\'))
         if level > 1:
