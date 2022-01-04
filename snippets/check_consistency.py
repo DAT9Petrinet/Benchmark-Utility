@@ -1,8 +1,9 @@
 import os
 import shutil
+import sys
 import tkinter as tk
 from glob import glob
-import sys
+
 import numpy as np
 import pandas as pd
 
@@ -51,9 +52,10 @@ def gui():
         if row > max_row:
             max_row = row
 
-    tk.Button(master, text="Select", command=master.destroy, bg=BACKGROUND, fg=FOREGROUND).grid(row=max_row, column=column)
-    tk.Button(master, text="Exit", command=sys.exit, bg=BACKGROUND, fg=FOREGROUND).grid(row=max_row+1,
-                                                                                              column=column)
+    tk.Button(master, text="Select", command=master.destroy, bg=BACKGROUND, fg=FOREGROUND).grid(row=max_row,
+                                                                                                column=column)
+    tk.Button(master, text="Exit", command=sys.exit, bg=BACKGROUND, fg=FOREGROUND).grid(row=max_row + 1,
+                                                                                        column=column)
     master.mainloop()
 
     chosen_results = [csv_name for csv_name in results.keys() if '.csv' in csv_name and results[csv_name].get() == 1]
@@ -74,28 +76,13 @@ def check_consistency(exp_1, exp_1_name, data_list, test_names, consistency_dir)
         elif test_index < test_names.index(exp_1_name):
             matrix_dict[test_names[test_index]] = np.nan
             continue
-        inconsistent_rows = []
-        for index, row in data.iterrows():
-            same_result = exp_1.iloc[index].answer == row.answer
-            either_row_is_none = (exp_1.iloc[index].answer == 'NONE') or (row.answer == 'NONE')
 
-            if (not same_result) and (not either_row_is_none):
-                inconsistent_rows.append((exp_1.iloc[index], row))
-
-        num_consistent_rows = int(len(inconsistent_rows))
+        combined = exp_1.merge(data, left_index=True, right_index=True)
+        combined = combined.loc[~(combined[f"{test_names[test_index]}@answer"] == combined[f"{exp_1_name}@answer"])]
+        num_consistent_rows = int(len(combined))
         matrix_dict[test_names[test_index]] = num_consistent_rows
         if num_consistent_rows > 0:
-            inconsistent_rows_df = pd.DataFrame()
-            for inconsistent_row in inconsistent_rows:
-                df = pd.Series(dtype=float)
-                for i in range(2):
-                    if i == 0:
-                        inconsistent_row_appended = inconsistent_row[i].add_prefix(exp_1_name + '@')
-                    else:
-                        inconsistent_row_appended = inconsistent_row[i].add_prefix(test_names[test_index] + '@')
-                    df = df.append(inconsistent_row_appended)
-                inconsistent_rows_df = inconsistent_rows_df.append(df, ignore_index=True)
-            inconsistent_rows_df.to_csv(
+            combined.to_csv(
                 f'{consistency_dir}/inconsistent_rows_({exp_1_name})_({test_names[test_index]}).csv')
 
     return matrix_dict
@@ -123,6 +110,10 @@ if __name__ == "__main__":
     print(f"(check_consistency) using experiments to check consistency: {test_names}")
 
     data_list = [pd.read_csv(results_dir + csv) for csv in csvs]
+    for i, data in enumerate(data_list):
+        data.drop(data.index[data['answer'] == 'NONE'], inplace=True)
+        data.set_index(["model name", "query index"], inplace=True)
+        data.rename(columns={col: f"{test_names[i]}@{col}" for col in data.columns}, inplace=True)
 
     matrix_df = pd.DataFrame()
     for index, exp_1 in enumerate(data_list):
