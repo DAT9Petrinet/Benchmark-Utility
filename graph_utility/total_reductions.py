@@ -64,4 +64,4 @@ def plot(data_list, test_names, graph_dir):
                           ha='center', va='center')
 
         plt.savefig(graph_dir + f'total_reductions_{png_names[index]}.png', bbox_inches='tight', dpi=300)
-        plt.clf()
+        plt.close()

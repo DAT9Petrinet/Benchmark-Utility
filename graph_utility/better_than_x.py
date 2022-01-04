@@ -170,7 +170,7 @@ def plot(data_list, test_names, graph_dir, experiment_to_compare_against, keep_l
         plt.savefig(
             graph_dir + f'{how_much_better * 100}%_better_than_{experiment_to_compare_against}_largest_{keep_largest_percent * 100}%_tests_.png',
             bbox_inches='tight', dpi=300)
-        plt.clf()
+        plt.close()
 
     if not os.path.isfile(
             graph_dir + f'eq_compare_to_{experiment_to_compare_against}_largest_{keep_largest_percent * 100}%_tests_all.png'):
@@ -210,4 +210,4 @@ def plot(data_list, test_names, graph_dir, experiment_to_compare_against, keep_l
             plt.savefig(
                 graph_dir + f'eq_compare_to_{experiment_to_compare_against}_largest_{keep_largest_percent * 100}%_tests.png',
                 bbox_inches='tight', dpi=300)
-            plt.clf()
+            plt.close()
