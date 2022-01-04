@@ -80,7 +80,7 @@ def plot(data_list, test_names, graph_dir, metric, keep_largest_percent):
     elif metric == 'reduced size':
         unit = 'ratio given by post size/pre size'
 
-    sns.set(rc={'figure.figsize': (11.7, 8.27)})
+    #sns.set(rc={'figure.figsize': (11.7, 8.27)})
     if not (len(combined_df) == 0 or len(combined_df.columns) == 0):
         # Plot the plot
         plot = sns.lineplot(data=combined_df, palette=custom_palette, dashes=[(1, 0)] * len(combined_df.columns))
