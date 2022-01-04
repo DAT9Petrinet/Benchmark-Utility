@@ -92,7 +92,7 @@ def plot(data_list, test_names, graph_dir, metric, keep_largest_percent):
             plot.set(yscale="linear")
             plt.ylim(0, 125)
         else:
-            plot.set(yscale="log")
+            plot.set(yscale="linear")
         #plt.legend(bbox_to_anchor=(1.02, 1), loc='best', borderaxespad=0)
         plt.legend(loc='upper left', borderaxespad=0)
 
