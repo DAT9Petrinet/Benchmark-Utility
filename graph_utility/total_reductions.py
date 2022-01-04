@@ -63,5 +63,5 @@ def plot(data_list, test_names, graph_dir):
             plot.annotate(int(width), xy=(left + width, bottom + height / 2),
                           ha='center', va='center')
 
-        plt.savefig(graph_dir + f'total_reductions_{png_names[index]}.png', bbox_inches='tight', dpi=300)
+        plt.savefig(graph_dir + f'total_reductions_{png_names[index]}.svg', bbox_inches='tight', dpi=600, format="svg")
         plt.close()

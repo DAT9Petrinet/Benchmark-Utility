@@ -94,5 +94,5 @@ def plot(data_list, test_names, graph_dir):
         left, bottom, width, height = p.get_bbox().bounds
         plot.annotate(int(width), xy=(left + width / 2, bottom + height / 2),
                       ha='center', va='center', rotation=45)
-    plt.savefig(graph_dir + 'answer_simplification_bars.png', dpi=300)
+    plt.savefig(graph_dir + 'answer_simplification_bars.svg', dpi=600, format="svg")
     plt.close()

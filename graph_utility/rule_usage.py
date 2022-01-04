@@ -55,7 +55,7 @@ def plot(data_list, test_names, graph_dir):
                           size=12,
                           xytext=(0, 8),
                           textcoords='offset points')
-        plt.savefig(graph_dir + f'{test_names[test_index]}_rule_usage_absolute.png', dpi=300)
+        plt.savefig(graph_dir + f'{test_names[test_index]}_rule_usage_absolute.svg', dpi=600, format="svg")
         plt.clf()
 
         # Plot the plot
@@ -72,7 +72,7 @@ def plot(data_list, test_names, graph_dir):
                               size=12,
                               xytext=(0, 8),
                               textcoords='offset points')
-        plt.savefig(graph_dir + f'{test_names[test_index]}_rule_usage_percentage.png', dpi=300)
+        plt.savefig(graph_dir + f'{test_names[test_index]}_rule_usage_percentage.svg', dpi=600, format="svg")
         plt.clf()
 
         # Plot the plot
@@ -87,5 +87,5 @@ def plot(data_list, test_names, graph_dir):
                               size=12,
                               xytext=(0, 8),
                               textcoords='offset points')
-        plt.savefig(graph_dir + f'{test_names[test_index]}_rule_usage_absolute_models.png', dpi=300)
+        plt.savefig(graph_dir + f'{test_names[test_index]}_rule_usage_absolute_models.svg', dpi=600, format="svg")
         plt.close()
