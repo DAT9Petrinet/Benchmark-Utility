@@ -4,7 +4,7 @@
 #SBATCH --mail-type=FAIL
 #SBATCH --exclude=naples0[1-2]
 #SBATCH --mem=15G
-#SBATCH -c 4
+#SBATCH -c 2
 
 # Args: <test-name> <binary> <test-folder> <model> <category> <red-time-out> <veri-time-out> <expl-time-out> <bin-options>
 
