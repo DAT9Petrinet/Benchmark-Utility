@@ -6,21 +6,22 @@
 #SBATCH --mem=15G
 #SBATCH -c 4
 
-# Args: <test-name> <binary> <test-folder> <model> <red-time-out> <veri-time-out> <expl-time-out> <bin-options>
+# Args: <test-name> <binary> <test-folder> <model> <category> <red-time-out> <veri-time-out> <expl-time-out> <bin-options>
 
 NAME=$1
 BIN=$2
 TEST_FOLDER=$3
 MODEL=$4
-RED_TIME_OUT=$5
-VERI_TIME_OUT=$6
-EXPL_TIME_OUT=$7
-OPTIONS="$8"
+CATEGORY=$5
+RED_TIME_OUT=$6
+VERI_TIME_OUT=$7
+EXPL_TIME_OUT=$8
+OPTIONS="$9"
 
-SCRATCH="/scratch/naje17/$NAME/$MODEL"
+SCRATCH="/scratch/naje17/$NAME/$MODEL/$CATEGORY"
 
 # Find the number of queries for this model by counting how many times "<property>" appears
-NQ=$(grep "<property>" "$TEST_FOLDER/$MODEL/ReachabilityCardinality.xml" | wc -l)
+NQ=$(grep "<property>" "$TEST_FOLDER/$MODEL/$CATEGORY.xml" | wc -l)
 
 echo "Processing 8 queries of $MODEL ($NQ queries total)"
 
@@ -35,7 +36,7 @@ for Q in $(seq 1 8) ; do
 
 	echo "  Reduction ..."
 
-	RCMD="./$BIN $OPTIONS -d $RED_TIME_OUT -q 0 -x $Q $TEST_FOLDER/$MODEL/model.pnml $TEST_FOLDER/$MODEL/ReachabilityCardinality.xml --write-reduced $PNML --noverify"
+	RCMD="./$BIN $OPTIONS -d $RED_TIME_OUT -q 0 -x $Q $TEST_FOLDER/$MODEL/model.pnml $TEST_FOLDER/$MODEL/$CATEGORY.xml --write-reduced $PNML --noverify"
 	ROUT="output/$(basename $BIN)/$NAME/$MODEL.$Q.rout"
 	
 	# Reduce model+query and store stdout
@@ -45,7 +46,7 @@ for Q in $(seq 1 8) ; do
 
 	echo "  Verification ..."
 
-	VCMD="./$BIN -r 0 -x $Q $PNML $TEST_FOLDER/$MODEL/ReachabilityCardinality.xml"
+	VCMD="./$BIN -r 0 -x $Q $PNML $TEST_FOLDER/$MODEL/$CATEGORY.xml"
 	VOUT="output/$(basename $BIN)/$NAME/$MODEL.$Q.vout"
 	
 	# Verify query and store stdout along with time and memory spent between @@@s
