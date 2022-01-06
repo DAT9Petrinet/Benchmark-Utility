@@ -2,8 +2,7 @@
 
 #SBATCH --time=12:00:00
 #SBATCH --mail-type=FAIL
-#SBATCH --partition=naples
-#SBATCH --exclude=naples0[1-3]
+#SBATCH --exclude=naples0[1-2]
 #SBATCH --mem=15G
 #SBATCH -c 4
 
@@ -23,9 +22,9 @@ SCRATCH="/scratch/naje17/$NAME/$MODEL"
 # Find the number of queries for this model by counting how many times "<property>" appears
 NQ=$(grep "<property>" "$TEST_FOLDER/$MODEL/ReachabilityCardinality.xml" | wc -l)
 
-echo "Processing $MODEL ($NQ queries)"
+echo "Processing 8 queries of $MODEL ($NQ queries total)"
 
-for Q in $(seq 1 $NQ) ; do
+for Q in $(seq 1 8) ; do
 	
 	echo "Q$Q"
 
