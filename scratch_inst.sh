@@ -18,7 +18,7 @@ VERI_TIME_OUT=$7
 EXPL_TIME_OUT=$8
 OPTIONS="$9"
 
-SCRATCH="/scratch/naje17/$NAME/$MODEL/$CATEGORY"
+SCRATCH="/scratch/$(whoami)/$NAME/$MODEL/$CATEGORY"
 
 # Find the number of queries for this model by counting how many times "<property>" appears
 NQ=$(grep "<property>" "$TEST_FOLDER/$MODEL/$CATEGORY.xml" | wc -l)
