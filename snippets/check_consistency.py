@@ -1,109 +1,134 @@
 import os
+import shutil
 import sys
+import tkinter as tk
+from glob import glob
 
 import numpy as np
 import pandas as pd
 
 
-def check_consistency(correct_results, correct_results_name, data_list, test_names, matrix):
+def gui():
+    BACKGROUND = '#C0C0C0'
+    FOREGROUND = '#1923E8'
+    master = tk.Tk()
+    master.configure(bg=BACKGROUND)
+    master.title('Select files to use for consistency')
+    script_dir = os.path.dirname(__file__)
+    results_dir = os.path.join(script_dir, '..\\results\\')
+    all_csv_files = [file.split('results')[1]
+                     for path, subdir, files in os.walk(results_dir)
+                     for file in glob(os.path.join(path, "*.csv"))]
+    results = {}
+    row = 0
+    column = 0
+    previous_top = ''
+    previous_level = 0
+    max_row = 0
+    for f in all_csv_files:
+        if 'matrix' in f or 'consistency' in f or 'everything' in f or 'pre_jan_06' in f:
+            continue
+        level = (f.count('\\'))
+        if level > 1:
+            if column == 0:
+                row = 0
+                column = 1
+            current_top = f.split('\\')[1]
+            if previous_top != '' and previous_top != current_top:
+                column += 1
+                row = 0
+            if level > previous_level and previous_top == current_top:
+                column += 1
+            previous_top = current_top
+
+        var = tk.IntVar()
+        if level == 1 and 'base-rules' in f:
+            var.set(1)
+        tk.Checkbutton(master, text=f, variable=var, bg=BACKGROUND, fg=FOREGROUND).grid(row=row, column=column)
+        results[f] = var
+
+        previous_level = level
+        row += 1
+        if row > max_row:
+            max_row = row
+
+    tk.Button(master, text="Select", command=master.destroy, bg=BACKGROUND, fg=FOREGROUND).grid(row=max_row,
+                                                                                                column=column)
+    tk.Button(master, text="Exit", command=sys.exit, bg=BACKGROUND, fg=FOREGROUND).grid(row=max_row + 1,
+                                                                                        column=column)
+    master.mainloop()
+
+    chosen_results = [csv_name for csv_name in results.keys() if '.csv' in csv_name and results[csv_name].get() == 1]
+
+    category = chosen_results[0].split('\\')[1]
+    for result in chosen_results:
+        curr_category = result.split('\\')[1]
+        if  curr_category != category:
+            raise Exception(f'Comparing across categories {category} and {curr_category}')
+
+    if len(chosen_results) == 0:
+        raise Exception('You did not choose any experiment')
+
+    return chosen_results, category
+
+
+def check_consistency(exp_1, exp_1_name, data_list, test_names, consistency_dir, category):
     matrix_dict = dict()
 
-    if not matrix:
-        print(f"Using {correct_results_name} as the basis for checking consistencies in our data")
-        print("--------------------------------------------------------------------")
-
-        # Remove "correct_results_name" if present in argument list, as we assume this is correct anyways
-        for index, test_name in enumerate(test_names):
-            if correct_results_name == test_name:
-                print(f"{correct_results_name}: trivially consistent \n")
-                data_list.pop(index)
-                test_names.pop(index)
-
     for test_index, data in enumerate(data_list):
-        if matrix:
-            if test_names[test_index] == correct_results_name:
-                matrix_dict[test_names[test_index]] = 0
-                continue
-            elif test_index < test_names.index(correct_results_name):
-                matrix_dict[test_names[test_index]] = np.nan
-                continue
-        inconsistent_rows = []
-        for index, row in data.iterrows():
-            same_result = correct_results.iloc[index].answer == row.answer
-            either_row_is_none = (correct_results.iloc[index].answer == 'NONE') or (row.answer == 'NONE')
+        if test_names[test_index] == exp_1_name:
+            matrix_dict[test_names[test_index]] = np.nan
+            continue
+        elif test_index < test_names.index(exp_1_name):
+            matrix_dict[test_names[test_index]] = np.nan
+            continue
 
-            if (not same_result) and (not either_row_is_none):
-                inconsistent_rows.append((correct_results.iloc[index], row))
+        combined = exp_1.merge(data, left_index=True, right_index=True)
+        combined = combined.loc[~(combined[f"{test_names[test_index]}@answer"] == combined[f"{exp_1_name}@answer"])]
+        num_consistent_rows = int(len(combined))
+        matrix_dict[test_names[test_index]] = num_consistent_rows
+        if num_consistent_rows > 0:
+            combined.to_csv(
+                f'{consistency_dir}/inconsistent_rows_({exp_1_name})_({test_names[test_index]})_{category}.csv')
 
-        if not matrix:
-            if len(inconsistent_rows) == 0:
-                print(f"{test_names[test_index]} is consistent with {correct_results_name}\n")
-                print("--------------------------------------------------------------------")
-            else:
-                print(f"({test_names[test_index]}) is not consistent with ({correct_results_name})\n"
-                      f"Found inconsistencies in answers in: {len(inconsistent_rows)} rows\n")
-                print(f"First instance found of an inconsistency is the model/query combination:")
-                print(f"({correct_results_name}) output:")
-                print(inconsistent_rows[0][0])
-                print("")
-                print(f"({test_names[test_index]}) output:")
-                print(inconsistent_rows[0][1])
-                print("--------------------------------------------------------------------")
-        else:
-            matrix_dict[test_names[test_index]] = int(len(inconsistent_rows))
-
-    if not matrix:
-        print("Done checking for consistency")
-    else:
-        return matrix_dict
+    return matrix_dict
 
 
 if __name__ == "__main__":
-    # What we assume to be correct results
-    if len(sys.argv) == 1:
-        correct_results_name = 'base-rules'
-        matrix = False
-    else:
-        correct_results_name = sys.argv[1]
-        if correct_results_name == 'matrix':
-            matrix = True
-        else:
-            matrix = False
 
     # Find the directory to save figures
     script_dir = os.path.dirname(__file__)
+    results_dir = os.path.join(script_dir, '..\\results')
 
-    # Directory for all our csv
-    csv_dir = os.path.join(script_dir, '../results\\')
+    consistency_dir = (results_dir + '\\consistency')
+
+    # Remove all graphs
+    if os.path.isdir(consistency_dir):
+        shutil.rmtree(consistency_dir)
+
+    os.makedirs(consistency_dir)
 
     # Read csv data
-    csvs = [file for file in os.listdir(csv_dir) if ('.csv' in file) and (correct_results_name not in file)]
+    csvs, category = gui()
 
     # Find names of the tests, to be used in graphs and file names
     test_names = [os.path.split(os.path.splitext(csv)[0])[1] for csv in csvs]
+    print(f"(check_consistency) using experiments to check consistency: {test_names}")
 
-    if not matrix:
-        try:
-            correct_results = pd.read_csv(csv_dir + correct_results_name + '.csv')
-        except:
-            raise Exception(
-                f'({correct_results_name}) is not present in results/ and cannot be used as basis for comparison. '
-                f'Check if you made a typo in the parameter to the program')
+    data_list = [pd.read_csv(results_dir + csv) for csv in csvs]
+    for i, data in enumerate(data_list):
+        data.drop(data.index[data['answer'] == 'NONE'], inplace=True)
+        data.set_index(["model name", "query index"], inplace=True)
+        data.rename(columns={col: f"{test_names[i]}@{col}" for col in data.columns}, inplace=True)
 
-    data_list = [pd.read_csv(csv_dir + csv) for csv in csvs]
+    matrix_df = pd.DataFrame()
+    for index, exp_1 in enumerate(data_list):
+        row = check_consistency(exp_1, test_names[index], data_list, test_names, consistency_dir, category)
+        matrix_df = matrix_df.append(row, ignore_index=True)
 
-    if not matrix:
-        check_consistency(correct_results, correct_results_name, data_list, test_names, matrix)
-    else:
-        matrix_df = pd.DataFrame()
-        for index, correct_results in enumerate(data_list):
-            row = check_consistency(correct_results, test_names[index], data_list, test_names, matrix)
-            matrix_df = matrix_df.append(row, ignore_index=True)
-
-        new_rows_indices = dict()
-        for index, name in enumerate(test_names):
-            new_rows_indices[index] = name
-        matrix_df = matrix_df.rename(index=new_rows_indices)
-        pd.set_option('display.max_columns', None)
-        pd.set_option('display.max_rows', None)
-        print(matrix_df)
+    new_rows_indices = dict()
+    for index, name in enumerate(test_names):
+        new_rows_indices[index] = name
+    matrix_df = matrix_df.rename(index=new_rows_indices)
+    matrix_df.to_csv(f'{consistency_dir}/matrix_{category}.csv')
+    print("Done")
