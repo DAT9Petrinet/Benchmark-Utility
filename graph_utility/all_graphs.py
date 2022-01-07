@@ -80,6 +80,12 @@ def gui():
     if len(chosen_results) == 0:
         raise Exception('You did not choose any experiment')
 
+    category = chosen_results[0].split('\\')[1]
+    for result in chosen_results:
+        curr_category = result.split('\\')[1]
+        if curr_category != category:
+            raise Exception(f'Comparing across categories {category} and {curr_category}')
+
     comparison = {}
     if results['point plot'].get() == 1:
         if len(chosen_results) == 1:
@@ -108,7 +114,7 @@ def gui():
         comp = comparison_list[0]
 
     chosen_graphs = [graph for graph in results.keys() if not ('.csv' in graph) and results[graph].get() == 1]
-    return chosen_results, chosen_graphs, comp
+    return chosen_results, chosen_graphs, comp, category
 
 
 def plot_all(data_list, test_names, graph_dir, experiment_to_compare_against_name, graphs):
@@ -163,12 +169,11 @@ def plot_all(data_list, test_names, graph_dir, experiment_to_compare_against_nam
 
 
 if __name__ == "__main__":
+    tests, graphs, comparison, category = gui()
 
     # Find the directory to save figures
     script_dir = os.path.dirname(__file__)
-    graph_dir = os.path.join(script_dir, '..\\graphs\\')
-
-    tests, graphs, comparison = gui()
+    graph_dir = os.path.join(script_dir, f'..\\graphs\\{category}\\')
 
     # Remove all graphs
     if os.path.isdir(graph_dir):
