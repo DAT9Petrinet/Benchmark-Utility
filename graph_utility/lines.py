@@ -13,16 +13,17 @@ def plot(data_list, test_names, graph_dir, metric, keep_largest_percent):
         [2, 2, 10, 2],
         [5, 5],
         [6, 2],
-        [3, 4, 1, 5],
-        [3, 5, 1, 5],
+        [3, 1],
+        [3, 1, 3, 1, 1, 1],
         [3, 1, 1, 1],
         [3, 5, 1, 5, 1, 5],
-        [3, 10, 1, 10, 1, 10],
+        [1, 1, 3, 1, 6, 1],
         [3, 1, 1, 1, 1, 1]]
 
     base_width = 3
     other_width = 1.5
     base_name = 'fixedbase'
+    print(f"(lines) name for base results {base_name}")
 
     """
     Can be called with a column name, and will plot all values from this column sorted as a line.
