@@ -149,7 +149,7 @@ def plot(data_list, test_names, graph_dir, experiment_to_compare_against, keep_l
              utility.unique_answers_comparison(derived_jable_sized, experiment_to_compare_against, test_names),
              'unique answers',
              test_names)).tolist(),
-         }, index=test_names).drop('base-rules')
+         }, index=test_names).drop(experiment_to_compare_against)
 
     if len(points_df) != 0:
         # Plot the plots
@@ -190,7 +190,7 @@ def plot(data_list, test_names, graph_dir, experiment_to_compare_against, keep_l
              'total time': get_points_by_metric(derived_jable_sized, 'total time', test_names,
                                                 experiment_to_compare_against, True, how_much_better),
              'answered queries': answer_df,
-             }, index=test_names).drop('base-rules')
+             }, index=test_names).drop(experiment_to_compare_against)
 
         if len(points_eq_df) != 0:
             # Plot the second plot with with

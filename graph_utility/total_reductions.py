@@ -40,14 +40,11 @@ def plot(data_list, test_names, graph_dir):
     # Rename indices to be test names, instead of int index
     points_df = utility.rename_index_to_test_name(points_df, test_names)
 
-    data_to_plot = utility.split_into_all_with_without(points_df)
-    png_names = ['all', 'with', 'without']
+    #data_to_plot = utility.split_into_all_with_without(points_df)
+    #png_names = ['all', 'with', 'without']
 
-    for index, data in enumerate(data_to_plot):
-        if index > 0:
-            continue
-        if len(data) == 0 or len(data.columns) == 0:
-            continue
+
+    if len(points_df) != 0 and len(points_df.columns) != 0:
         # Plot the plot
         sns.set_theme(style="darkgrid", palette="pastel")
         plot = data.plot(kind='barh', width=0.75, linewidth=2, figsize=(10, 10))
@@ -63,5 +60,5 @@ def plot(data_list, test_names, graph_dir):
             plot.annotate(int(width), xy=(left + width, bottom + height / 2),
                           ha='center', va='center')
 
-        plt.savefig(graph_dir + f'total_reductions_{png_names[index]}.svg', bbox_inches='tight', dpi=600, format="svg")
+        plt.savefig(graph_dir + f'total_reductions.svg', bbox_inches='tight', dpi=600, format="svg")
         plt.close()

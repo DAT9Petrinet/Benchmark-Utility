@@ -92,19 +92,7 @@ def rename_index_to_test_name(df, test_names):
     return df
 
 
-def split_into_all_with_without(df):
-    columns_with = [test_name for test_name in df.T.columns if
-                    ("with" in test_name) or ("base-rules" in test_name)]
-    columns_not_with = [test_name for test_name in df.T.columns if
-                        "with" not in test_name or ("base-rules" in test_name)]
 
-    columns_to_be_removed_by_with = [column for column in df.T.columns if column not in columns_with]
-    columns_to_be_removed_by_without = [column for column in df.T.columns if column not in columns_not_with]
-
-    df_without = df.drop(columns_to_be_removed_by_without)
-    df_with = df.drop(columns_to_be_removed_by_with)
-
-    return [df, df_with, df_without]
 
 
 def make_derived_jable(csvs, exp_names):
@@ -134,15 +122,6 @@ def make_derived_jable(csvs, exp_names):
                 f'{exp_name}@{time} transition count']
         jable[f'{exp_name}@reduced size'] = (jable[f'{exp_name}@post size'] - jable[
             f'{exp_name}@prev size'])
-
-    # Unique answer
-    '''answer_columns = [experiment_column + '@' + 'answer' for experiment_column in exp_names]
-    everything['unique answers'] = everything[answer_columns].apply(
-        lambda row: row.index[row != 'NONE'][0].split("@", 1)[0] if 'NONE' in (row.value_counts().index) and
-                                                                    row.value_counts()[
-                                                                        'NONE'] == len(exp_names) - 1 else np.nan,
-        axis=1)'''
-
     return jable
 
 
@@ -262,3 +241,18 @@ def remove_errors_datalist(data_list):
     for data in data_list:
         data.drop(data[data['answer'] == 'ERR'].index, inplace=True)
     return data_list
+
+'''
+def split_into_all_with_without(df):
+    columns_with = [test_name for test_name in df.T.columns if
+                    ("with" in test_name) or ("base-rules" in test_name)]
+    columns_not_with = [test_name for test_name in df.T.columns if
+                        "with" not in test_name or ("base-rules" in test_name)]
+
+    columns_to_be_removed_by_with = [column for column in df.T.columns if column not in columns_with]
+    columns_to_be_removed_by_without = [column for column in df.T.columns if column not in columns_not_with]
+
+    df_without = df.drop(columns_to_be_removed_by_without)
+    df_with = df.drop(columns_to_be_removed_by_with)
+
+    return [df, df_with, df_without]'''

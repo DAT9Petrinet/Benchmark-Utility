@@ -8,6 +8,22 @@ import utility
 
 
 def plot(data_list, test_names, graph_dir, metric, keep_largest_percent):
+    linestyles = [
+        [1, 1],
+        [2, 2, 10, 2],
+        [5, 5],
+        [6, 2],
+        [3, 4, 1, 5],
+        [3, 5, 1, 5],
+        [3, 1, 1, 1],
+        [3, 5, 1, 5, 1, 5],
+        [3, 10, 1, 10, 1, 10],
+        [3, 1, 1, 1, 1, 1]]
+
+    base_width = 3
+    other_width = 1.5
+    base_name = 'fixedbase'
+
     """
     Can be called with a column name, and will plot all values from this column sorted as a line.
     Can be called with multiple csvs, and will plot all lines on same graph
@@ -80,10 +96,18 @@ def plot(data_list, test_names, graph_dir, metric, keep_largest_percent):
     elif metric == 'reduced size':
         unit = 'ratio given by post size/pre size'
 
-    #sns.set(rc={'figure.figsize': (11.7, 8.27)})
+    my_dashes = linestyles[0:len(combined_df.columns) - 1]
+    columns_without_base = [column for column in combined_df.columns if column != 'fixedbase']
+    # sns.set(rc={'figure.figsize': (11.7, 8.27)})
     if not (len(combined_df) == 0 or len(combined_df.columns) == 0):
         # Plot the plot
-        plot = sns.lineplot(data=combined_df, palette=custom_palette, dashes=[(1, 0)] * len(combined_df.columns))
+        #
+        if base_name in test_names:
+            sns.lineplot(data=combined_df[base_name], palette=custom_palette, linewidth=base_width, label='base')
+            plot = sns.lineplot(data=combined_df[columns_without_base], palette=custom_palette, linewidth=other_width,
+                                dashes=my_dashes)
+        else:
+            plot = sns.lineplot(data=combined_df, palette=custom_palette)
         plot.set(
             title=f'{metric} per test instance sorted, using {keep_largest_percent * 100}% largest tests',
             ylabel=f'{unit}',
@@ -91,13 +115,12 @@ def plot(data_list, test_names, graph_dir, metric, keep_largest_percent):
         if metric == "reduced size":
             plot.set(yscale="linear")
             plt.ylim(0, 125)
-        elif metric == "state space size":
+        elif metric in ["state space size", 'verification memory']:
             plot.set(yscale="log")
         else:
             plot.set(yscale="linear")
-        #plt.legend(bbox_to_anchor=(1.02, 1), loc='best', borderaxespad=0)
+        # plt.legend(bbox_to_anchor=(1.02, 1), loc='best', borderaxespad=0)
         plt.legend(loc='upper left', borderaxespad=0)
-
         plt.savefig(graph_dir + f'{metric.replace(" ", "_")}_top_{keep_largest_percent * 100}.svg',
                     bbox_inches='tight', dpi=600, format="svg")
         plt.close()
