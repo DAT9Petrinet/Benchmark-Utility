@@ -1,4 +1,5 @@
 import copy
+import os
 
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -23,12 +24,13 @@ def plot(data_list, test_names, graph_dir, metric, keep_largest_percent):
     base_width = 3
     other_width = 1.5
     base_name = 'fixedbase'
-    print(f"(lines) name for base results {base_name}")
+    cutoff_time = {'total time': 5, 'verification time': 5, 'reduce time': 5}
 
-    """
-    Can be called with a column name, and will plot all values from this column sorted as a line.
-    Can be called with multiple csvs, and will plot all lines on same graph
-    """
+    time_metrics = ['total time', 'verification time', 'reduce time']
+
+    if metric in time_metrics and os.path.isfile(
+            graph_dir + f'{metric.replace(" ", "_")}_above_{cutoff_time[metric]}_seconds.svg'):
+        return
 
     # The deepcopies are because in the 'all_graphs' the data_list are used for all plots,
     # so each function will make their own copy
@@ -70,7 +72,10 @@ def plot(data_list, test_names, graph_dir, metric, keep_largest_percent):
             metric_data = ((res_df[f'{metric}'].sort_values()).reset_index()).drop(columns=
                                                                                    'index')
 
-        metric_data = metric_data.tail(n)
+        if metric in time_metrics:
+            metric_data = metric_data[metric_data[metric] >= cutoff_time[metric]]
+        else:
+            metric_data = metric_data.tail(n)
 
         # Rename the column to include the name of the test
         metric_data.rename(columns={f'{metric}': test_names[index]}, inplace=True)
@@ -110,9 +115,14 @@ def plot(data_list, test_names, graph_dir, metric, keep_largest_percent):
         else:
             plot = sns.lineplot(data=combined_df, palette=custom_palette)
         plot.set(
-            title=f'{metric} per test instance sorted, using {keep_largest_percent * 100}% largest tests',
             ylabel=f'{unit}',
             xlabel='test instances')
+
+        if metric in time_metrics:
+            plot.set(title=f'{metric} per test instance sorted, above {cutoff_time[metric]} seconds')
+        else:
+            plot.set(title=f'{metric} per test instance sorted, using {keep_largest_percent * 100}% largest tests')
+
         if metric == "reduced size":
             plot.set(yscale="linear")
             plt.ylim(0, 125)
@@ -122,6 +132,11 @@ def plot(data_list, test_names, graph_dir, metric, keep_largest_percent):
             plot.set(yscale="linear")
         # plt.legend(bbox_to_anchor=(1.02, 1), loc='best', borderaxespad=0)
         plt.legend(loc='upper left', borderaxespad=0)
-        plt.savefig(graph_dir + f'{metric.replace(" ", "_")}_top_{keep_largest_percent * 100}.svg',
-                    bbox_inches='tight', dpi=600, format="svg")
+
+        if metric in time_metrics:
+            plt.savefig(graph_dir + f'{metric.replace(" ", "_")}_above_{cutoff_time[metric]}_seconds.svg',
+                        bbox_inches='tight', dpi=600, format="svg")
+        else:
+            plt.savefig(graph_dir + f'{metric.replace(" ", "_")}_top_{keep_largest_percent * 100}.svg',
+                        bbox_inches='tight', dpi=600, format="svg")
         plt.close()

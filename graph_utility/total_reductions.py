@@ -40,9 +40,8 @@ def plot(data_list, test_names, graph_dir):
     # Rename indices to be test names, instead of int index
     points_df = utility.rename_index_to_test_name(points_df, test_names)
 
-    #data_to_plot = utility.split_into_all_with_without(points_df)
-    #png_names = ['all', 'with', 'without']
-
+    # data_to_plot = utility.split_into_all_with_without(points_df)
+    # png_names = ['all', 'with', 'without']
 
     if len(points_df) != 0 and len(points_df.columns) != 0:
         # Plot the plot
