@@ -135,7 +135,7 @@ def get_reduced_size(row):
         pre_size = get_pre_size(row)
         post_size = get_post_size(row)
         return ((post_size / pre_size) * 100) if post_size > 0 and ((post_size / pre_size) * 100) < 100 and (
-                    (post_size / pre_size) * 100) > 0 else np.nan
+                (post_size / pre_size) * 100) > 0 else np.nan
     else:
         return np.nan
 
@@ -240,18 +240,27 @@ def remove_errors_datalist(data_list):
         data.drop(data[data['answer'] == 'ERR'].index, inplace=True)
     return data_list
 
+
 def rename_test_name_for_paper_presentation(test_names):
     new_test_names = {}
     for test_name in test_names:
         if "fixed" in test_name:
             new_test_name = test_name.replace('fixed', '')
-        else:
-            new_test_name = test_name.replace('with-', 'base.')
+        elif "with" in test_name:
+            splits = test_name.split('-')
 
-        new_test_name = f"({new_test_name})⃰"
+            if len(splits) > 0:
+                rules = ""
+                split_rules = list(splits)[1]
+                for i, split in enumerate(split_rules):
+                    rules += f"{split}⃰"
+                    if i < len(split_rules) - 1:
+                        rules += "."
+            new_test_name = f"(base.{rules})⃰"
 
         new_test_names[test_name] = new_test_name
     return new_test_names
+
 
 '''
 def split_into_all_with_without(df):
