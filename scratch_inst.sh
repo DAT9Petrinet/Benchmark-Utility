@@ -41,7 +41,7 @@ for Q in $(seq 1 8) ; do
 	
 	# Reduce model+query and store stdout
 
-	O=$(eval "$RCMD" 2>&1)
+	O=$(eval "$RCMD")
 	eval "$O" > "$ROUT"
 
 	# ===================== VERIFICATION =====================
@@ -52,7 +52,7 @@ for Q in $(seq 1 8) ; do
 	VOUT="output/$(basename $BIN)/$NAME/$MODEL.$Q.vout"
 	
 	# Verify query and store stdout along with time and memory spent between @@@s
-	O=$(eval "/usr/bin/time -f '@@@%e,%M@@@' timeout ${VERI_TIME_OUT}m $VCMD" 2>&1)
+	O=$(eval "/usr/bin/time -f '@@@%e,%M@@@' timeout ${VERI_TIME_OUT}m $VCMD")
 	eval "$O" > "$VOUT"
 
 	# ===================== EXPLORATION ======================
