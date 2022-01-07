@@ -2,7 +2,6 @@ from pathlib import Path
 
 import pandas as pd
 
-
 root = Path(__file__).parent.parent
 data_dir = root / "results"
 

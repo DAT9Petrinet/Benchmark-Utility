@@ -7,6 +7,8 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 
+import utility
+
 
 def plot(data_list, test_names, graph_dir):
     """
@@ -19,33 +21,10 @@ def plot(data_list, test_names, graph_dir):
     data_list = copy.deepcopy(data_list)
     test_names = copy.deepcopy(test_names)
 
-    for test_index, name in enumerate(test_names):
-        if 'no-red' in name:
-            data_list.pop(test_index)
-            test_names.pop(test_index)
+    data_list, test_names = utility.remove_no_red(data_list, test_names)
 
     # Find test instances that no experiment managed to reduce
-    rows_to_delete = set()
-    for index, data in enumerate(data_list):
-        # Find all indices where the query has been solved by simplification
-        simplification_indices = set((data.index[data['solved by query simplification']]).tolist())
-
-        # Find all rows where we have 'NONE' answer
-        answer_indices = set((data.index[data['answer'] == 'NONE']).tolist())
-
-        # Take the union
-        combined_indices = answer_indices.union(simplification_indices)
-
-        # Only interested in finding the rows that NO experiment managed to reduce
-        # So take intersection
-        if index == 0:
-            rows_to_delete = combined_indices
-        else:
-            rows_to_delete = rows_to_delete.intersection(combined_indices)
-
-    # Remove the rows from all data files
-    for data in data_list:
-        data.drop(rows_to_delete, inplace=True)
+    data_list = utility.filter_out_test_instances_that_were_not_reduced_by_any(data_list)
 
     # Time to actually find the reduced sizes, collect in reduced_sizes
     reduced_sizes = pd.DataFrame()
@@ -62,24 +41,16 @@ def plot(data_list, test_names, graph_dir):
 
         # This block removes all np.nan in the reduced_sizes_list
         # And also all rows that were not reduced (i.e size == 100)
-        reduced_sizes_list = [size for size in reduced_sizes_list if (np.isfinite(size) and size < 100)]
+        reduced_sizes_list = [size for size in reduced_sizes_list if (np.isfinite(size))]
         reduced_sizes_list.sort()
         reduced_frame = pd.DataFrame(reduced_sizes_list, columns=[f'{test_names[test_index]}'])
 
         # Add to the dataframe containing results from all experiments
         reduced_sizes = pd.concat([reduced_sizes, reduced_frame], axis=1)
 
-    def color(t):
-        a = np.array([0.5, 0.5, 0.5])
-        b = np.array([0.5, 0.5, 0.5])
-        c = np.array([1.0, 1.0, 1.0])
-        d = np.array([0.0, 0.33, 0.67])
-
-        return a + (b * np.cos(2 * np.pi * (c * t + d)))
-
     custom_palette = {}
     for column_index, column in enumerate(reduced_sizes.columns):
-        custom_palette[column] = color((column_index + 1) / len(reduced_sizes.columns))
+        custom_palette[column] = utility.color((column_index + 1) / len(reduced_sizes.columns))
 
     # Add the spacing between markers in plot
     marker_interval = int(len(reduced_sizes.index) / 20)

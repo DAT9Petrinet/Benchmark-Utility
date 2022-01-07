@@ -11,5 +11,6 @@ __pycache__
 graphs/
 sizes/*
 !sizes/query.xml
+consistency/
 RC_types/*
 results/everything/

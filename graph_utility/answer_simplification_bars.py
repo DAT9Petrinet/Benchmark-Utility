@@ -1,6 +1,4 @@
 import copy
-import os
-import sys
 
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -37,9 +35,12 @@ def plot(data_list, test_names, graph_dir):
         # Get counts of 'simplified' and 'not simplified'
         simplifications = (data['solved by query simplification'].value_counts()).to_frame()
 
+        simplifications.drop('ERR', inplace=True)
+
         # Combine into same dataframe, with column being the test name, and row indices being above metrics
         answers.rename(columns={'answer': test_names[index]}, inplace=True)
         simplifications.rename(columns={'solved by query simplification': test_names[index]}, inplace=True)
+
         temp = answers.append(simplifications)
 
         # Might not have these columns, due to faulty test, so wrap in try-except
@@ -70,8 +71,7 @@ def plot(data_list, test_names, graph_dir):
                 continue
 
         # Reorder the columns so that bars are stacked nicely
-        # This perfectly fits with the columns should be in exact opposite order :)
-        temp = temp[temp.columns[::-1]]
+        temp = temp[["reduced", "simplified", "not answered", "ERR"]]
 
         # Add data from this experiment, to results from other experiments
         combined = combined.append(temp)
@@ -93,24 +93,6 @@ def plot(data_list, test_names, graph_dir):
     for p in plot.patches:
         left, bottom, width, height = p.get_bbox().bounds
         plot.annotate(int(width), xy=(left + width / 2, bottom + height / 2),
-                      ha='center', va='center')
-    plt.savefig(graph_dir + 'answer_simplification_bars.png')
-    plt.clf()
-
-
-if __name__ == "__main__":
-    # Find the directory to save figures
-    script_dir = os.path.dirname(__file__)
-    graph_dir = os.path.join(script_dir, '..\\graphs\\' + '\\best-experiment\\')
-
-    if not os.path.isdir(graph_dir):
-        os.makedirs(graph_dir)
-
-    # Read data given as arguments
-    paths = sys.argv[1:]
-    data_list = [pd.read_csv(path) for path in paths]
-
-    # Find name of the tests
-    test_names = [os.path.split(os.path.splitext(path)[0])[1] for path in paths]
-
-    plot(data_list, test_names, graph_dir)
+                      ha='center', va='center', rotation=45)
+    plt.savefig(graph_dir + 'answer_simplification_bars.svg', dpi=600, format="svg")
+    plt.close()

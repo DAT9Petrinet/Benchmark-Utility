@@ -4,9 +4,10 @@ import re
 import sys
 
 import matplotlib.pyplot as plt
-import numpy as np
 import pandas as pd
 import seaborn as sns
+
+import utility
 
 
 def plot(data_list, test_names, graph_dir):
@@ -54,14 +55,6 @@ def plot(data_list, test_names, graph_dir):
     regex = r"(.*)-(time|memory)$"
     sns.set_theme(style="darkgrid")
 
-    def color(t):
-        a = np.array([0.5, 0.5, 0.5])
-        b = np.array([0.5, 0.5, 0.5])
-        c = np.array([1.0, 1.0, 1.0])
-        d = np.array([0.0, 0.33, 0.67])
-
-        return a + (b * np.cos(2 * np.pi * (c * t + d)))
-
     custom_palette = {}
     dashes = []
     for column_index, column in enumerate(combined_df.columns):
@@ -74,7 +67,7 @@ def plot(data_list, test_names, graph_dir):
                 dashes.append((2, 2))
             else:
                 raise Exception("(time_memory_combined) Should not be able to reach this")
-            custom_palette[column] = color((column_index + 1) / len(combined_df.columns))
+            custom_palette[column] = utility.color((column_index + 1) / len(combined_df.columns))
 
     columns_with_with = [test_name for test_name in combined_df.columns if
                          ("with" in test_name) or ("base-rules" in test_name)]
