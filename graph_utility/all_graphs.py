@@ -1,14 +1,15 @@
 import os
 import shutil
+import sys
 import tkinter as tk
 from glob import glob
-import sys
+
 import pandas as pd
 
 import answer_simplification_bars
 import better_than_x
-import rule_usage
 import lines
+import rule_usage
 import total_reductions
 import utility
 
@@ -70,9 +71,10 @@ def gui():
         results[graph] = var
         row += 1
 
-    tk.Button(master, text="Next", command=master.destroy, bg=BACKGROUND, fg=FOREGROUND).grid(row=max_row, column=column)
-    tk.Button(master, text="Exit", command=sys.exit, bg=BACKGROUND, fg=FOREGROUND).grid(row=max_row+1,
+    tk.Button(master, text="Next", command=master.destroy, bg=BACKGROUND, fg=FOREGROUND).grid(row=max_row,
                                                                                               column=column)
+    tk.Button(master, text="Exit", command=sys.exit, bg=BACKGROUND, fg=FOREGROUND).grid(row=max_row + 1,
+                                                                                        column=column)
     master.mainloop()
 
     chosen_results = [csv_name for csv_name in results.keys() if '.csv' in csv_name and results[csv_name].get() == 1]
@@ -99,7 +101,8 @@ def gui():
             tk.Checkbutton(master, text=result, variable=var, bg=BACKGROUND, fg=FOREGROUND).grid(row=row)
             row += 1
             comparison[result] = var
-        tk.Button(master, text="Choose", command=master.destroy, bg=BACKGROUND, fg=FOREGROUND).grid(row=max_row, column=column)
+        tk.Button(master, text="Choose", command=master.destroy, bg=BACKGROUND, fg=FOREGROUND).grid(row=max_row,
+                                                                                                    column=column)
         tk.Button(master, text="Exit", command=sys.exit, bg=BACKGROUND, fg=FOREGROUND).grid(row=max_row + 1,
                                                                                             column=column)
 

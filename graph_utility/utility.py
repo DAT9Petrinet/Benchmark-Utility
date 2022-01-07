@@ -92,9 +92,6 @@ def rename_index_to_test_name(df, test_names):
     return df
 
 
-
-
-
 def make_derived_jable(csvs, exp_names):
     needed_columns = ['model name', 'query index', 'answer', 'verification time', 'verification memory',
                       'prev place count', 'post place count',
@@ -137,7 +134,8 @@ def get_reduced_size(row):
     if row['prev place count'] > 0:
         pre_size = get_pre_size(row)
         post_size = get_post_size(row)
-        return ((post_size / pre_size) * 100) if post_size > 0 else np.nan
+        return ((post_size / pre_size) * 100) if post_size > 0 and ((post_size / pre_size) * 100) < 100 and (
+                    (post_size / pre_size) * 100) > 0 else np.nan
     else:
         return np.nan
 
@@ -241,6 +239,7 @@ def remove_errors_datalist(data_list):
     for data in data_list:
         data.drop(data[data['answer'] == 'ERR'].index, inplace=True)
     return data_list
+
 
 '''
 def split_into_all_with_without(df):
