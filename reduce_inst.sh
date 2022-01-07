@@ -32,7 +32,7 @@ for Q in $(seq 1 $NQ) ; do
 	OUT="output/$(basename $BIN)/$NAME/$MODEL.$Q.rout"
 	
 	# Reduce model+query and store stdout
-	O=$(eval "$CMD" 2>&1)
+	O=$(eval "$CMD")
 	eval "$O" > "$OUT"
 	
 done
