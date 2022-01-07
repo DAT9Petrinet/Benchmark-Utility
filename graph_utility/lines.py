@@ -116,12 +116,12 @@ def plot(data_list, test_names, graph_dir, metric, keep_largest_percent):
             plot = sns.lineplot(data=combined_df, palette=custom_palette)
         plot.set(
             ylabel=f'{unit}',
-            xlabel='test instances')
+            xlabel='queries')
 
-        if metric in time_metrics:
-            plot.set(title=f'{metric} per test instance sorted, above {cutoff_time[metric]} seconds')
-        else:
-            plot.set(title=f'{metric} per test instance sorted, using {keep_largest_percent * 100}% largest tests')
+        #if metric in time_metrics:
+        #    plot.set(title=f'{metric} per test instance sorted, above {cutoff_time[metric]} seconds')
+        #else:
+        #    plot.set(title=f'{metric} per test instance sorted, using {keep_largest_percent * 100}% largest tests')
 
         if metric == "reduced size":
             plot.set(yscale="linear")
