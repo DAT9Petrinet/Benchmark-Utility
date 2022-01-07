@@ -26,7 +26,7 @@ def gui():
     previous_level = 0
     max_row = 0
     for f in all_csv_files:
-        if 'matrix' in f or 'consistency' in f or 'everything' in f:
+        if 'matrix' in f or 'consistency' in f or 'everything' in f or 'pre_jan_06' in f:
             continue
         level = (f.count('\\'))
         if level > 1:
@@ -60,13 +60,19 @@ def gui():
 
     chosen_results = [csv_name for csv_name in results.keys() if '.csv' in csv_name and results[csv_name].get() == 1]
 
+    category = chosen_results[0].split('\\')[1]
+    for result in chosen_results:
+        curr_category = result.split('\\')[1]
+        if  curr_category != category:
+            raise Exception(f'Comparing across categories {category} and {curr_category}')
+
     if len(chosen_results) == 0:
         raise Exception('You did not choose any experiment')
 
-    return chosen_results
+    return chosen_results, category
 
 
-def check_consistency(exp_1, exp_1_name, data_list, test_names, consistency_dir):
+def check_consistency(exp_1, exp_1_name, data_list, test_names, consistency_dir, category):
     matrix_dict = dict()
 
     for test_index, data in enumerate(data_list):
@@ -83,7 +89,7 @@ def check_consistency(exp_1, exp_1_name, data_list, test_names, consistency_dir)
         matrix_dict[test_names[test_index]] = num_consistent_rows
         if num_consistent_rows > 0:
             combined.to_csv(
-                f'{consistency_dir}/inconsistent_rows_({exp_1_name})_({test_names[test_index]}).csv')
+                f'{consistency_dir}/inconsistent_rows_({exp_1_name})_({test_names[test_index]})_{category}.csv')
 
     return matrix_dict
 
@@ -103,7 +109,7 @@ if __name__ == "__main__":
     os.makedirs(consistency_dir)
 
     # Read csv data
-    csvs = gui()
+    csvs, category = gui()
 
     # Find names of the tests, to be used in graphs and file names
     test_names = [os.path.split(os.path.splitext(csv)[0])[1] for csv in csvs]
@@ -117,12 +123,12 @@ if __name__ == "__main__":
 
     matrix_df = pd.DataFrame()
     for index, exp_1 in enumerate(data_list):
-        row = check_consistency(exp_1, test_names[index], data_list, test_names, consistency_dir)
+        row = check_consistency(exp_1, test_names[index], data_list, test_names, consistency_dir, category)
         matrix_df = matrix_df.append(row, ignore_index=True)
 
     new_rows_indices = dict()
     for index, name in enumerate(test_names):
         new_rows_indices[index] = name
     matrix_df = matrix_df.rename(index=new_rows_indices)
-    matrix_df.to_csv(f'{consistency_dir}/matrix.csv')
+    matrix_df.to_csv(f'{consistency_dir}/matrix_{category}.csv')
     print("Done")

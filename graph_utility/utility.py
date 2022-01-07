@@ -75,14 +75,12 @@ def color(t):
 
 def sanitise_df(df):
     df = infer_errors(df)
-    return infer_simplification_from_prev_size_0_rows(df)
+    df = infer_simplification_from_prev_size_0_rows(df)
+    return df
 
 
 def sanitise_df_list(datalist):
-    sanitised_datalist = []
-    for df in datalist:
-        sanitised_datalist.append(sanitise_df(df))
-    return sanitised_datalist
+    return [sanitise_df(df) for df in datalist]
 
 
 def rename_index_to_test_name(df, test_names):
