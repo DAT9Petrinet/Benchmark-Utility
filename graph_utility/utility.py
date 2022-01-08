@@ -267,7 +267,7 @@ def rename_test_name_for_paper_presentation(test_names):
                                 rules += "."
 
             if "with" in test_name:
-                new_test_name = f"(base⃰.{rules})⃰"
+                new_test_name = f"(base.{rules})⃰"
             else:
                 new_test_name = f"({rules})⃰"
 
