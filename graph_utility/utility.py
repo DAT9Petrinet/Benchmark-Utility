@@ -246,17 +246,30 @@ def rename_test_name_for_paper_presentation(test_names):
     for test_name in test_names:
         if "fixed" in test_name:
             new_test_name = test_name.replace('fixed', '')
-        elif "with" in test_name:
+        elif "base" in test_name:
+            new_test_name = f"(TAPAAL)⃰"
+        else:
             splits = test_name.split('-')
 
             if len(splits) > 0:
                 rules = ""
                 split_rules = list(splits)[1]
                 for i, split in enumerate(split_rules):
-                    rules += f"{split}⃰"
-                    if i < len(split_rules) - 1:
-                        rules += "."
-            new_test_name = f"(base.{rules})⃰"
+                    if split.isalpha():
+                        rules += f"{split}⃰"
+
+                        if i < len(split_rules) - 1:
+                            any_next_rules = False
+                            for split1 in split_rules[i + 1:]:
+                                if split1.isalpha():
+                                    any_next_rules = True
+                            if any_next_rules:
+                                rules += "."
+
+            if "with" in test_name:
+                new_test_name = f"(base.{rules})⃰"
+            else:
+                new_test_name = f"({rules})⃰"
 
         new_test_names[test_name] = new_test_name
     return new_test_names
