@@ -24,12 +24,12 @@ def plot(data_list, test_names, graph_dir, metric, keep_largest_percent):
     base_width = 3
     other_width = 1.5
     base_name = 'base'
-    cutoff_time = {'total time': 5, 'verification time': 5, 'reduce time': 5}
+    cutoff_times = {'total time': 5, 'verification time': 5, 'reduce time': 5}
 
     time_metrics = ['total time', 'verification time', 'reduce time']
 
     if metric in time_metrics and os.path.isfile(
-            graph_dir + f'{metric.replace(" ", "_")}_above_{cutoff_time[metric]}_seconds.svg'):
+            graph_dir + f'{metric.replace(" ", "_")}_above_{cutoff_times[metric]}_seconds.svg'):
         return
 
     # The deepcopies are because in the 'all_graphs' the data_list are used for all plots,
@@ -73,7 +73,7 @@ def plot(data_list, test_names, graph_dir, metric, keep_largest_percent):
                                                                                    'index')
 
         if metric in time_metrics:
-            metric_data = metric_data[metric_data[metric] >= cutoff_time[metric]]
+            metric_data = metric_data[metric_data[metric] >= cutoff_times[metric]]
         else:
             metric_data = metric_data.tail(n)
 
@@ -136,7 +136,7 @@ def plot(data_list, test_names, graph_dir, metric, keep_largest_percent):
         plt.legend(loc='upper left', borderaxespad=0)
 
         if metric in time_metrics:
-            plt.savefig(graph_dir + f'{metric.replace(" ", "_")}_above_{cutoff_time[metric]}_seconds.svg',
+            plt.savefig(graph_dir + f'{metric.replace(" ", "_")}_above_{cutoff_times[metric]}_seconds.svg',
                         bbox_inches='tight', dpi=600, format="svg")
         else:
             plt.savefig(graph_dir + f'{metric.replace(" ", "_")}_top_{keep_largest_percent * 100}.svg',
