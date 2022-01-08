@@ -8,6 +8,8 @@
 
 # Args: <test-name> <binary> <test-folder> <model> <category> <red-time-out> <veri-time-out> <expl-time-out> <bin-options>
 
+echo "Arguments: $@"
+
 NAME=$1
 BIN=$2
 TEST_FOLDER=$3
@@ -42,7 +44,7 @@ for Q in $(seq 1 8) ; do
 	# Reduce model+query and store stdout
 
 	O=$(eval "$RCMD")
-	eval "$O" > "$ROUT"
+	echo "$O" > "$ROUT"
 
 	# ===================== VERIFICATION =====================
 
@@ -53,7 +55,7 @@ for Q in $(seq 1 8) ; do
 	
 	# Verify query and store stdout along with time and memory spent between @@@s
 	O=$(eval "/usr/bin/time -f '@@@%e,%M@@@' timeout ${VERI_TIME_OUT}m $VCMD")
-	eval "$O" > "$VOUT"
+	echo "$O" > "$VOUT"
 
 	# ===================== EXPLORATION ======================
 

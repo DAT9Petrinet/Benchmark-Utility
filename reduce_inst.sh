@@ -33,7 +33,7 @@ for Q in $(seq 1 $NQ) ; do
 	
 	# Reduce model+query and store stdout
 	O=$(eval "$CMD")
-	eval "$O" > "$OUT"
+	echo "$O" > "$OUT"
 	
 done
 
