@@ -3,6 +3,7 @@ import copy
 import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
+import utility
 
 
 def plot(data_list, test_names, graph_dir):
@@ -77,6 +78,7 @@ def plot(data_list, test_names, graph_dir):
         combined = combined.append(temp)
 
     # Plot the plot
+    combined.rename(utility.rename_test_name_for_paper_presentation(test_names), axis='columns', inplace=True)
     sns.set_theme(style="darkgrid", palette="pastel")
     plot = combined.plot(kind='barh', width=0.75, linewidth=2, figsize=(10, 10), stacked=True)
 

@@ -245,7 +245,7 @@ def rename_test_name_for_paper_presentation(test_names):
     new_test_names = {}
     for test_name in test_names:
         if "fixed" in test_name:
-            new_test_name = test_name.replace('fixed', '')
+            new_test_name = f"(base)⃰"
         elif "base" in test_name:
             new_test_name = f"(TAPAAL)⃰"
         else:
