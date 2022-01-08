@@ -286,7 +286,6 @@ def rename_test_name_for_paper_presentation(test_names):
                         new_test_name += f"{star}"
 
         new_test_names[test_name] = new_test_name
-        print(new_test_names)
     return new_test_names
 
 

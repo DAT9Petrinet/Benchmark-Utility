@@ -8,7 +8,7 @@ import seaborn as sns
 import utility
 
 
-def plot(data_list, test_names, graph_dir, metric, keep_largest_percent):
+def plot(data_list, test_names, graph_dir, metric, keep_largest_percent, cutoff_time):
     linestyles = [
         [1, 1],
         [2, 2, 10, 2],
@@ -24,12 +24,14 @@ def plot(data_list, test_names, graph_dir, metric, keep_largest_percent):
     base_width = 3
     other_width = 1.5
     base_name = 'base'
-    cutoff_times = {'total time': 5, 'verification time': 5, 'reduce time': 5}
+    cutoff_times = {'total time': cutoff_time, 'verification time': cutoff_time, 'reduce time': cutoff_time}
 
     time_metrics = ['total time', 'verification time', 'reduce time']
 
     if metric in time_metrics and os.path.isfile(
             graph_dir + f'{metric.replace(" ", "_")}_above_{cutoff_times[metric]}_seconds.svg'):
+        return
+    elif os.path.isfile(graph_dir + f'{metric.replace(" ", "_")}_top_{keep_largest_percent * 100}.svg'):
         return
 
     # The deepcopies are because in the 'all_graphs' the data_list are used for all plots,
