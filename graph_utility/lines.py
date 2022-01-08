@@ -23,7 +23,7 @@ def plot(data_list, test_names, graph_dir, metric, keep_largest_percent):
 
     base_width = 3
     other_width = 1.5
-    base_name = 'fixedbase'
+    base_name = 'base'
     cutoff_time = {'total time': 5, 'verification time': 5, 'reduce time': 5}
 
     time_metrics = ['total time', 'verification time', 'reduce time']
@@ -86,10 +86,10 @@ def plot(data_list, test_names, graph_dir, metric, keep_largest_percent):
             continue
         combined_df = pd.concat([combined_df, metric_data], axis=1)
 
+    combined_df.rename(utility.rename_test_name_for_paper_presentation(test_names), axis='columns', inplace=True)
+
     sns.set_theme(style="darkgrid")
     custom_palette = {}
-
-    # dashes = []
     for column_index, column in enumerate(combined_df.columns):
         custom_palette[column] = utility.color((column_index + 1) / len(combined_df.columns))
 
@@ -102,26 +102,28 @@ def plot(data_list, test_names, graph_dir, metric, keep_largest_percent):
     elif metric == 'reduced size':
         unit = 'ratio given by post size/pre size'
 
+
     my_dashes = linestyles[0:len(combined_df.columns) - 1]
-    columns_without_base = [column for column in combined_df.columns if column != 'fixedbase']
+
+    columns_without_base = [column for column in combined_df.columns if column != base_name]
     # sns.set(rc={'figure.figsize': (11.7, 8.27)})
     if not (len(combined_df) == 0 or len(combined_df.columns) == 0):
         # Plot the plot
         #
         if base_name in test_names:
-            sns.lineplot(data=combined_df[base_name], palette=custom_palette, linewidth=base_width, label='base')
+            sns.lineplot(data=combined_df[base_name], palette=custom_palette, linewidth=base_width)
             plot = sns.lineplot(data=combined_df[columns_without_base], palette=custom_palette, linewidth=other_width,
                                 dashes=my_dashes)
         else:
             plot = sns.lineplot(data=combined_df, palette=custom_palette)
         plot.set(
             ylabel=f'{unit}',
-            xlabel='test instances')
+            xlabel='queries')
 
-        if metric in time_metrics:
-            plot.set(title=f'{metric} per test instance sorted, above {cutoff_time[metric]} seconds')
-        else:
-            plot.set(title=f'{metric} per test instance sorted, using {keep_largest_percent * 100}% largest tests')
+        #if metric in time_metrics:
+        #    plot.set(title=f'{metric} per test instance sorted, above {cutoff_time[metric]} seconds')
+        #else:
+        #    plot.set(title=f'{metric} per test instance sorted, using {keep_largest_percent * 100}% largest tests')
 
         if metric == "reduced size":
             plot.set(yscale="linear")
