@@ -248,6 +248,8 @@ def rename_test_name_for_paper_presentation(test_names):
             new_test_name = f"base⃰"
         elif "base" in test_name:
             new_test_name = f"(TAPAAL)⃰"
+        elif test_name == "with-M-as-E":
+            new_test_name = f"(base.M⃰-as-E⃰)⃰"
         else:
             splits = test_name.split('-')
 
@@ -266,14 +268,6 @@ def rename_test_name_for_paper_presentation(test_names):
                                 rules += f"{subrule}⃰"
                                 if i != len(split) - 1:
                                     rules += "."
-
-                    ''' if i < len(split_rules) - 1:
-                         any_next_rules = False
-                         for split1 in split_rules[i + 1:]:
-                             if split1.isalpha():
-                                 any_next_rules = True
-                         if any_next_rules:
-                             rules += "."'''
             if "with" in test_name and (len(rules) > 0 or len(appendage) > 0):
                 new_test_name = f"(base.{rules})⃰{appendage}"
             else:
