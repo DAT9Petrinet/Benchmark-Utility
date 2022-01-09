@@ -259,7 +259,7 @@ def rename_test_name_for_paper_presentation(test_names):
 
                 appendage = ""
                 for i, split in enumerate(split_rules):
-                    if split in ['DFS', 'inhib', 'DSF']:
+                    if i == len(split_rules)-1 and split in ['DFS', 'inhib', 'DSF', 'i']:
                         appendage += f"-{split}"
                         continue
                     if split.isalpha():
