@@ -134,7 +134,7 @@ def get_reduced_size(row):
     if row['prev place count'] > 0:
         pre_size = get_pre_size(row)
         post_size = get_post_size(row)
-        return ((post_size / pre_size) * 100) if post_size > 0 and ((post_size / pre_size) * 100) < 100 and (
+        return ((post_size / pre_size) * 100) if post_size > 0  and (
                 (post_size / pre_size) * 100) > 0 else np.nan
     else:
         return np.nan
