@@ -10,7 +10,7 @@ import utility
 warnings.filterwarnings("error")
 
 
-def plot(data_list, test_names, graph_dir):
+def plot(data_list, test_names, graph_dir, category):
     # The deepcopies are because in the 'all_graphs' the data_list are used for all plots,
     # so each function will make their own copy
     data_list = copy.deepcopy(data_list)
@@ -57,7 +57,7 @@ def plot(data_list, test_names, graph_dir):
                           size=12,
                           xytext=(0, 8),
                           textcoords='offset points')
-        plt.savefig(graph_dir + f'{test_names[test_index]}_rule_usage_absolute.svg', dpi=600, format="svg")
+        plt.savefig(graph_dir + f'{category}_{test_names[test_index]}_rule_usage_absolute.svg', dpi=600, format="svg")
         plt.clf()
 
         # Plot the plot
@@ -74,7 +74,7 @@ def plot(data_list, test_names, graph_dir):
                               size=12,
                               xytext=(0, 8),
                               textcoords='offset points')
-        plt.savefig(graph_dir + f'{test_names[test_index]}_rule_usage_percentage.svg', dpi=600, format="svg")
+        plt.savefig(graph_dir + f'{category}_{test_names[test_index]}_rule_usage_percentage.svg', dpi=600, format="svg")
         plt.clf()
 
         # Plot the plot
@@ -89,5 +89,5 @@ def plot(data_list, test_names, graph_dir):
                               size=12,
                               xytext=(0, 8),
                               textcoords='offset points')
-        plt.savefig(graph_dir + f'{test_names[test_index]}_rule_usage_absolute_models.svg', dpi=600, format="svg")
+        plt.savefig(graph_dir + f'{category}_{test_names[test_index]}_rule_usage_absolute_models.svg', dpi=600, format="svg")
         plt.close()

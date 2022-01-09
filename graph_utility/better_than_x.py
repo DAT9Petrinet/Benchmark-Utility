@@ -113,7 +113,7 @@ def get_answer_df(derived_jable, test_names):
     return s.tolist()
 
 
-def plot(data_list, test_names, graph_dir, experiment_to_compare_against, keep_largest_percent, how_much_better):
+def plot(data_list, test_names, graph_dir, experiment_to_compare_against, keep_largest_percent, how_much_better, category):
     if len(data_list) == 1:
         return
 
@@ -168,12 +168,12 @@ def plot(data_list, test_names, graph_dir, experiment_to_compare_against, keep_l
             plot.annotate(int(width), xy=(left + width, bottom + height / 2), ha='center', va='center', size=10)
 
         plt.savefig(
-            graph_dir + f'{how_much_better * 100}%_better_than_{experiment_to_compare_against}_largest_{keep_largest_percent * 100}%_tests_.svg',
+            graph_dir + f'{category}_{how_much_better * 100}%_better_than_{experiment_to_compare_against}_largest_{keep_largest_percent * 100}%_tests_.svg',
             bbox_inches='tight', dpi=600, format="svg")
         plt.close()
 
     if not os.path.isfile(
-            graph_dir + f'eq_compare_to_{experiment_to_compare_against}_largest_{keep_largest_percent * 100}%_tests_all.svg'):
+            graph_dir + f'{category}_eq_compare_to_{experiment_to_compare_against}_largest_{keep_largest_percent * 100}%_tests_all.svg'):
         points_eq_df = pd.DataFrame(
             {'reduced size': get_points_by_metric(derived_jable_sized, 'reduced size', test_names,
                                                   experiment_to_compare_against,
@@ -208,6 +208,6 @@ def plot(data_list, test_names, graph_dir, experiment_to_compare_against, keep_l
                 plot.annotate(int(width), xy=(left + width, bottom + height / 2), ha='center', va='center', size=10)
 
             plt.savefig(
-                graph_dir + f'eq_compare_to_{experiment_to_compare_against}_largest_{keep_largest_percent * 100}%_tests.svg',
+                graph_dir + f'{category}_eq_compare_to_{experiment_to_compare_against}_largest_{keep_largest_percent * 100}%_tests.svg',
                 bbox_inches='tight', dpi=600, format="svg")
             plt.close()

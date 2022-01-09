@@ -7,7 +7,7 @@ import seaborn as sns
 import utility
 
 
-def plot(data_list, test_names, graph_dir):
+def plot(data_list, test_names, graph_dir, category):
     """
         Plots 3 bars for each experiment, one for how many transitions, places and both has been reduced
     """
@@ -58,5 +58,5 @@ def plot(data_list, test_names, graph_dir):
             plot.annotate(int(width), xy=(left + width, bottom + height / 2),
                           ha='center', va='center')
 
-        plt.savefig(graph_dir + f'total_reductions.svg', bbox_inches='tight', dpi=600, format="svg")
+        plt.savefig(graph_dir + f'{category}_total_reductions.svg', bbox_inches='tight', dpi=600, format="svg")
         plt.close()

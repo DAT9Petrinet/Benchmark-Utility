@@ -122,7 +122,7 @@ def gui():
     return chosen_results, chosen_graphs, comp, category
 
 
-def plot_all(data_list, test_names, graph_dir, experiment_to_compare_against_name, graphs):
+def plot_all(data_list, test_names, graph_dir, experiment_to_compare_against_name, graphs, category):
     """
     Will create all plots from all graph functions in this directory, except the deprecated ones
     """
@@ -138,7 +138,7 @@ def plot_all(data_list, test_names, graph_dir, experiment_to_compare_against_nam
     print("Making graphs")
 
     if 'answers' in graphs:
-        answer_simplification_bars.plot(data_list, test_names, graph_dir + '\\best-experiment\\')
+        answer_simplification_bars.plot(data_list, test_names, graph_dir + '\\best-experiment\\', category)
         graphs_made += 1
         print(f"{graphs_made}/{num_graphs} graphs made")
 
@@ -147,13 +147,13 @@ def plot_all(data_list, test_names, graph_dir, experiment_to_compare_against_nam
             for how_much_better in [0.01, 0.025, 0]:
                 better_than_x.plot(data_list, test_names,
                                    graph_dir + '\\best-experiment\\',
-                                   experiment_to_compare_against_name, keep_largest_percent, how_much_better)
+                                   experiment_to_compare_against_name, keep_largest_percent, how_much_better, category)
         graphs_made += 1
         print(f"{graphs_made}/{num_graphs} graphs made")
 
     if 'rule usage' in graphs:
         # Plots that has to do with application of rules
-        rule_usage.plot(data_list, test_names, graph_dir + '\\rule-usage\\')
+        rule_usage.plot(data_list, test_names, graph_dir + '\\rule-usage\\', category)
         graphs_made += 1
         print(f"{graphs_made}/{num_graphs} graphs made")
 
@@ -164,12 +164,12 @@ def plot_all(data_list, test_names, graph_dir, experiment_to_compare_against_nam
             for percentage in [0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1]:
                 for cutoff_time in [0, 0.5, 1, 5, 10, 30]:
                     lines.plot(data_list, test_names, graph_dir + '\\lines\\' + metric.replace(" ", "-") + '\\',
-                               metric, percentage, cutoff_time)
+                               metric, percentage, cutoff_time, category)
         graphs_made += 1
         print(f"{graphs_made}/{num_graphs} graphs made")
 
     if 'total reductions' in graphs:
-        total_reductions.plot(data_list, test_names, graph_dir + '\\reductions\\')
+        total_reductions.plot(data_list, test_names, graph_dir + '\\reductions\\', category)
         graphs_made += 1
         print(f"{graphs_made}/{num_graphs} graphs made")
 
@@ -220,4 +220,4 @@ if __name__ == "__main__":
 
     data_list = [pd.read_csv(results_dir + csv, engine='python') for csv in tests]
 
-    plot_all(data_list, test_names, graph_dir, experiment_to_compare_against_name, graphs)
+    plot_all(data_list, test_names, graph_dir, experiment_to_compare_against_name, graphs, category)

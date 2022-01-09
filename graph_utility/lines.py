@@ -8,7 +8,7 @@ import seaborn as sns
 import utility
 
 
-def plot(data_list, test_names, graph_dir, metric, keep_largest_percent, cutoff_time):
+def plot(data_list, test_names, graph_dir, metric, keep_largest_percent, cutoff_time, category):
     linestyles = [
         [1, 1],
         [2, 2, 10, 2],
@@ -29,9 +29,9 @@ def plot(data_list, test_names, graph_dir, metric, keep_largest_percent, cutoff_
     time_metrics = ['total time', 'verification time', 'reduce time']
 
     if metric in time_metrics and os.path.isfile(
-            graph_dir + f'{metric.replace(" ", "_")}_above_{cutoff_times[metric]}_seconds.svg'):
+            graph_dir + f'{category}_{metric.replace(" ", "_")}_above_{cutoff_times[metric]}_seconds.svg'):
         return
-    elif os.path.isfile(graph_dir + f'{metric.replace(" ", "_")}_top_{keep_largest_percent * 100}.svg'):
+    elif os.path.isfile(graph_dir + f'{category}_{metric.replace(" ", "_")}_top_{keep_largest_percent * 100}.svg'):
         return
 
     # The deepcopies are because in the 'all_graphs' the data_list are used for all plots,
@@ -138,9 +138,9 @@ def plot(data_list, test_names, graph_dir, metric, keep_largest_percent, cutoff_
         plt.legend(loc='upper left', borderaxespad=0)
 
         if metric in time_metrics:
-            plt.savefig(graph_dir + f'{metric.replace(" ", "_")}_above_{cutoff_times[metric]}_seconds.svg',
+            plt.savefig(graph_dir + f'{category}_{metric.replace(" ", "_")}_above_{cutoff_times[metric]}_seconds.svg',
                         bbox_inches='tight', dpi=600, format="svg")
         else:
-            plt.savefig(graph_dir + f'{metric.replace(" ", "_")}_top_{keep_largest_percent * 100}.svg',
+            plt.savefig(graph_dir + f'{category}_{metric.replace(" ", "_")}_top_{keep_largest_percent * 100}.svg',
                         bbox_inches='tight', dpi=600, format="svg")
         plt.close()
