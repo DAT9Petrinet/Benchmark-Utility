@@ -28,6 +28,9 @@ def plot(data_list, test_names, graph_dir, metric, keep_largest_percent, cutoff_
 
     time_metrics = ['total time', 'verification time', 'reduce time']
 
+    if metric == "verification memory":
+        return
+
     if metric in time_metrics and os.path.isfile(
             graph_dir + f'{category}_{metric.replace(" ", "_")}_above_{cutoff_times[metric]}_seconds.svg'):
         return
@@ -43,9 +46,6 @@ def plot(data_list, test_names, graph_dir, metric, keep_largest_percent, cutoff_
     combined_df = pd.DataFrame()
     for index, data in enumerate(data_list):
         data = utility.remove_errors_df(data)
-
-        # Get data from relevant column sorted
-        n = int(data.shape[0] * keep_largest_percent)
 
         res_df = pd.DataFrame()
         if metric in ['verification time', 'verification memory']:
@@ -77,6 +77,7 @@ def plot(data_list, test_names, graph_dir, metric, keep_largest_percent, cutoff_
         if metric in time_metrics:
             metric_data = metric_data[metric_data[metric] >= cutoff_times[metric]]
         else:
+            n = int(metric_data.shape[0] * keep_largest_percent)
             metric_data = metric_data.tail(n)
 
         # Rename the column to include the name of the test
