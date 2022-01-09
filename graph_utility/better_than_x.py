@@ -32,7 +32,9 @@ def get_points_by_metric(derived_jable, metric, test_names, experiment_to_compar
     def point(row):
         if metric in ['verification time', 'verification memory', 'total time']:
             # Both got an answer
-            if row[test + '@' + 'answer'] != 'NONE' and row[experiment_to_compare_against + '@' + 'answer'] != 'NONE':
+            if row[test + '@' + 'answer'] != 'NONE' and row[
+                experiment_to_compare_against + '@' + 'answer'] != 'NONE' and row[
+                experiment_to_compare_against + '@' + metric] > 0.5 and row[test + '@' + metric] > 0.5:
                 if better_than_comparison(row, test, metric):
                     return 1
                 elif equal_to_comparison(row, test, metric):
@@ -65,7 +67,8 @@ def get_points_by_metric(derived_jable, metric, test_names, experiment_to_compar
                 Exception("(better_than_x) should not be able to reach this - state space size point")
         elif metric in ['reduce time']:
             if row[experiment_to_compare_against + '@' + metric] < REDUCE_TIMEOUT and row[
-                test + '@' + metric] < REDUCE_TIMEOUT:
+                test + '@' + metric] < REDUCE_TIMEOUT and row[
+                experiment_to_compare_against + '@' + metric] > 0.5 and row[test + '@' + metric] > 0.5:
                 if better_than_comparison(row, test, metric):
                     return 1
                 elif equal_to_comparison(row, test, metric):
@@ -113,7 +116,8 @@ def get_answer_df(derived_jable, test_names):
     return s.tolist()
 
 
-def plot(data_list, test_names, graph_dir, experiment_to_compare_against, keep_largest_percent, how_much_better, category):
+def plot(data_list, test_names, graph_dir, experiment_to_compare_against, keep_largest_percent, how_much_better,
+         category):
     if len(data_list) == 1:
         return
 
