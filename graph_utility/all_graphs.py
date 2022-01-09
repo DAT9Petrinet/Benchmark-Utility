@@ -116,7 +116,9 @@ def gui():
     elif results['point plot'].get() == 1:
         comp = comparison_list[0]
 
+    print(f"Selected category: {category}")
     chosen_graphs = [graph for graph in results.keys() if not ('.csv' in graph) and results[graph].get() == 1]
+    print(f"Selected graphs: {chosen_graphs}")
     return chosen_results, chosen_graphs, comp, category
 
 
@@ -156,12 +158,13 @@ def plot_all(data_list, test_names, graph_dir, experiment_to_compare_against_nam
         print(f"{graphs_made}/{num_graphs} graphs made")
 
     if 'lines' in graphs:
-        metrics = ['verification time', 'verification memory', 'state space size', 'reduce time', 'reduced size',
-                   'total time']
+        # metrics = ['verification time', 'verification memory', 'state space size', 'reduce time', 'reduced size', 'total time']
+        metrics = ['verification time', 'state space size', 'reduce time', 'reduced size', 'total time']
         for metric in metrics:
             for percentage in [0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1]:
-                lines.plot(data_list, test_names, graph_dir + '\\lines\\' + metric.replace(" ", "-") + '\\',
-                           metric, percentage)
+                for cutoff_time in [0, 0.5, 1, 5, 10, 30]:
+                    lines.plot(data_list, test_names, graph_dir + '\\lines\\' + metric.replace(" ", "-") + '\\',
+                               metric, percentage, cutoff_time)
         graphs_made += 1
         print(f"{graphs_made}/{num_graphs} graphs made")
 
