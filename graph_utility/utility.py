@@ -246,13 +246,22 @@ def rename_test_name_for_paper_presentation(test_names):
     for test_name in test_names:
         if "fixed" in test_name:
             new_test_name = f"base⃰"
-        elif "base" in test_name:
-            new_test_name = f"(TAPAAL)⃰"
+        elif "orig" in test_name:
+            new_test_name = f"TAPAAL"
+        elif test_name == "TAPAAL":
+            new_test_name = f"TAPAAL"
         elif test_name == "with-M-as-E":
             new_test_name = f"(base.M⃰-as-E⃰)⃰"
+        elif test_name == "only-M-then-E":
+            new_test_name = f"(M⃰.E⃰)⃰"
+        elif test_name == "only-QRE-then-AB":
+            new_test_name = f"((Q⃰.R⃰.E⃰)⃰.(A⃰.B⃰))⃰"
         else:
             splits = test_name.split('-')
-
+            if splits[0] == "only":
+                only = True
+            else:
+                only = False
             if len(splits) > 0:
                 rules = ""
                 split_rules = list(splits)[1:]
@@ -280,6 +289,7 @@ def rename_test_name_for_paper_presentation(test_names):
                         new_test_name += f"{star}"
 
         new_test_names[test_name] = new_test_name
+        print(new_test_names)
     return new_test_names
 
 
