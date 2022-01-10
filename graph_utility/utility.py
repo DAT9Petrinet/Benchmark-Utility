@@ -247,9 +247,9 @@ def rename_test_name_for_paper_presentation(test_names):
         if "fixed" in test_name:
             new_test_name = f"(base)⃰"
         elif test_name == "origbase":
-            new_test_name = "origbase"
+            new_test_name = test_name
         elif test_name == "TAPAAL":
-            new_test_name = f"TAPAAL"
+            new_test_name = test_name
         elif test_name == "with-M-as-E":
             new_test_name = "(A⃰B⃰C⃰D⃰M⃰F⃰G⃰I⃰)⃰"
         elif test_name == "only-M-then-E":
