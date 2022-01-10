@@ -131,8 +131,8 @@ def plot(data_list, test_names, graph_dir, metric, keep_largest_percent, cutoff_
         if metric == "reduced size":
             plot.set(yscale="linear")
             plt.ylim(0, 125)
-        elif metric in ["state space size", 'verification memory']:
-            plot.set(yscale="log")
+        #elif metric in ["state space size", 'verification memory']:
+        #    plot.set(yscale="log")
         else:
             plot.set(yscale="linear")
         # plt.legend(bbox_to_anchor=(1.02, 1), loc='best', borderaxespad=0)
