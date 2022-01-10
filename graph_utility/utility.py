@@ -134,7 +134,7 @@ def get_reduced_size(row):
     if row['prev place count'] > 0:
         pre_size = get_pre_size(row)
         post_size = get_post_size(row)
-        return ((post_size / pre_size) * 100) if post_size > 0  and (
+        return ((post_size / pre_size) * 100) if post_size > 0 and (
                 (post_size / pre_size) * 100) > 0 else np.nan
     else:
         return np.nan
@@ -245,30 +245,28 @@ def rename_test_name_for_paper_presentation(test_names):
     new_test_names = {}
     for test_name in test_names:
         if "fixed" in test_name:
-            new_test_name = f"base⃰"
-        elif "orig" in test_name:
-            new_test_name = f"TAPAAL"
+            new_test_name = f"(base)⃰"
+        elif test_name == "origbase":
+            new_test_name = "origbase"
         elif test_name == "TAPAAL":
             new_test_name = f"TAPAAL"
         elif test_name == "with-M-as-E":
-            new_test_name = f"(base.M⃰-as-E⃰)⃰"
+            new_test_name = "(A⃰B⃰C⃰D⃰M⃰F⃰G⃰I⃰)⃰"
         elif test_name == "only-M-then-E":
             new_test_name = f"(M⃰.E⃰)⃰"
         elif test_name == "only-QRE-then-AB":
             new_test_name = f"((Q⃰.R⃰.E⃰)⃰.(A⃰.B⃰))⃰"
+        elif test_name == "with-M-as-E-NO":
+            new_test_name = "(A⃰B⃰C⃰D⃰M⃰F⃰G⃰I⃰N⃰O⃰)⃰"
         else:
             splits = test_name.split('-')
-            if splits[0] == "only":
-                only = True
-            else:
-                only = False
             if len(splits) > 0:
                 rules = ""
                 split_rules = list(splits)[1:]
 
                 appendage = ""
                 for i, split in enumerate(split_rules):
-                    if i == len(split_rules)-1 and split in ['DFS', 'inhib', 'DSF', 'i']:
+                    if i == len(split_rules) - 1 and split in ['DFS', 'inhib', 'DSF', 'i']:
                         appendage += f"-{split}"
                         continue
                     if split.isalpha():
@@ -287,9 +285,9 @@ def rename_test_name_for_paper_presentation(test_names):
                         new_test_name += f"{star}."
                     else:
                         new_test_name += f"{star}"
+                new_test_name = f"({new_test_name})⃰"
 
         new_test_names[test_name] = new_test_name
-        print(new_test_names)
     return new_test_names
 
 
