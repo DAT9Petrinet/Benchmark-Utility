@@ -82,6 +82,7 @@ def plot(data_list, test_names, graph_dir, category):
         plt.clf()
 
         percentages.rename(index={0: utility.rename_test_name_for_paper_presentation(test_names)[test_names[test_index]]}, inplace=True)
+        percentages = percentages.round(1)
         all_percentages = all_percentages.append(percentages)
 
         # Plot the plot
