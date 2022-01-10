@@ -8,7 +8,7 @@ import seaborn as sns
 import utility
 
 
-def plot(data_list, test_names, graph_dir, metric, keep_largest_percent, cutoff_time):
+def plot(data_list, test_names, graph_dir, metric, keep_largest_percent, cutoff_time, category):
     linestyles = [
         [1, 1],
         [2, 2, 10, 2],
@@ -28,10 +28,13 @@ def plot(data_list, test_names, graph_dir, metric, keep_largest_percent, cutoff_
 
     time_metrics = ['total time', 'verification time', 'reduce time']
 
-    if metric in time_metrics and os.path.isfile(
-            graph_dir + f'{metric.replace(" ", "_")}_above_{cutoff_times[metric]}_seconds.svg'):
+    if metric == "verification memory":
         return
-    elif os.path.isfile(graph_dir + f'{metric.replace(" ", "_")}_top_{keep_largest_percent * 100}.svg'):
+
+    if metric in time_metrics and os.path.isfile(
+            graph_dir + f'{category}_{metric.replace(" ", "_")}_above_{cutoff_times[metric]}_seconds.svg'):
+        return
+    elif os.path.isfile(graph_dir + f'{category}_{metric.replace(" ", "_")}_top_{keep_largest_percent * 100}.svg'):
         return
 
     # The deepcopies are because in the 'all_graphs' the data_list are used for all plots,
@@ -43,9 +46,6 @@ def plot(data_list, test_names, graph_dir, metric, keep_largest_percent, cutoff_
     combined_df = pd.DataFrame()
     for index, data in enumerate(data_list):
         data = utility.remove_errors_df(data)
-
-        # Get data from relevant column sorted
-        n = int(data.shape[0] * keep_largest_percent)
 
         res_df = pd.DataFrame()
         if metric in ['verification time', 'verification memory']:
@@ -77,6 +77,7 @@ def plot(data_list, test_names, graph_dir, metric, keep_largest_percent, cutoff_
         if metric in time_metrics:
             metric_data = metric_data[metric_data[metric] >= cutoff_times[metric]]
         else:
+            n = int(metric_data.shape[0] * keep_largest_percent)
             metric_data = metric_data.tail(n)
 
         # Rename the column to include the name of the test
@@ -138,9 +139,9 @@ def plot(data_list, test_names, graph_dir, metric, keep_largest_percent, cutoff_
         plt.legend(loc='upper left', borderaxespad=0)
 
         if metric in time_metrics:
-            plt.savefig(graph_dir + f'{metric.replace(" ", "_")}_above_{cutoff_times[metric]}_seconds.svg',
+            plt.savefig(graph_dir + f'{category}_{metric.replace(" ", "_")}_above_{cutoff_times[metric]}_seconds.svg',
                         bbox_inches='tight', dpi=600, format="svg")
         else:
-            plt.savefig(graph_dir + f'{metric.replace(" ", "_")}_top_{keep_largest_percent * 100}.svg',
+            plt.savefig(graph_dir + f'{category}_{metric.replace(" ", "_")}_top_{keep_largest_percent * 100}.svg',
                         bbox_inches='tight', dpi=600, format="svg")
         plt.close()

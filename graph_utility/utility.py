@@ -134,7 +134,7 @@ def get_reduced_size(row):
     if row['prev place count'] > 0:
         pre_size = get_pre_size(row)
         post_size = get_post_size(row)
-        return ((post_size / pre_size) * 100) if post_size > 0 and ((post_size / pre_size) * 100) < 100 and (
+        return ((post_size / pre_size) * 100) if post_size > 0 and (
                 (post_size / pre_size) * 100) > 0 else np.nan
     else:
         return np.nan
@@ -245,19 +245,28 @@ def rename_test_name_for_paper_presentation(test_names):
     new_test_names = {}
     for test_name in test_names:
         if "fixed" in test_name:
-            new_test_name = f"base⃰"
-        elif "base" in test_name:
-            new_test_name = f"(TAPAAL)⃰"
+            new_test_name = f"(base)⃰"
+        elif test_name == "origbase":
+            new_test_name = test_name
+        elif test_name == "TAPAAL":
+            new_test_name = test_name
+        elif test_name == "with-M-as-E":
+            new_test_name = "(A⃰B⃰C⃰D⃰M⃰F⃰G⃰I⃰)⃰"
+        elif test_name == "only-M-then-E":
+            new_test_name = f"(M⃰.E⃰)⃰"
+        elif test_name == "only-QRE-then-AB":
+            new_test_name = f"((Q⃰.R⃰.E⃰)⃰.(A⃰.B⃰))⃰"
+        elif test_name == "with-M-as-E-NO":
+            new_test_name = "(A⃰B⃰C⃰D⃰M⃰F⃰G⃰I⃰N⃰O⃰)⃰"
         else:
             splits = test_name.split('-')
-
             if len(splits) > 0:
                 rules = ""
                 split_rules = list(splits)[1:]
 
                 appendage = ""
                 for i, split in enumerate(split_rules):
-                    if split in ['DFS', 'inhib', 'DSF']:
+                    if i == len(split_rules) - 1 and split in ['DFS', 'inhib', 'DSF', 'i']:
                         appendage += f"-{split}"
                         continue
                     if split.isalpha():
@@ -266,14 +275,6 @@ def rename_test_name_for_paper_presentation(test_names):
                                 rules += f"{subrule}⃰"
                                 if i != len(split) - 1:
                                     rules += "."
-
-                    ''' if i < len(split_rules) - 1:
-                         any_next_rules = False
-                         for split1 in split_rules[i + 1:]:
-                             if split1.isalpha():
-                                 any_next_rules = True
-                         if any_next_rules:
-                             rules += "."'''
             if "with" in test_name and (len(rules) > 0 or len(appendage) > 0):
                 new_test_name = f"(base.{rules})⃰{appendage}"
             else:
@@ -284,6 +285,7 @@ def rename_test_name_for_paper_presentation(test_names):
                         new_test_name += f"{star}."
                     else:
                         new_test_name += f"{star}"
+                new_test_name = f"({new_test_name})⃰"
 
         new_test_names[test_name] = new_test_name
     return new_test_names
