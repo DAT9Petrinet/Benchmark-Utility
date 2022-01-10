@@ -1,8 +1,10 @@
 import copy
 import re
 import warnings
+from pathlib import Path
 
 import matplotlib.pyplot as plt
+import pandas as pd
 import seaborn as sns
 
 import utility
@@ -19,6 +21,8 @@ def plot(data_list, test_names, graph_dir, category):
     data_list, test_names = utility.remove_no_red(data_list, test_names)
 
     data_list = utility.remove_rows_with_no_answers_or_query_simplification(data_list)
+
+    all_percentages = pd.DataFrame()
 
     # Make one plot (png) for each csv
     for test_index, data in enumerate(data_list):
@@ -77,6 +81,9 @@ def plot(data_list, test_names, graph_dir, category):
         plt.savefig(graph_dir + f'{category}_{test_names[test_index]}_rule_usage_percentage.svg', dpi=600, format="svg")
         plt.clf()
 
+        percentages.rename(index={0: utility.rename_test_name_for_paper_presentation(test_names)[test_names[test_index]]}, inplace=True)
+        all_percentages = all_percentages.append(percentages)
+
         # Plot the plot
         plot = sns.barplot(data=models_using_rule)
         plot.set(title=f'{new_test_name} number of models using rules', ylabel='uses', xlabel='rules')
@@ -89,5 +96,10 @@ def plot(data_list, test_names, graph_dir, category):
                               size=12,
                               xytext=(0, 8),
                               textcoords='offset points')
-        plt.savefig(graph_dir + f'{category}_{test_names[test_index]}_rule_usage_absolute_models.svg', dpi=600, format="svg")
+        plt.savefig(graph_dir + f'{category}_{test_names[test_index]}_rule_usage_absolute_models.svg', dpi=600,
+                    format="svg")
         plt.close()
+
+    root = Path(__file__).parent.parent
+    everything_dir = root / "results" / "everything"
+    all_percentages.to_csv(everything_dir / f"{category}_rule_usage.csv", sep="&", decimal=".")
