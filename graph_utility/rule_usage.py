@@ -81,7 +81,8 @@ def plot(data_list, test_names, graph_dir, category):
         plt.savefig(graph_dir + f'{category}_{test_names[test_index]}_rule_usage_percentage.svg', dpi=600, format="svg")
         plt.clf()
 
-        percentages.rename(index={0: utility.rename_test_name_for_paper_presentation(test_names)[test_names[test_index]]}, inplace=True)
+        percentages.rename(index={0: utility.rename_test_name_for_paper_presentation(test_names)[test_names[test_index]].replace("⃰", "*")}, inplace=True)
+        percentages.drop([' J', ' K'], axis=1, inplace=True)
         percentages = percentages.round(1)
         all_percentages = all_percentages.append(percentages)
 
