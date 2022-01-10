@@ -246,6 +246,8 @@ def rename_test_name_for_paper_presentation(test_names):
     for test_name in test_names:
         if "fixed" in test_name:
             new_test_name = f"(base)⃰"
+            if "-i" in test_name:
+                new_test_name += "-inhib"
         elif test_name == "origbase":
             new_test_name = test_name
         elif test_name == "TAPAAL":
@@ -267,7 +269,10 @@ def rename_test_name_for_paper_presentation(test_names):
                 appendage = ""
                 for i, split in enumerate(split_rules):
                     if i == len(split_rules) - 1 and split in ['DFS', 'inhib', 'DSF', 'i']:
-                        appendage += f"-{split}"
+                        if split == 'i':
+                            appendage += f"-{split}nhib"
+                        else:
+                            appendage += f"-{split}"
                         continue
                     if split.isalpha():
                         if len(split) > 0:
