@@ -62,7 +62,7 @@ def plot(data_list, test_names, graph_dir, category):
 
         # Plot the plot
         plot = sns.barplot(data=percentages)
-        plot.set(title=f'{new_test_name} percentage of models using rules', ylabel='uses in \\%',
+        plot.set(title=f'{new_test_name} percentage of models using rules', ylabel='uses in %',
                  xlabel='rules')
         # Plots numbers above bars
         for p in plot.patches:
