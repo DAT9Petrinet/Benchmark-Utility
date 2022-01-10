@@ -63,7 +63,7 @@ for RED_RES_FILE in $(ls $DIR | grep "\.rout$") ; do
 
 	# Time and memory is appended to the file
 	VERI_TIME=$([[ -n "$(echo $VOUT | awk "/on verification/")" ]] && echo $VOUT | sed -E "s/.*Spent (([0-9](\.[0-9])?e-0[2-9])|([0-9]+(\.[0-9]+)?)) on verification.*/\1/" || echo 0.0)
-	VERI_MEM=$(echo $VOUT | sed -E "s/.*@@@.*,(.*)@@@.*/\1/")
+	VERI_MEM=$([[ -n "$(echo $VOUT | awk "/@@@/")" ]] && echo $VOUT | sed -E "s/.*@@@.*,(.*)@@@.*/\1/" || echo 0)
 
 	# Did we get an answer or did the query time out?
 	# We can check this by checking if "satisfied" is a substring of the output.

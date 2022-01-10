@@ -39,14 +39,13 @@ def plot(data_list, test_names, graph_dir):
 
     # Rename indices to be test names, instead of int index
     points_df = utility.rename_index_to_test_name(points_df, test_names)
-
     # data_to_plot = utility.split_into_all_with_without(points_df)
     # png_names = ['all', 'with', 'without']
-
+    points_df.rename(utility.rename_test_name_for_paper_presentation(test_names), axis='rows', inplace=True)
     if len(points_df) != 0 and len(points_df.columns) != 0:
         # Plot the plot
         sns.set_theme(style="darkgrid", palette="pastel")
-        plot = data.plot(kind='barh', width=0.75, linewidth=2, figsize=(10, 10))
+        plot = points_df.plot(kind='barh', width=0.75, linewidth=2, figsize=(10, 10))
 
         plt.legend(bbox_to_anchor=(1.02, 1), loc='best', borderaxespad=0)
         plt.xscale('log')

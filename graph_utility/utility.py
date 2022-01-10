@@ -135,7 +135,7 @@ def get_reduced_size(row):
         pre_size = get_pre_size(row)
         post_size = get_post_size(row)
         return ((post_size / pre_size) * 100) if post_size > 0 and ((post_size / pre_size) * 100) < 100 and (
-                    (post_size / pre_size) * 100) > 0 else np.nan
+                (post_size / pre_size) * 100) > 0 else np.nan
     else:
         return np.nan
 
@@ -239,6 +239,54 @@ def remove_errors_datalist(data_list):
     for data in data_list:
         data.drop(data[data['answer'] == 'ERR'].index, inplace=True)
     return data_list
+
+
+def rename_test_name_for_paper_presentation(test_names):
+    new_test_names = {}
+    for test_name in test_names:
+        if "fixed" in test_name:
+            new_test_name = f"base⃰"
+        elif "base" in test_name:
+            new_test_name = f"(TAPAAL)⃰"
+        else:
+            splits = test_name.split('-')
+
+            if len(splits) > 0:
+                rules = ""
+                split_rules = list(splits)[1:]
+
+                appendage = ""
+                for i, split in enumerate(split_rules):
+                    if split in ['DFS', 'inhib', 'DSF']:
+                        appendage += f"-{split}"
+                        continue
+                    if split.isalpha():
+                        if len(split) > 0:
+                            for i, subrule in enumerate(split):
+                                rules += f"{subrule}⃰"
+                                if i != len(split) - 1:
+                                    rules += "."
+
+                    ''' if i < len(split_rules) - 1:
+                         any_next_rules = False
+                         for split1 in split_rules[i + 1:]:
+                             if split1.isalpha():
+                                 any_next_rules = True
+                         if any_next_rules:
+                             rules += "."'''
+            if "with" in test_name and (len(rules) > 0 or len(appendage) > 0):
+                new_test_name = f"(base.{rules})⃰{appendage}"
+            else:
+                starred = [f"{rule}⃰" for rule in list(test_name)]
+                new_test_name = ""
+                for i, star in enumerate(starred):
+                    if (i != len(starred) - 1):
+                        new_test_name += f"{star}."
+                    else:
+                        new_test_name += f"{star}"
+
+        new_test_names[test_name] = new_test_name
+    return new_test_names
 
 
 '''

@@ -34,6 +34,8 @@ def plot(data_list, test_names, graph_dir):
         percentages = (((((data_grouped_by_model > 0) * 1).mean()) * 100).to_frame()).T
         models_using_rule = ((data_grouped_by_model > 0) * 1).agg('sum').to_frame().T
 
+        new_test_name = utility.rename_test_name_for_paper_presentation(test_names)[test_names[test_index]]
+
         # Remove the 'Rule' part of e.g 'Rule A'
         for df in [rules_summed, percentages, models_using_rule]:
             df.rename(columns=lambda x: re.sub('rule', '', x), inplace=True)
@@ -46,7 +48,7 @@ def plot(data_list, test_names, graph_dir):
         except:
             print(f"Test has probably gone wrong, had no application of any rules: {test_names[test_index]}")
             plot.set_yscale("linear")
-        plot.set(title=f'({test_names[test_index]}) number of times rules are used', ylabel='uses', xlabel='rules')
+        plot.set(title=f'{new_test_name} number of times rules are used', ylabel='uses', xlabel='rules')
         # This for-loop puts the number of times each rule has been used, on top of the bar
         for p in plot.patches:
             plot.annotate(format(p.get_height().astype(int), 'd'),
@@ -60,7 +62,7 @@ def plot(data_list, test_names, graph_dir):
 
         # Plot the plot
         plot = sns.barplot(data=percentages)
-        plot.set(title=f'({test_names[test_index]}) percentage of models using rules', ylabel='uses in \\%',
+        plot.set(title=f'{new_test_name} percentage of models using rules', ylabel='uses in \\%',
                  xlabel='rules')
         # Plots numbers above bars
         for p in plot.patches:
@@ -77,7 +79,7 @@ def plot(data_list, test_names, graph_dir):
 
         # Plot the plot
         plot = sns.barplot(data=models_using_rule)
-        plot.set(title=f'({test_names[test_index]}) number of models using rules', ylabel='uses', xlabel='rules')
+        plot.set(title=f'{new_test_name} number of models using rules', ylabel='uses', xlabel='rules')
         # Plots numbers above bars
         for p in plot.patches:
             if p.get_height() != 0:

@@ -8,7 +8,7 @@ import seaborn as sns
 import utility
 
 
-def plot(data_list, test_names, graph_dir, metric, keep_largest_percent):
+def plot(data_list, test_names, graph_dir, metric, keep_largest_percent, cutoff_time):
     linestyles = [
         [1, 1],
         [2, 2, 10, 2],
@@ -23,13 +23,15 @@ def plot(data_list, test_names, graph_dir, metric, keep_largest_percent):
 
     base_width = 3
     other_width = 1.5
-    base_name = 'fixedbase'
-    cutoff_time = {'total time': 5, 'verification time': 5, 'reduce time': 5}
+    base_name = 'base'
+    cutoff_times = {'total time': cutoff_time, 'verification time': cutoff_time, 'reduce time': cutoff_time}
 
     time_metrics = ['total time', 'verification time', 'reduce time']
 
     if metric in time_metrics and os.path.isfile(
-            graph_dir + f'{metric.replace(" ", "_")}_above_{cutoff_time[metric]}_seconds.svg'):
+            graph_dir + f'{metric.replace(" ", "_")}_above_{cutoff_times[metric]}_seconds.svg'):
+        return
+    elif os.path.isfile(graph_dir + f'{metric.replace(" ", "_")}_top_{keep_largest_percent * 100}.svg'):
         return
 
     # The deepcopies are because in the 'all_graphs' the data_list are used for all plots,
@@ -73,7 +75,7 @@ def plot(data_list, test_names, graph_dir, metric, keep_largest_percent):
                                                                                    'index')
 
         if metric in time_metrics:
-            metric_data = metric_data[metric_data[metric] >= cutoff_time[metric]]
+            metric_data = metric_data[metric_data[metric] >= cutoff_times[metric]]
         else:
             metric_data = metric_data.tail(n)
 
@@ -86,10 +88,10 @@ def plot(data_list, test_names, graph_dir, metric, keep_largest_percent):
             continue
         combined_df = pd.concat([combined_df, metric_data], axis=1)
 
+    combined_df.rename(utility.rename_test_name_for_paper_presentation(test_names), axis='columns', inplace=True)
+
     sns.set_theme(style="darkgrid")
     custom_palette = {}
-
-    # dashes = []
     for column_index, column in enumerate(combined_df.columns):
         custom_palette[column] = utility.color((column_index + 1) / len(combined_df.columns))
 
@@ -102,26 +104,28 @@ def plot(data_list, test_names, graph_dir, metric, keep_largest_percent):
     elif metric == 'reduced size':
         unit = 'ratio given by post size/pre size'
 
+
     my_dashes = linestyles[0:len(combined_df.columns) - 1]
-    columns_without_base = [column for column in combined_df.columns if column != 'fixedbase']
+
+    columns_without_base = [column for column in combined_df.columns if column != base_name]
     # sns.set(rc={'figure.figsize': (11.7, 8.27)})
     if not (len(combined_df) == 0 or len(combined_df.columns) == 0):
         # Plot the plot
         #
         if base_name in test_names:
-            sns.lineplot(data=combined_df[base_name], palette=custom_palette, linewidth=base_width, label='base')
+            sns.lineplot(data=combined_df[base_name], palette=custom_palette, linewidth=base_width)
             plot = sns.lineplot(data=combined_df[columns_without_base], palette=custom_palette, linewidth=other_width,
                                 dashes=my_dashes)
         else:
             plot = sns.lineplot(data=combined_df, palette=custom_palette)
         plot.set(
             ylabel=f'{unit}',
-            xlabel='test instances')
+            xlabel='queries')
 
-        if metric in time_metrics:
-            plot.set(title=f'{metric} per test instance sorted, above {cutoff_time[metric]} seconds')
-        else:
-            plot.set(title=f'{metric} per test instance sorted, using {keep_largest_percent * 100}% largest tests')
+        #if metric in time_metrics:
+        #    plot.set(title=f'{metric} per test instance sorted, above {cutoff_time[metric]} seconds')
+        #else:
+        #    plot.set(title=f'{metric} per test instance sorted, using {keep_largest_percent * 100}% largest tests')
 
         if metric == "reduced size":
             plot.set(yscale="linear")
@@ -134,7 +138,7 @@ def plot(data_list, test_names, graph_dir, metric, keep_largest_percent):
         plt.legend(loc='upper left', borderaxespad=0)
 
         if metric in time_metrics:
-            plt.savefig(graph_dir + f'{metric.replace(" ", "_")}_above_{cutoff_time[metric]}_seconds.svg',
+            plt.savefig(graph_dir + f'{metric.replace(" ", "_")}_above_{cutoff_times[metric]}_seconds.svg',
                         bbox_inches='tight', dpi=600, format="svg")
         else:
             plt.savefig(graph_dir + f'{metric.replace(" ", "_")}_top_{keep_largest_percent * 100}.svg',
