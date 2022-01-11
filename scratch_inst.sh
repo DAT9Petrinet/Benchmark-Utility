@@ -38,7 +38,7 @@ for Q in $(seq 1 8) ; do
 
 	echo "  Reduction ..."
 
-	RCMD="./$BIN $OPTIONS -d $RED_TIME_OUT -q 0 -x $Q $TEST_FOLDER/$MODEL/model.pnml $TEST_FOLDER/$MODEL/$CATEGORY.xml --write-reduced $PNML --noverify"
+	RCMD="./$BIN $OPTIONS -ltl -d $RED_TIME_OUT -q 0 -x $Q $TEST_FOLDER/$MODEL/model.pnml $TEST_FOLDER/$MODEL/$CATEGORY.xml --write-reduced $PNML --noverify"
 	ROUT="output/$(basename $BIN)/$NAME/$MODEL.$Q.rout"
 	
 	# Reduce model+query and store stdout
@@ -50,7 +50,7 @@ for Q in $(seq 1 8) ; do
 
 	echo "  Verification ..."
 
-	VCMD="./$BIN -r 0 -x $Q $PNML $TEST_FOLDER/$MODEL/$CATEGORY.xml"
+	VCMD="./$BIN -ltl -r 0 -x $Q $PNML $TEST_FOLDER/$MODEL/$CATEGORY.xml"
 	VOUT="output/$(basename $BIN)/$NAME/$MODEL.$Q.vout"
 	
 	# Verify query and store stdout along with time and memory spent between @@@s
@@ -61,7 +61,7 @@ for Q in $(seq 1 8) ; do
 
 	echo "  Exploration ..."
 
-	ECMD="./$BIN -q 0 -r 0 $PNML -e"
+	ECMD="./$BIN -ltl -q 0 -r 0 $PNML -e"
 	SOUT="output/$(basename $BIN)/$NAME/$MODEL.$Q.sout"
 	ZOUT="output/$(basename $BIN)/$NAME/$MODEL.$Q.size"
 
