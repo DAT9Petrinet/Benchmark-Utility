@@ -61,7 +61,7 @@ for Q in $(seq 1 8) ; do
 
 	echo "  Exploration ..."
 
-	ECMD="./$BIN -ltl -q 0 -r 0 $PNML -e"
+	ECMD="./$BIN -ltl  -q 0 -r 0 $PNML -e"
 	SOUT="output/$(basename $BIN)/$NAME/$MODEL.$Q.sout"
 	ZOUT="output/$(basename $BIN)/$NAME/$MODEL.$Q.size"
 
