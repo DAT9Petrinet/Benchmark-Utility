@@ -3,10 +3,11 @@ import copy
 import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
+
 import utility
 
 
-def plot(data_list, test_names, graph_dir):
+def plot(data_list, test_names, graph_dir, category):
     """
     Creates a stacked bar for each csv data in data_list,
     where the bars are 'reduced', 'simplified', and 'not answered'
@@ -96,5 +97,5 @@ def plot(data_list, test_names, graph_dir):
         left, bottom, width, height = p.get_bbox().bounds
         plot.annotate(int(width), xy=(left + width / 2, bottom + height / 2),
                       ha='center', va='center', rotation=45)
-    plt.savefig(graph_dir + 'answer_simplification_bars.svg', dpi=600, format="svg")
+    plt.savefig(graph_dir + f'{category}_answer_simplification_bars.svg', dpi=600, format="svg")
     plt.close()
