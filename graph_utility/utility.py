@@ -244,10 +244,10 @@ def remove_errors_datalist(data_list):
 def rename_test_name_for_paper_presentation(test_names):
     new_test_names = {}
     for test_name in test_names:
-        if "fixed" in test_name:
+        if test_name in ['fixedbase-i', 'fixedbase']:
             new_test_name = f"(base)⃰"
-            if "-i" in test_name:
-                new_test_name += "-inhib"
+            #if "-i" in test_name:
+             #   new_test_name += "-inhib"
         elif test_name == "origbase":
             new_test_name = test_name
         elif test_name == "TAPAAL":
@@ -260,6 +260,12 @@ def rename_test_name_for_paper_presentation(test_names):
             new_test_name = f"((Q⃰.R⃰.E⃰)⃰.(A⃰.B⃰))⃰"
         elif test_name == "with-M-as-E-NO":
             new_test_name = "(A⃰B⃰C⃰D⃰M⃰F⃰G⃰I⃰N⃰O⃰)⃰"
+        elif test_name == "with-MasE-NOP-i":
+            new_test_name = "(A⃰B⃰C⃰D⃰M⃰F⃰G⃰I⃰N⃰O⃰P⃰)⃰"
+        elif test_name == "with-LMNOPQR-i-run1":
+            new_test_name = '(base.L⃰.M⃰.N⃰.O⃰.P⃰.Q⃰.R⃰)⃰-run1'
+        elif test_name == "fixedbase-i-run1":
+            new_test_name = f"(base)⃰-run1"
         else:
             splits = test_name.split('-')
             if len(splits) > 0:
@@ -269,11 +275,10 @@ def rename_test_name_for_paper_presentation(test_names):
                 appendage = ""
                 for i, split in enumerate(split_rules):
                     if i == len(split_rules) - 1 and split in ['DFS', 'inhib', 'DSF', 'i']:
-                        if split == 'i':
-                            appendage += f"-{split}nhib"
-                        else:
+                        if split == 'DFS':
                             appendage += f"-{split}"
-                        continue
+                        else:
+                            continue
                     if split.isalpha():
                         if len(split) > 0:
                             for i, subrule in enumerate(split):
