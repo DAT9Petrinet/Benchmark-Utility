@@ -262,6 +262,8 @@ def rename_test_name_for_paper_presentation(test_names):
             new_test_name = "(A⃰B⃰C⃰D⃰M⃰F⃰G⃰I⃰N⃰O⃰)⃰"
         elif test_name == "with-MasE-NOP-i":
             new_test_name = "(A⃰B⃰C⃰D⃰M⃰F⃰G⃰I⃰N⃰O⃰P⃰)⃰"
+        elif test_name == "with-MasE-NO-i.csv":
+            new_test_name = "(A⃰B⃰C⃰D⃰M⃰F⃰G⃰I⃰N⃰O⃰)⃰"
         elif test_name == "with-LMNOPQR-i-run1":
             new_test_name = '(base.L⃰.M⃰.N⃰.O⃰.P⃰.Q⃰.R⃰)⃰-run1'
         elif test_name == "fixedbase-i-run1":
