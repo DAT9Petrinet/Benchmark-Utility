@@ -253,15 +253,15 @@ def rename_test_name_for_paper_presentation(test_names):
         elif test_name == "TAPAAL":
             new_test_name = test_name
         elif test_name == "with-M-as-E":
-            new_test_name = "(A⃰B⃰C⃰D⃰M⃰F⃰G⃰I⃰)⃰"
+            new_test_name = "(A⃰.B⃰.C⃰.D⃰.M⃰.F⃰.G⃰.I⃰)⃰"
         elif test_name == "only-M-then-E":
             new_test_name = f"(M⃰.E⃰)⃰"
         elif test_name == "only-QRE-then-AB":
             new_test_name = f"((Q⃰.R⃰.E⃰)⃰.(A⃰.B⃰))⃰"
-        elif test_name == "with-M-as-E-NO":
-            new_test_name = "(A⃰B⃰C⃰D⃰M⃰F⃰G⃰I⃰N⃰O⃰)⃰"
+        elif test_name in ["with-M-as-E-NO", "with-MasE-NO-i"]:
+            new_test_name = "(A⃰.B⃰.C⃰.D⃰.M⃰.F⃰.G⃰.I⃰.N⃰.O⃰)⃰"
         elif test_name == "with-MasE-NOP-i":
-            new_test_name = "(A⃰B⃰C⃰D⃰M⃰F⃰G⃰I⃰N⃰O⃰P⃰)⃰"
+            new_test_name = "(A⃰.B⃰.C⃰.D⃰.M⃰.F⃰.G⃰.I⃰.N⃰.O⃰.P⃰)⃰"
         elif test_name == "with-LMNOPQR-i-run1":
             new_test_name = '(base.L⃰.M⃰.N⃰.O⃰.P⃰.Q⃰.R⃰)⃰-run1'
         elif test_name == "fixedbase-i-run1":
