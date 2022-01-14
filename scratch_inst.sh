@@ -22,12 +22,14 @@ OPTIONS="$9"
 
 SCRATCH="/scratch/$(whoami)/$NAME/$MODEL/$CATEGORY"
 
+LTLFLAG=$([[ "$CATEGORY" == "LTLCardinality" ]] && echo " -ltl" || echo "")
+
 # Find the number of queries for this model by counting how many times "<property>" appears
 NQ=$(grep "<property>" "$TEST_FOLDER/$MODEL/$CATEGORY.xml" | wc -l)
 
-echo "Processing 8 queries of $MODEL ($NQ queries total)"
+echo "Processing $MODEL ($NQ queries total)"
 
-for Q in $(seq 1 8) ; do
+for Q in $(seq 1 $NQ) ; do
 	
 	echo "Q$Q"
 
@@ -38,7 +40,7 @@ for Q in $(seq 1 8) ; do
 
 	echo "  Reduction ..."
 
-	RCMD="./$BIN $OPTIONS -d $RED_TIME_OUT -q 0 -x $Q $TEST_FOLDER/$MODEL/model.pnml $TEST_FOLDER/$MODEL/$CATEGORY.xml --write-reduced $PNML --noverify"
+	RCMD="./$BIN $OPTIONS -d $RED_TIME_OUT -q 0 -x $Q $LTLFLAG $TEST_FOLDER/$MODEL/model.pnml $TEST_FOLDER/$MODEL/$CATEGORY.xml --write-reduced $PNML --noverify"
 	ROUT="output/$(basename $BIN)/$NAME/$MODEL.$Q.rout"
 	
 	# Reduce model+query and store stdout
@@ -50,7 +52,7 @@ for Q in $(seq 1 8) ; do
 
 	echo "  Verification ..."
 
-	VCMD="./$BIN -r 0 -x $Q $PNML $TEST_FOLDER/$MODEL/$CATEGORY.xml"
+	VCMD="./$BIN -r 0 -x $Q $LTLFLAG $PNML $TEST_FOLDER/$MODEL/$CATEGORY.xml"
 	VOUT="output/$(basename $BIN)/$NAME/$MODEL.$Q.vout"
 	
 	# Verify query and store stdout along with time and memory spent between @@@s
