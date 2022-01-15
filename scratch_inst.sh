@@ -56,7 +56,7 @@ for Q in $(seq 1 $NQ) ; do
 	VOUT="output/$(basename $BIN)/$NAME/$MODEL.$Q.vout"
 	
 	# Verify query and store stdout along with time and memory spent between @@@s
-	O=$(eval "/usr/bin/time -f '@@@%e,%M@@@' timeout ${VERI_TIME_OUT}m $VCMD")
+	O=$(eval "/usr/bin/time -f '@@@%e,%M@@@' timeout ${VERI_TIME_OUT}m $VCMD" 2>&1)
 	echo "$O" > "$VOUT"
 
 	# ===================== EXPLORATION ======================
