@@ -15,11 +15,12 @@ import utility
 
 
 def gui():
+    DIR = 'Exam'
     BACKGROUND = '#C0C0C0'
     FOREGROUND = '#1923E8'
     master = tk.Tk()
     master.configure(bg=BACKGROUND)
-    master.title('Select files to use for graphs')
+    master.title(f'Select files in /{DIR} to use for consistency')
     script_dir = os.path.dirname(__file__)
     results_dir = os.path.join(script_dir, '..\\results\\')
     all_csv_files = [file.split('results')[1]
@@ -32,8 +33,9 @@ def gui():
     previous_level = 0
     max_row = 0
     for f in all_csv_files:
-        if 'matrix' in f or 'consistency' in f or 'everything' in f or 'pre_jan_06' in f:
+        if DIR not in f:
             continue
+        f = f.replace(f'\\{DIR}', '')
         level = (f.count('\\'))
         if level > 1:
             if column == 0:
@@ -71,9 +73,9 @@ def gui():
         results[graph] = var
         row += 1
 
-    tk.Button(master, text="Next", command=master.destroy, bg=BACKGROUND, fg=FOREGROUND).grid(row=max_row,
+    tk.Button(master, text="Next", command=master.destroy, bg=BACKGROUND, fg=FOREGROUND).grid(row=row,
                                                                                               column=column)
-    tk.Button(master, text="Exit", command=sys.exit, bg=BACKGROUND, fg=FOREGROUND).grid(row=max_row + 1,
+    tk.Button(master, text="Exit", command=sys.exit, bg=BACKGROUND, fg=FOREGROUND).grid(row=row + 1,
                                                                                         column=column)
     master.mainloop()
 
@@ -83,10 +85,11 @@ def gui():
         raise Exception('You did not choose any experiment')
 
     category = chosen_results[0].split('\\')[1]
-    for result in chosen_results:
+    for index, result in enumerate(chosen_results):
         curr_category = result.split('\\')[1]
         if curr_category != category:
             raise Exception(f'Comparing across categories {category} and {curr_category}')
+        chosen_results[index] = f'\\{DIR}\\{result}'
 
     comparison = {}
     if results['point plot'].get() == 1:
