@@ -37,7 +37,10 @@ def plot(data_list, test_names, graph_dir, category):
         # Get counts of 'simplified' and 'not simplified'
         simplifications = (data['solved by query simplification'].value_counts()).to_frame()
 
-        simplifications.drop('ERR', inplace=True)
+        try:
+            simplifications.drop('ERR', inplace=True)
+        except KeyError:
+            pass
 
         # Combine into same dataframe, with column being the test name, and row indices being above metrics
         answers.rename(columns={'answer': test_names[index]}, inplace=True)
@@ -65,15 +68,19 @@ def plot(data_list, test_names, graph_dir, category):
         # As per default we want to remove these two columns that Nicolaj does not like
         # But as we saw, we can have faulty experiments where some of these wont exist
         # And if we try to remove something that does not exist, everything stops working
-        columns_to_remove = ['answered', 'not simplified']
+        columns_to_remove = ['answered', 'not simplified', 'ERR']
         for col in columns_to_remove:
             try:
                 temp.drop(columns=col, inplace=True)
-            except:
+            except KeyError:
                 continue
 
         # Reorder the columns so that bars are stacked nicely
-        temp = temp[["reduced", "simplified", "not answered", "ERR"]]
+        try:
+            temp = temp[["reduced", "simplified", "not answered", "ERR"]]
+        except KeyError:
+            temp = temp[["reduced", "simplified", "not answered"]]
+
 
         # Add data from this experiment, to results from other experiments
         combined = combined.append(temp)
