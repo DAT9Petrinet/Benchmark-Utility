@@ -74,6 +74,7 @@ def color(t):
 
 
 def sanitise_df(df):
+    df = remove_permission_denied_model(df)
     df = infer_errors(df)
     df = infer_simplification_from_prev_size_0_rows(df)
     return df
@@ -230,6 +231,8 @@ def largest_x_by_prev_size_jable(jable, x, test_name):
 
     return res_df.tail(n)
 
+def remove_permission_denied_model(df):
+    return df[df['model name'] != 'EGFr-PT-10421']
 
 def remove_errors_df(df):
     return df[df['answer'] != 'ERR']
