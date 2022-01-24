@@ -6,7 +6,7 @@ import seaborn as sns
 
 import utility
 
-
+pd.options.mode.chained_assignment = None
 def plot(data_list, test_names, graph_dir, category):
     """
     Creates a stacked bar for each csv data in data_list,
@@ -23,6 +23,13 @@ def plot(data_list, test_names, graph_dir, category):
     combined = pd.DataFrame()
 
     for index, data in enumerate(data_list):
+        try:
+            num_errors = data['answer'].value_counts()['ERR']
+        except KeyError:
+            num_errors = 0
+
+        data = utility.remove_errors_df(data)
+
         # Change 'NONE' value to 'not answered', and 'TRUE' and 'FALSE' to 'answered'
         data['answer'] = data['answer'].replace(['TRUE', 'FALSE'], 'answered')
         data['answer'] = data['answer'].replace(['NONE'], 'not answered')
@@ -37,8 +44,6 @@ def plot(data_list, test_names, graph_dir, category):
         # Get counts of 'simplified' and 'not simplified'
         simplifications = (data['solved by query simplification'].value_counts()).to_frame()
 
-        simplifications.drop('ERR', inplace=True)
-
         # Combine into same dataframe, with column being the test name, and row indices being above metrics
         answers.rename(columns={'answer': test_names[index]}, inplace=True)
         simplifications.rename(columns={'solved by query simplification': test_names[index]}, inplace=True)
@@ -48,19 +53,23 @@ def plot(data_list, test_names, graph_dir, category):
         # Might not have these columns, due to faulty test, so wrap in try-except
         try:
             num_answered = temp.T['answered']
-        except:
+        except KeyError:
             num_answered = 0
 
         try:
             num_simplified = temp.T['simplified']
-        except:
+        except KeyError:
             num_simplified = 0
 
         # Create new column 'reduced'
         reduced = int(num_answered - num_simplified)
         if reduced > 0:
             temp.loc['reduced'] = reduced
+
+        if num_errors > 0:
+            temp.loc['ERR'] = num_errors
         temp = temp.T
+
 
         # As per default we want to remove these two columns that Nicolaj does not like
         # But as we saw, we can have faulty experiments where some of these wont exist
@@ -69,11 +78,15 @@ def plot(data_list, test_names, graph_dir, category):
         for col in columns_to_remove:
             try:
                 temp.drop(columns=col, inplace=True)
-            except:
+            except KeyError:
                 continue
 
         # Reorder the columns so that bars are stacked nicely
-        temp = temp[["reduced", "simplified", "not answered", "ERR"]]
+        try:
+            temp = temp[["reduced", "simplified", "not answered", "ERR"]]
+        except KeyError:
+            temp = temp[["reduced", "simplified", "not answered"]]
+
 
         # Add data from this experiment, to results from other experiments
         combined = combined.append(temp)

@@ -74,6 +74,7 @@ def color(t):
 
 
 def sanitise_df(df):
+    df = remove_permission_denied_model(df)
     df = infer_errors(df)
     df = infer_simplification_from_prev_size_0_rows(df)
     return df
@@ -231,6 +232,10 @@ def largest_x_by_prev_size_jable(jable, x, test_name):
     return res_df.tail(n)
 
 
+def remove_permission_denied_model(df):
+    return df[df['model name'] != 'EGFr-PT-10421']
+
+
 def remove_errors_df(df):
     return df[df['answer'] != 'ERR']
 
@@ -244,10 +249,10 @@ def remove_errors_datalist(data_list):
 def rename_test_name_for_paper_presentation(test_names):
     new_test_names = {}
     for test_name in test_names:
-        if test_name in ['fixedbase-i', 'fixedbase']:
+        if test_name in ['fixedbase-i', 'fixedbase', 'ffbase']:
             new_test_name = f"(base)⃰"
-            #if "-i" in test_name:
-             #   new_test_name += "-inhib"
+        if test_name in ['ffbase-DFS']:
+            new_test_name = f"(base)⃰-DFS"
         elif test_name == "origbase":
             new_test_name = test_name
         elif test_name == "TAPAAL":
@@ -277,6 +282,7 @@ def rename_test_name_for_paper_presentation(test_names):
                     if i == len(split_rules) - 1 and split in ['DFS', 'inhib', 'DSF', 'i']:
                         if split == 'DFS':
                             appendage += f"-{split}"
+                            continue
                         else:
                             continue
                     if split.isalpha():
