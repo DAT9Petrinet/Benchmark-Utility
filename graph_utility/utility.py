@@ -251,8 +251,10 @@ def rename_test_name_for_paper_presentation(test_names):
     for test_name in test_names:
         if test_name in ['fixedbase-i', 'fixedbase', 'ffbase']:
             new_test_name = f"(base)⃰"
-        if test_name in ['ffbase-DFS']:
+        elif test_name in ['ffbase-DFS']:
             new_test_name = f"(base)⃰-DFS"
+        elif test_name in ['ffbase-BestFS']:
+            new_test_name = f"(base)⃰-BestFS"
         elif test_name == "origbase":
             new_test_name = test_name
         elif test_name == "TAPAAL":
@@ -279,12 +281,11 @@ def rename_test_name_for_paper_presentation(test_names):
 
                 appendage = ""
                 for i, split in enumerate(split_rules):
-                    if i == len(split_rules) - 1 and split in ['DFS', 'inhib', 'DSF', 'i']:
-                        if split == 'DFS':
-                            appendage += f"-{split}"
-                            continue
-                        else:
-                            continue
+                    if i == len(split_rules) - 1 and split in ['DFS', 'BestFS']:
+                        appendage += f"-{split}"
+                        continue
+                    elif i == len(split_rules) - 1 and split in ['inhib', 'i']:
+                        continue
                     if split.isalpha():
                         if len(split) > 0:
                             for i, subrule in enumerate(split):
