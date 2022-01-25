@@ -253,7 +253,7 @@ def rename_test_name_for_paper_presentation(test_names):
             new_test_name = f"(base)⃰"
         elif test_name in ['ffbase-DFS']:
             new_test_name = f"(base)⃰-DFS"
-        elif test_name in ['ffbase-BestFS']:
+        elif test_name in ['ffbase-BestFS', 'ffbase-i-BestFS']:
             new_test_name = f"(base)⃰-BestFS"
         elif test_name == "origbase":
             new_test_name = test_name
@@ -273,6 +273,8 @@ def rename_test_name_for_paper_presentation(test_names):
             new_test_name = '(base.L⃰.M⃰.N⃰.O⃰.P⃰.Q⃰.R⃰)⃰-run1'
         elif test_name == "fixedbase-i-run1":
             new_test_name = f"(base)⃰-run1"
+        elif test_name[:4] == "red1":
+            new_test_name = test_name
         else:
             splits = test_name.split('-')
             if len(splits) > 0:
