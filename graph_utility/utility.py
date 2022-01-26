@@ -273,6 +273,12 @@ def rename_test_name_for_paper_presentation(test_names):
             new_test_name = '(base.L⃰.M⃰.N⃰.O⃰.P⃰.Q⃰.R⃰)⃰-run1'
         elif test_name == "fixedbase-i-run1":
             new_test_name = f"(base)⃰-run1"
+        elif test_name == "red1-0d9ba7e-DFS":
+            new_test_name = "Custom 1"
+        elif test_name == "red1-c84c6fd-DFS":
+            new_test_name = "Custom 2"
+        elif test_name == "red1-b1d41c3-DFS":
+            new_test_name = "Custom 3"
         elif test_name[:4] == "red1":
             new_test_name = test_name
         else:
