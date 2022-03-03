@@ -261,6 +261,8 @@ def rename_test_name_for_paper_presentation(test_names):
             new_test_name = test_name
         elif test_name == "with-M-as-E":
             new_test_name = "(A⃰.B⃰.C⃰.D⃰.M⃰.F⃰.G⃰.I⃰)⃰"
+        elif test_name == "with-MasEPFNO-BestFS":
+            new_test_name = "(A⃰.B⃰.C⃰.D⃰.M+++⃰.G⃰.I⃰)⃰-BestFS"
         elif test_name == "only-M-then-E":
             new_test_name = f"(M⃰.E⃰)⃰"
         elif test_name == "only-QRE-then-AB":
