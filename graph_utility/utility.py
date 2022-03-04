@@ -285,7 +285,7 @@ def rename_test_name_for_paper_presentation(test_names):
                 .replace("c84c6fd", "(A*B*C*D*M(FNO)*G*H*I)*Q*R2*L") \
                 .replace("b1d41c3", "(IA*B*MC*D*G*H*(FNO)*)*Q*R2*") \
                 .replace("3bcc770", "(IA*B*(EFPMNO)C*D*G*S2*)*Q*R1") \
-                .replace("ebc7a70", "(IA*B*(EFPMNO)S2*C*D*G*H)*Q*R1")
+                .replace("ebc7a70", "(IA*B*(EFPMNO)S2C*D*G*H*)*Q*R1")
         else:
             splits = test_name.split('-')
             if len(splits) > 0:
