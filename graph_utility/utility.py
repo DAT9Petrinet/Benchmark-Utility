@@ -279,8 +279,12 @@ def rename_test_name_for_paper_presentation(test_names):
             new_test_name = "Custom 2"
         elif test_name == "red1-b1d41c3-DFS":
             new_test_name = "Custom 3"
-        elif test_name[:4] == "red1":
-            new_test_name = test_name
+        elif test_name[:5] == "red1-":
+            new_test_name = test_name[5:]\
+                .replace("0d9ba7e", "(A*B*C*D*E*(FNO)*G*H*I*L*M*P*Q*R*)*")\
+                .replace("c84c6fd", "(A*B*C*D*M(FNO)*G*H*I)*Q*R2*L")\
+                .replace("b1d41c3", "(IA*B*MC*D*G*H*(FNO)*)*Q*R2*")\
+                .replace("3bcc770", "(IA*B*(EFPMNO)C*D*G*H*S*)*Q*R")
         else:
             splits = test_name.split('-')
             if len(splits) > 0:
