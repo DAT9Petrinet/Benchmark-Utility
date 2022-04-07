@@ -20,7 +20,9 @@ VERI_TIME_OUT=$7
 EXPL_TIME_OUT=$8
 OPTIONS="$9"
 
-SCRATCH="/scratch/$(whoami)/$NAME/$MODEL/$CATEGORY"
+SCRATCH="/scratch/$$/$NAME/$MODEL/$CATEGORY"
+mkdir -p $SCRATCH
+trap "rm -r $SCRATCH ; echo terminated ; exit" 0  # We trap the to make sure we cleanup
 
 LTLFLAG=$([[ "$CATEGORY" == "LTLCardinality" ]] && echo " -ltl" || echo "")
 
@@ -74,6 +76,8 @@ for Q in $(seq 1 $NQ) ; do
 	SIZE=$([[ -n "$(echo $RES | awk "/explored states/")" ]] && echo $RES | sed -E "s/.*explored states: *([0-9]+).*/\1/" || echo 0)
 	
 	echo $SIZE > $ZOUT
+
+	rm -r $SCRATCH
 	
 done
 
