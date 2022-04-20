@@ -15,7 +15,7 @@ import utility
 
 
 def gui():
-    DIR = 'Exam'
+    DIR = 'P10'
     BACKGROUND = '#C0C0C0'
     FOREGROUND = '#1923E8'
     master = tk.Tk()
